@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="key.svg">Resources/images/key.svg</file>
+        <file alias="addDatabase.svg">Resources/images/addDatabase.svg</file>
+    </qresource>
+</RCC>

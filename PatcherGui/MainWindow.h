@@ -1,0 +1,51 @@
+#pragma once
+
+#include <QMainWindow>
+#include "ui_MainWindow.h"
+
+class QVBoxLayout;
+class QHBoxLayout;
+class QGroupBox;
+class QTabWidget;
+class QPlainTextEdit;
+class QMenu;
+class QAction;
+class QLabel;
+class BuilderWidget;
+class InstallerWidget;
+class LoginWindow;
+
+class MainWindow : public QMainWindow, public Ui::MainWindow
+{
+	Q_OBJECT
+
+public:
+	MainWindow(QWidget *parent = Q_NULLPTR);
+	~MainWindow();
+
+private:
+	LoginWindow *loginWindow;
+
+	void initializeLogOutput();
+	QPlainTextEdit *logOutput;
+	QDockWidget *logOutputDock;
+
+	void initializeModeTabs();
+	QTabWidget *modeTab;
+	BuilderWidget *builderWidget;
+	InstallerWidget *installerWidget;
+
+	void initializeActions();
+	QAction *loginAction;
+
+	void initializeMainMenu();	
+	QMenu *databaseMenu;
+
+	void initializeToolBars();
+	QLabel *databaseInformation;
+	QToolBar *builderToolBar;
+	QToolBar *installerToolBar;
+
+private slots:
+	bool login();
+};
