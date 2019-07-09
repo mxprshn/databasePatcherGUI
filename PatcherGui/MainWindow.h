@@ -26,7 +26,7 @@ public:
 private:
 	LoginWindow *loginWindow;
 
-	void initializeLogOutput();
+	void initializeDocks();
 	QPlainTextEdit *logOutput;
 	QDockWidget *logOutputDock;
 
@@ -43,8 +43,6 @@ private:
 
 	void initializeToolBars();
 	QLabel *databaseInformation;
-	QToolBar *builderToolBar;
-	QToolBar *installerToolBar;
 
 private slots:
 	bool login();

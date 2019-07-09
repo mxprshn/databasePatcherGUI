@@ -9,13 +9,15 @@
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, loginWindow(new LoginWindow(this))
+	, builderWidget(new BuilderWidget)
+	, installerWidget(new InstallerWidget)
 {
 	setupUi(this);
 
 	initializeActions();
 	initializeMainMenu();
 	initializeModeTabs();
-	initializeLogOutput();
+	initializeDocks();
 	initializeToolBars();
 
 	setCentralWidget(modeTab);
@@ -32,21 +34,18 @@ void MainWindow::initializeActions()
 
 void MainWindow::initializeModeTabs()
 {
-	builderWidget = new BuilderWidget;
-	installerWidget = new InstallerWidget;
-
 	modeTab = new QTabWidget;
 	modeTab->addTab(builderWidget, "Build");
 	modeTab->addTab(installerWidget, "Install");
 	modeTab->setMinimumHeight(400);
 }
 
-void MainWindow::initializeLogOutput()
+void MainWindow::initializeDocks()
 {
 	logOutputDock = new QDockWidget("Log output", this);
 	logOutput = new QPlainTextEdit;
 	logOutputDock->setWidget(logOutput);
-	logOutputDock->setAllowedAreas(Qt::BottomDockWidgetArea);
+	logOutputDock->setAllowedAreas(Qt::BottomDockWidgetArea);	
 }
 
 void MainWindow::initializeMainMenu()

@@ -2,5 +2,10 @@
     <qresource prefix="/images">
         <file alias="key.svg">Resources/images/key.svg</file>
         <file alias="addDatabase.svg">Resources/images/addDatabase.svg</file>
+        <file alias="downArrow.svg">Resources/images/downArrow.svg</file>
+        <file alias="hammer.svg">Resources/images/hammer.svg</file>
+        <file alias="removeFile.svg">Resources/images/removeFile.svg</file>
+        <file alias="upArrow.svg">Resources/images/upArrow.svg</file>
+        <file alias="addFile.svg">Resources/images/addFile.svg</file>
     </qresource>
 </RCC>
