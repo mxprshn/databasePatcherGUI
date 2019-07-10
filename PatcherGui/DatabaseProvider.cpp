@@ -1,14 +1,14 @@
-#include "stdafx.h"
 #include <QSqlDatabase>
-#include <QSqlError>
 #include <QDebug>
+#include <QSqlError>
 #include "DatabaseProvider.h"
 
-DatabaseProvider::DatabaseProvider()
+DatabaseProvider::DatabaseProvider(QObject *parent)
+	: QObject(parent)
 {
 }
 
-bool DatabaseProvider::connect(const QString &database, const QString &user, const QString &password,
+QString DatabaseProvider::connect(const QString &database, const QString &user, const QString &password,
 	const QString &server, const int port, const QString &name)
 {
 	auto connection = QSqlDatabase::addDatabase("QPSQL", name);
@@ -22,9 +22,12 @@ bool DatabaseProvider::connect(const QString &database, const QString &user, con
 
 	if (!isConnectionSet)
 	{
-		qDebug() << connection.lastError().text();		 
+		return connection.lastError().text();
 	}
 
-	return isConnectionSet;
+		return "Yea!";
 }
 
+DatabaseProvider::~DatabaseProvider()
+{
+}

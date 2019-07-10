@@ -5,6 +5,7 @@
 #include "BuilderWidget.h"
 #include "InstallerWidget.h"
 #include "LoginWindow.h"
+#include "DatabaseProvider.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -13,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
 	, installerWidget(new InstallerWidget)
 {
 	setupUi(this);
+
+	databaseProvider = new DatabaseProvider(this);
 
 	initializeActions();
 	initializeMainMenu();

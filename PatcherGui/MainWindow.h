@@ -14,6 +14,7 @@ class QLabel;
 class BuilderWidget;
 class InstallerWidget;
 class LoginWindow;
+class DatabaseProvider;
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -25,6 +26,7 @@ public:
 
 private:
 	LoginWindow *loginWindow;
+	DatabaseProvider *databaseProvider;
 
 	void initializeDocks();
 	QPlainTextEdit *logOutput;

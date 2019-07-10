@@ -1,5 +1,3 @@
-#include "LoginWindow.h"
-#include "BuilderWidget.h"
 #include <MainWindow.h>
 #include <QtWidgets/QApplication>
 
