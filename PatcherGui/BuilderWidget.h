@@ -6,12 +6,14 @@
 class QListWidget;
 class QHBoxLayout;
 class QVBoxLayout;
+class QGridLayout;
 class QGroupBox;
 class QAction;
 class QPushButton;
 class QComboBox;
 class QLineEdit;
 class QToolButton;
+class QSize;
 
 class BuilderWidget : public QWidget, public Ui::BuilderWidget
 {
@@ -22,11 +24,19 @@ public:
 	~BuilderWidget();
 
 private:
-	QHBoxLayout *mainLayout;
+	void initializeItemList();
+	void initializeToolButtons();
+	void initializeAddItemBox();
+
+	const QSize toolButtonSize;
+	const QSize toolButtonIconSize;
+
+	QGridLayout *mainLayout;
 	QHBoxLayout *addItemLayout;
 	QVBoxLayout *itemListLayout;
 	QVBoxLayout *toolsLayout;
 
+	QGroupBox *itemListGroupBox;
 	QListWidget *itemListWidget;
 
 	QGroupBox *addItemGroupBox;
