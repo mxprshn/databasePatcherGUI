@@ -25,6 +25,12 @@ public:
 	~MainWindow();
 
 private:
+	QString databaseName;
+	QString username;
+	QString serverName;
+	int port;
+	QString password;
+
 	LoginWindow *loginWindow;
 	DatabaseProvider *databaseProvider;
 

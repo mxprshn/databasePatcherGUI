@@ -18,6 +18,7 @@ class LoginWindow : public QDialog, public Ui::LoginWindow
 public:
 	LoginWindow(QWidget *parent = Q_NULLPTR);
 	~LoginWindow();
+	QDialogButtonBox *buttons;
 
 private:
 	QVBoxLayout *mainLayout;
@@ -33,5 +34,4 @@ private:
 
 	QLabel *portLabel;
 
-	QDialogButtonBox *buttons;
 };

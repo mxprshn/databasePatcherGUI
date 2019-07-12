@@ -9,13 +9,14 @@
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
+	, databaseProvider(new DatabaseProvider(this))
 	, loginWindow(new LoginWindow(this))
 	, builderWidget(new BuilderWidget)
 	, installerWidget(new InstallerWidget)
+	, databaseName("Connect to database!")
+	, username("")
 {
 	setupUi(this);
-
-	databaseProvider = new DatabaseProvider(this);
 
 	initializeActions();
 	initializeMainMenu();
@@ -27,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
 	addToolBar(Qt::TopToolBarArea, mainToolBar);
 	setMinimumSize(800, 600);
+
+	//connect(loginWindow->buttons, SIGNAL("accepted()"), this, SLOT(""));
 }
 
 void MainWindow::initializeActions()
@@ -74,4 +77,5 @@ bool MainWindow::login()
 
 MainWindow::~MainWindow()
 {
+	delete databaseProvider;
 }
