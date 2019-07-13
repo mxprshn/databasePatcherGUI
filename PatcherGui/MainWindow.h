@@ -21,15 +21,11 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 	Q_OBJECT
 
 public:
+
 	MainWindow(QWidget *parent = Q_NULLPTR);
 	~MainWindow();
 
 private:
-	QString databaseName;
-	QString username;
-	QString serverName;
-	int port;
-	QString password;
 
 	LoginWindow *loginWindow;
 	DatabaseProvider *databaseProvider;
@@ -45,6 +41,7 @@ private:
 
 	void initializeActions();
 	QAction *loginAction;
+	QAction *logoutAction;
 
 	void initializeMainMenu();	
 	QMenu *databaseMenu;
@@ -52,6 +49,10 @@ private:
 	void initializeToolBars();
 	QLabel *databaseInformation;
 
-private slots:
-	bool login();
+private slots:	
+
+	void login(const QString &database, const QString &user, const QString &password,
+		const QString &server, const int port) const;
+
+	void logout();
 };

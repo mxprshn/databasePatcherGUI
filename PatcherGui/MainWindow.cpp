@@ -1,6 +1,7 @@
 #include <QPlainTextEdit>
 #include <QDockWidget>
 #include <QLabel>
+#include <QMessageBox>
 #include "MainWindow.h"
 #include "BuilderWidget.h"
 #include "InstallerWidget.h"
@@ -13,10 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
 	, loginWindow(new LoginWindow(this))
 	, builderWidget(new BuilderWidget)
 	, installerWidget(new InstallerWidget)
-	, databaseName("Connect to database!")
-	, username("")
 {
 	setupUi(this);
+	setWindowTitle("Database patcher");
 
 	initializeActions();
 	initializeMainMenu();
@@ -28,14 +28,16 @@ MainWindow::MainWindow(QWidget *parent)
 	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
 	addToolBar(Qt::TopToolBarArea, mainToolBar);
 	setMinimumSize(800, 600);
-
-	//connect(loginWindow->buttons, SIGNAL("accepted()"), this, SLOT(""));
 }
 
 void MainWindow::initializeActions()
 {
 	loginAction = new QAction(QIcon(":/images/addDatabase.svg"),"Connect to database...", this);
-	connect(loginAction, SIGNAL(triggered()), this, SLOT(login()));
+	logoutAction = new QAction(QIcon(":/images/removeDatabase.svg"), "Disconnect", this);
+	logoutAction->setDisabled(true);
+
+	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(showLoginWindow()));
+	connect(logoutAction, SIGNAL(triggered()), this, SLOT(logout()));
 }
 
 void MainWindow::initializeModeTabs()
@@ -58,6 +60,7 @@ void MainWindow::initializeMainMenu()
 {
 	databaseMenu = new QMenu("Database");
 	databaseMenu->addAction(loginAction);
+	databaseMenu->addAction(logoutAction);
 
 	QMainWindow::menuBar()->addMenu(databaseMenu);
 }
@@ -67,13 +70,37 @@ void MainWindow::initializeToolBars()
 	databaseInformation = new QLabel("Connect to database!");
 	mainToolBar->addAction(loginAction);
 	mainToolBar->addWidget(databaseInformation);
+	mainToolBar->setMovable(false);
 }
 
-bool MainWindow::login()
+void MainWindow::login(const QString &database, const QString &user, const QString &password,
+	const QString &server, const int port) const
 {
-	loginWindow->show();
-	return true;
+	auto connectionMessage = "Connected to \"" + database + "\" as \"" + user + "\"";
+	const auto isConnected = databaseProvider->connect(database, user, password, server, port, connectionMessage);
+
+	if (isConnected)
+	{
+		databaseInformation->setText(connectionMessage);
+		loginWindow->close();
+		loginAction->setDisabled(true);
+		logoutAction->setEnabled(true);
+	}
+	else
+	{
+		QMessageBox::warning(loginWindow, "Connection error", connectionMessage, QMessageBox::Ok,
+			QMessageBox::Ok);
+	}
 }
+
+void MainWindow::logout()
+{
+	databaseProvider->disconnect();
+	databaseInformation->setText("Connect to database!");
+	loginAction->setEnabled(true);
+	logoutAction->setDisabled(true);
+}
+
 
 MainWindow::~MainWindow()
 {

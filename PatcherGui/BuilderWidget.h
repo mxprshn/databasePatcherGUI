@@ -20,10 +20,12 @@ class BuilderWidget : public QWidget, public Ui::BuilderWidget
 	Q_OBJECT
 
 public:
+
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
 
 private:
+
 	void initializeItemList();
 	void initializeToolButtons();
 	void initializeAddItemBox();

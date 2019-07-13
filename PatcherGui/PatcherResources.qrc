@@ -9,5 +9,6 @@
         <file alias="addFile.svg">Resources/images/addFile.svg</file>
         <file alias="install.svg">Resources/images/install.svg</file>
         <file alias="test.svg">Resources/images/test.svg</file>
+        <file alias="removeDatabase.svg">Resources/images/removeDatabase.svg</file>
     </qresource>
 </RCC>

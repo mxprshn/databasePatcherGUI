@@ -17,10 +17,12 @@ class InstallerWidget : public QWidget, public Ui::InstallerWidget
 	Q_OBJECT
 
 public:
+
 	InstallerWidget(QWidget *parent = Q_NULLPTR);
 	~InstallerWidget();
 
 private:
+
 	void initializeOpenPatchBox();
 	void initializeItemLists();
 	void initializeToolButtons();

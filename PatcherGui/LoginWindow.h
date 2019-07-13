@@ -16,11 +16,16 @@ class LoginWindow : public QDialog, public Ui::LoginWindow
 	Q_OBJECT
 
 public:
+
 	LoginWindow(QWidget *parent = Q_NULLPTR);
 	~LoginWindow();
-	QDialogButtonBox *buttons;
+
+	void clear();
 
 private:
+
+	QDialogButtonBox *buttons;
+
 	QVBoxLayout *mainLayout;
 	QFormLayout *inputLayout;
 	QHBoxLayout *buttonsLayout;
@@ -34,4 +39,13 @@ private:
 
 	QLabel *portLabel;
 
+private slots:
+
+	void showLoginWindow();
+	void connectionRequest();
+
+signals:
+
+	void connectionRequested(const QString &database, const QString &user, const QString &password,
+		const QString &server, const int port);
 };

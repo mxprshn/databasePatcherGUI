@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include "LoginWindow.h"
+#include "MainWindow.h"
 
 LoginWindow::LoginWindow(QWidget *parent)
 	: QDialog(parent)
@@ -21,6 +22,8 @@ LoginWindow::LoginWindow(QWidget *parent)
 	databaseInputBox = new QLineEdit;
 	usernameInputBox = new QLineEdit;
 	passwordInputBox = new QLineEdit;
+
+	passwordInputBox->setEchoMode(QLineEdit::Password);
 
 	buttons = new QDialogButtonBox;
 
@@ -49,6 +52,33 @@ LoginWindow::LoginWindow(QWidget *parent)
 	setFixedSize(450, 230);
 	setWindowTitle("Login");
 	setLayout(mainLayout);
+
+	setWindowModality(Qt::ApplicationModal);
+
+	connect(this->buttons, SIGNAL(accepted()), this, SLOT(connectionRequest()));
+	connect(this->buttons, SIGNAL(rejected()), this, SLOT(close()));
+	connect(this, SIGNAL(connectionRequested(QString, QString, QString, QString, int)),this->parent(),
+		SLOT(login(QString, QString, QString, QString, int)));
+}
+
+void LoginWindow::connectionRequest()
+{
+	emit connectionRequested(databaseInputBox->text(), usernameInputBox->text(), passwordInputBox->text(),
+		serverInputBox->text(), portInputBox->text().toInt());
+}
+
+void LoginWindow::clear()
+{
+	foreach(QLineEdit* lineEdit, findChildren<QLineEdit*>())
+	{
+		lineEdit->clear();
+	}
+}
+
+void LoginWindow::showLoginWindow()
+{
+	clear();
+	show();
 }
 
 LoginWindow::~LoginWindow()
