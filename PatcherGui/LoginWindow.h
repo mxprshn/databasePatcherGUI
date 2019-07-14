@@ -20,8 +20,6 @@ public:
 	LoginWindow(QWidget *parent = Q_NULLPTR);
 	~LoginWindow();
 
-	void clear();
-
 private:
 
 	QDialogButtonBox *buttons;
@@ -38,6 +36,8 @@ private:
 	QLineEdit *passwordInputBox;
 
 	QLabel *portLabel;
+
+	void clear() const;
 
 private slots:
 

@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include "ui_InstallerWidget.h"
+#include "DependenciesListModel.h"
 
 class QHBoxLayout;
 class QVBoxLayout;
@@ -11,6 +12,8 @@ class QLineEdit;
 class QPushButton;
 class QToolButton;
 class QListWidget;
+class QTreeView;
+class QTableView;
 
 class InstallerWidget : public QWidget, public Ui::InstallerWidget
 {
@@ -41,7 +44,7 @@ private:
 	QGroupBox *dependenciesListGroupBox;
 
 	QListWidget *itemListWidget;
-	QListWidget *dependenciesListWidget;
+	QTreeView *dependenciesListView;
 
 	QLineEdit *patchPathLineEdit;
 
@@ -50,4 +53,6 @@ private:
 
 	QToolButton *testButton;
 	QToolButton *installButton;
+
+	DependenciesListModel *dependenciesListModel;
 };

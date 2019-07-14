@@ -50,15 +50,18 @@ LoginWindow::LoginWindow(QWidget *parent)
 	mainLayout->addStretch(1);
 
 	setFixedSize(450, 230);
-	setWindowTitle("Login");
+	setWindowTitle("Connect to database");
 	setLayout(mainLayout);
+
+	setWindowIcon(QIcon(":/images/addDatabase.svg"));
 
 	setWindowModality(Qt::ApplicationModal);
 
 	connect(this->buttons, SIGNAL(accepted()), this, SLOT(connectionRequest()));
 	connect(this->buttons, SIGNAL(rejected()), this, SLOT(close()));
-	connect(this, SIGNAL(connectionRequested(QString, QString, QString, QString, int)),this->parent(),
-		SLOT(login(QString, QString, QString, QString, int)));
+	connect(this, SIGNAL(connectionRequested(const QString&, const QString&, const QString&,
+		const QString&, const int)), this->parent(), SLOT(login(const QString&, const QString&,
+		const QString&, const QString&, const int)));
 }
 
 void LoginWindow::connectionRequest()
@@ -67,7 +70,7 @@ void LoginWindow::connectionRequest()
 		serverInputBox->text(), portInputBox->text().toInt());
 }
 
-void LoginWindow::clear()
+void LoginWindow::clear() const
 {
 	foreach(QLineEdit* lineEdit, findChildren<QLineEdit*>())
 	{

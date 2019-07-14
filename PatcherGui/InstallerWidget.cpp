@@ -5,12 +5,15 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QToolButton>
+#include <QTreeView>
+#include <QStandardItemModel>
 #include "InstallerWidget.h"
 
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
+	, dependenciesListModel(new DependenciesListModel(this))
 {
 	setupUi(this);
 	mainLayout = new QGridLayout;
@@ -35,16 +38,21 @@ void InstallerWidget::initializeItemLists()
 	dependenciesListGroupBox = new QGroupBox("Dependencies");
 
 	itemListWidget = new QListWidget;
-	dependenciesListWidget = new QListWidget;
+	dependenciesListView = new QTreeView;
 
 	itemListLayout->addWidget(itemListWidget);
-	dependenciesListLayout->addWidget(dependenciesListWidget);
+	dependenciesListLayout->addWidget(dependenciesListView);
 
 	itemListGroupBox->setLayout(itemListLayout);
 	dependenciesListGroupBox->setLayout(dependenciesListLayout);
 
 	mainLayout->addWidget(itemListGroupBox, 1, 0);
 	mainLayout->addWidget(dependenciesListGroupBox, 1, 1);
+
+	dependenciesListModel->parseDependenciesFromFile(":/data/dependencies.txt");
+	dependenciesListView->setModel(dependenciesListModel);
+	dependenciesListView->resizeColumnToContents(0);
+	dependenciesListView->setRootIsDecorated(false);
 }
 
 void InstallerWidget::initializeOpenPatchBox()
@@ -89,4 +97,5 @@ void InstallerWidget::initializeToolButtons()
 
 	mainLayout->addLayout(toolsLayout, 0, 2, 2, 1);
 }
+
 
