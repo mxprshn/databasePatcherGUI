@@ -163,3 +163,41 @@ bool DependenciesListModel::parseDependenciesFromFile(const QString& filePath)
 	file.close();
 	return true;
 }
+
+bool DependenciesListModel::parseCheckResultsFromFile(const QString& filePath)
+{
+	QFile file(filePath);
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		return false;
+	}
+
+	QTextStream input(&file);
+
+	QString typeName = "";
+	QString name = "";
+	int isSatisfied = 0;
+
+	for (auto i = 0; i < elements.count(); ++i)
+	{
+		input >> typeName >> name >> isSatisfied;
+
+		if (isSatisfied == 1)
+		{
+			elements[i]->setSatisfied();
+			elements[i]->setReadyToInstall();
+		}
+		else
+		{
+			elements[i]->setNotSatisfied();
+		}
+	}
+
+	file.close();
+
+	const QModelIndex topLeft = createIndex(0, statusColumnIndex);
+	const QModelIndex bottomRight = createIndex(elements.count(), statusColumnIndex);
+	emit dataChanged(topLeft, bottomRight);
+	return true;
+}

@@ -19,6 +19,11 @@ void DependenciesListElement::setNotSatisfied()
 	status = notSatisfied;
 }
 
+void DependenciesListElement::setReadyToInstall()
+{
+	isReadyToInstall = true;
+}
+
 DependenciesListElement::ObjectType DependenciesListElement::getType() const
 {
 	return type;

@@ -19,7 +19,7 @@ public:
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
 	bool parseDependenciesFromFile(const QString &filePath);
-	//bool parseCheckResultsFromFile(const QString &filePath);
+	bool parseCheckResultsFromFile(const QString &filePath);
 
 private:
 
@@ -28,4 +28,5 @@ private:
 	QHash<int, QString> statusIcons;
 	QHash<int, QString> typeNames;
 	static const int columnAmount = 3;
+	static const int statusColumnIndex = 2;
 };

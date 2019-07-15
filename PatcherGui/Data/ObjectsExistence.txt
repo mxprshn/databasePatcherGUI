@@ -1,0 +1,6 @@
+table cats 0
+function dogs 1
+view tigers 0
+table dogs 0
+function cats 1
+view tigggers 1

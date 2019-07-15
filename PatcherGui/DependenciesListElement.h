@@ -31,6 +31,7 @@ public:
 
 	void setSatisfied();
 	void setNotSatisfied();
+	void setReadyToInstall();
 
 	ObjectType getType() const;
 	QString getName() const;

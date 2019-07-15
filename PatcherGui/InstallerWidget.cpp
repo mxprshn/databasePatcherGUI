@@ -7,6 +7,8 @@
 #include <QToolButton>
 #include <QTreeView>
 #include <QStandardItemModel>
+#include <QAction>
+#include <QHeaderView>
 #include "InstallerWidget.h"
 
 InstallerWidget::InstallerWidget(QWidget *parent)
@@ -20,6 +22,7 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 
 	initializeItemLists();
 	initializeOpenPatchBox();
+	initializeActions();
 	initializeToolButtons();
 
 	setLayout(mainLayout);
@@ -51,8 +54,10 @@ void InstallerWidget::initializeItemLists()
 
 	dependenciesListModel->parseDependenciesFromFile(":/data/dependencies.txt");
 	dependenciesListView->setModel(dependenciesListModel);
-	dependenciesListView->resizeColumnToContents(0);
 	dependenciesListView->setRootIsDecorated(false);
+	dependenciesListView->header()->setStretchLastSection(false);
+	dependenciesListView->header()->setSectionResizeMode(1, QHeaderView::ResizeMode::Stretch);
+	dependenciesListView->header()->setSectionResizeMode(2, QHeaderView::ResizeMode::ResizeToContents);
 }
 
 void InstallerWidget::initializeOpenPatchBox()
@@ -84,6 +89,8 @@ void InstallerWidget::initializeToolButtons()
 	testButton->setIconSize(toolButtonIconSize);
 	testButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
+	connect(this->testButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
+
 	installButton = new QToolButton;
 	installButton->setIcon(QIcon(":/images/install.svg"));
 	installButton->setText("Install");
@@ -97,5 +104,19 @@ void InstallerWidget::initializeToolButtons()
 
 	mainLayout->addLayout(toolsLayout, 0, 2, 2, 1);
 }
+
+void InstallerWidget::initializeActions()
+{
+	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
+	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
+		SLOT(requestTest()));
+}
+
+void InstallerWidget::requestTest()
+{
+	dependenciesListModel->parseCheckResultsFromFile(":data/ObjectsExistence.txt");
+}
+
+
 
 

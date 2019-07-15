@@ -29,6 +29,7 @@ private:
 	void initializeOpenPatchBox();
 	void initializeItemLists();
 	void initializeToolButtons();
+	void initializeActions();
 
 	const QSize toolButtonSize;
 	const QSize toolButtonIconSize;
@@ -54,5 +55,15 @@ private:
 	QToolButton *testButton;
 	QToolButton *installButton;
 
+	QAction *testDependenciesAction;
+
 	DependenciesListModel *dependenciesListModel;
+
+signals:
+
+	void testRequested(const QString &filePath);
+
+private slots:
+
+	void requestTest();
 };

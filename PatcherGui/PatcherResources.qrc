@@ -10,15 +10,16 @@
         <file alias="install.svg">Resources/images/install.svg</file>
         <file alias="test.svg">Resources/images/test.svg</file>
         <file alias="removeDatabase.svg">Resources/images/removeDatabase.svg</file>
-        <file alias="checked.svg">Resources/images/labels/checked.svg</file>
         <file alias="error.svg">Resources/images/labels/error.svg</file>
         <file alias="unchecked.svg">Resources/images/labels/unchecked.svg</file>
         <file alias="function.svg">Resources/images/labels/function.svg</file>
         <file alias="sequence.svg">Resources/images/labels/sequence.svg</file>
         <file alias="table.svg">Resources/images/labels/table.svg</file>
         <file alias="view.svg">Resources/images/labels/view.svg</file>
+        <file alias="checked.svg">Resources/images/labels/checked.svg</file>
     </qresource>
     <qresource prefix="/data">
         <file alias="dependencies.txt">Data/dependencies.txt</file>
+        <file alias="ObjectsExistence.txt">Data/ObjectsExistence.txt</file>
     </qresource>
 </RCC>
