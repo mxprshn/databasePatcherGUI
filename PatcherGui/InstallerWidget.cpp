@@ -9,13 +9,19 @@
 #include <QStandardItemModel>
 #include <QAction>
 #include <QHeaderView>
+#include <QProcess>
+#include <QBitArray>
+#include <QStringList>
 #include "InstallerWidget.h"
+#include "InstallerHandler.h"
 
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
+	, installerProgram("patchInstaller.exe")
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
 	, dependenciesListModel(new DependenciesListModel(this))
+	, installerHandler(new InstallerHandler(this, "PatchInstaller_exe.exe"))
 {
 	setupUi(this);
 	mainLayout = new QGridLayout;
@@ -114,8 +120,10 @@ void InstallerWidget::initializeActions()
 
 void InstallerWidget::requestTest()
 {
-	dependenciesListModel->parseCheckResultsFromFile(":data/ObjectsExistence.txt");
+	dependenciesListModel->getTestResult(installerHandler->testDependencies(QStringList() << "testString" << "check"));
 }
+
+
 
 
 

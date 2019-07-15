@@ -14,6 +14,8 @@ class QToolButton;
 class QListWidget;
 class QTreeView;
 class QTableView;
+class QStringArray;
+class InstallerHandler;
 
 class InstallerWidget : public QWidget, public Ui::InstallerWidget
 {
@@ -25,6 +27,8 @@ public:
 	~InstallerWidget();
 
 private:
+
+	const QString installerProgram;
 
 	void initializeOpenPatchBox();
 	void initializeItemLists();
@@ -58,6 +62,8 @@ private:
 	QAction *testDependenciesAction;
 
 	DependenciesListModel *dependenciesListModel;
+
+	InstallerHandler *installerHandler;
 
 signals:
 

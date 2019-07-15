@@ -4,6 +4,8 @@
 #include <QList>
 #include "DependenciesListElement.h"
 
+class QBitArray;
+
 class DependenciesListModel : public QAbstractListModel
 {
 	Q_OBJECT
@@ -19,7 +21,7 @@ public:
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
 	bool parseDependenciesFromFile(const QString &filePath);
-	bool parseCheckResultsFromFile(const QString &filePath);
+	void getTestResult(const QBitArray &testResult);
 
 private:
 
