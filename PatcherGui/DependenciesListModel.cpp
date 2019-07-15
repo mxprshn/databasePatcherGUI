@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QIcon>
+#include <QBitArray>
 
 DependenciesListModel::DependenciesListModel(QObject *parent)
 	: QAbstractListModel(parent)
@@ -164,26 +165,11 @@ bool DependenciesListModel::parseDependenciesFromFile(const QString& filePath)
 	return true;
 }
 
-bool DependenciesListModel::parseCheckResultsFromFile(const QString& filePath)
+void DependenciesListModel::getTestResult(const QBitArray& testResult)
 {
-	QFile file(filePath);
-
-	if (!file.open(QIODevice::ReadOnly))
+	for (auto i = 0; i < testResult.count(); ++i)
 	{
-		return false;
-	}
-
-	QTextStream input(&file);
-
-	QString typeName = "";
-	QString name = "";
-	int isSatisfied = 0;
-
-	for (auto i = 0; i < elements.count(); ++i)
-	{
-		input >> typeName >> name >> isSatisfied;
-
-		if (isSatisfied == 1)
+		if (testResult[i])
 		{
 			elements[i]->setSatisfied();
 			elements[i]->setReadyToInstall();
@@ -194,10 +180,7 @@ bool DependenciesListModel::parseCheckResultsFromFile(const QString& filePath)
 		}
 	}
 
-	file.close();
-
 	const QModelIndex topLeft = createIndex(0, statusColumnIndex);
 	const QModelIndex bottomRight = createIndex(elements.count(), statusColumnIndex);
 	emit dataChanged(topLeft, bottomRight);
-	return true;
 }
