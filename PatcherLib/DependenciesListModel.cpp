@@ -25,6 +25,8 @@ DependenciesListModel::DependenciesListModel(QObject *parent)
 	typeNames.insert(DependenciesListElement::ObjectType::index, "index");
 	typeNames.insert(DependenciesListElement::ObjectType::trigger, "trigger");
 	typeNames.insert(DependenciesListElement::ObjectType::view, "view");
+
+	parseDependenciesFromFile("Dependencies.txt");
 }
 
 DependenciesListModel::~DependenciesListModel()

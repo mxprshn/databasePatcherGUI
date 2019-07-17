@@ -25,6 +25,8 @@ public:
 
 	InstallerWidget(QWidget *parent = Q_NULLPTR);
 	~InstallerWidget();
+	void setDependenciesListModel(QAbstractItemModel *model);
+	void setInstallListModel(QAbstractItemModel *model);
 
 private:
 
@@ -61,15 +63,14 @@ private:
 
 	QAction *testDependenciesAction;
 
-	DependenciesListModel *dependenciesListModel;
+	//DependenciesListModel *dependenciesListModel;
 
 	InstallerHandler *installerHandler;
 
 signals:
-
-	void testRequested(const QString &filePath);
+	void testButtonClicked();
 
 private slots:
 
-	void requestTest();
+	//void requestTest();
 };

@@ -20,7 +20,6 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	, installerProgram("patchInstaller.exe")
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
-	, dependenciesListModel(new DependenciesListModel(this))
 	, installerHandler(new InstallerHandler(this, "PatchInstaller_exe.exe"))
 {
 	setupUi(this);
@@ -58,8 +57,6 @@ void InstallerWidget::initializeItemLists()
 	mainLayout->addWidget(itemListGroupBox, 1, 0);
 	mainLayout->addWidget(dependenciesListGroupBox, 1, 1);
 
-	dependenciesListModel->parseDependenciesFromFile(":/data/dependencies.txt");
-	dependenciesListView->setModel(dependenciesListModel);
 	dependenciesListView->setRootIsDecorated(false);
 	dependenciesListView->header()->setStretchLastSection(false);
 	dependenciesListView->header()->setSectionResizeMode(1, QHeaderView::ResizeMode::Stretch);
@@ -115,16 +112,17 @@ void InstallerWidget::initializeActions()
 {
 	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
 	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
-		SLOT(requestTest()));
+		SIGNAL(testButtonClicked()));
 }
 
-void InstallerWidget::requestTest()
+void InstallerWidget::setDependenciesListModel(QAbstractItemModel* model)
 {
-	dependenciesListModel->getTestResult(installerHandler->testDependencies(QStringList() << "testString" << "check"));
+	dependenciesListView->setModel(model);
 }
 
-
-
+void InstallerWidget::setInstallListModel(QAbstractItemModel* model)
+{
+}
 
 
 

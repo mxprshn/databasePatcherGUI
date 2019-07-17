@@ -39,6 +39,7 @@ signals:
 	void connectedToDatabase(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
 	void notConnectedToDatabase(const QString &errorMessage);
+	void disconnectedFromDatabase();
 	void checkPassed();
 	void patchInstalled();
 	void patchNotInstalled(const QString &errorMessage);

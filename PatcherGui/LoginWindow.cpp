@@ -57,18 +57,35 @@ LoginWindow::LoginWindow(QWidget *parent)
 
 	setWindowModality(Qt::ApplicationModal);
 
-	connect(this->buttons, SIGNAL(accepted()), this, SLOT(connectionRequest()));
+	connect(this->buttons, SIGNAL(accepted()), this, SIGNAL(loginButtonClicked()));
 	connect(this->buttons, SIGNAL(rejected()), this, SLOT(close()));
-	connect(this, SIGNAL(connectionRequested(const QString&, const QString&, const QString&,
-		const QString&, const int)), this->parent(), SLOT(login(const QString&, const QString&,
-		const QString&, const QString&, const int)));
 }
 
-void LoginWindow::connectionRequest()
+QString LoginWindow::getHostInput() const
 {
-	emit connectionRequested(databaseInputBox->text(), usernameInputBox->text(), passwordInputBox->text(),
-		serverInputBox->text(), portInputBox->text().toInt());
+	return serverInputBox->text();
 }
+
+int LoginWindow::getPortInput() const
+{
+	return portInputBox->text().toInt();
+}
+
+QString LoginWindow::getDatabaseInput() const
+{
+	return databaseInputBox->text();
+}
+
+QString LoginWindow::getUsernameInput() const
+{
+	return usernameInputBox->text();
+}
+
+QString LoginWindow::getPasswordInput() const
+{
+	return passwordInputBox->text();
+}
+
 
 void LoginWindow::clear() const
 {
@@ -76,12 +93,6 @@ void LoginWindow::clear() const
 	{
 		lineEdit->clear();
 	}
-}
-
-void LoginWindow::showLoginWindow()
-{
-	clear();
-	show();
 }
 
 LoginWindow::~LoginWindow()

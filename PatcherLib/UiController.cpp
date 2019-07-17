@@ -27,12 +27,10 @@ InstallListModel* UiController::getInstallListModel() const
 	return installListModel;
 }
 
-
 DependenciesListModel* UiController::getDependenciesListModel() const
 {
 	return dependenciesListModel;
 }
-
 
 void UiController::connectToDatabase(const QString &database, const QString &user, const QString &password,
 	const QString &server, const int port)
@@ -52,6 +50,7 @@ void UiController::connectToDatabase(const QString &database, const QString &use
 void UiController::disconnectFromDatabase()
 {
 	databaseProvider->disconnect();
+	emit disconnectedFromDatabase();
 }
 
 void UiController::checkDependencies()
@@ -61,6 +60,7 @@ void UiController::checkDependencies()
 		.arg(databaseProvider->password());
 	const QStringList installerArguments = { connectionInfo, "check" };
 	dependenciesListModel->getTestResult(installerHandler->testDependencies(installerArguments));
+	emit checkPassed();
 }
 
 void UiController::installPatch()

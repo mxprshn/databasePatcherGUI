@@ -16,36 +16,27 @@ class LoginWindow : public QDialog, public Ui::LoginWindow
 	Q_OBJECT
 
 public:
-
 	LoginWindow(QWidget *parent = Q_NULLPTR);
 	~LoginWindow();
-
+	QString getHostInput()const;
+	int getPortInput() const;
+	QString getDatabaseInput() const;
+	QString getUsernameInput() const;
+	QString getPasswordInput() const;
 private:
-
 	QDialogButtonBox *buttons;
-
 	QVBoxLayout *mainLayout;
 	QFormLayout *inputLayout;
 	QHBoxLayout *buttonsLayout;
 	QHBoxLayout *serverInputLayout;
-
 	QLineEdit *serverInputBox;
 	QLineEdit *portInputBox;
 	QLineEdit *databaseInputBox;
 	QLineEdit *usernameInputBox;
 	QLineEdit *passwordInputBox;
-
 	QLabel *portLabel;
-
-	void clear() const;
-
 private slots:
-
-	void showLoginWindow();
-	void connectionRequest();
-
+	void clear() const;
 signals:
-
-	void connectionRequested(const QString &database, const QString &user, const QString &password,
-		const QString &server, const int port);
+	void loginButtonClicked();
 };
