@@ -4,6 +4,7 @@
 #include "UiController.h"
 #include <QObject>
 
+class QAbstractItemModel;
 class DatabaseProvider;
 class BuilderHandler;
 class InstallerHandler;
@@ -17,9 +18,9 @@ class PATCHERLIB_EXPORT UiController : public QObject
 
 public:
 	explicit UiController(QObject *parent = Q_NULLPTR);
-	BuildListModel *getBuildListModel() const;
-	InstallListModel *getInstallListModel() const;
-	DependenciesListModel *getDependenciesListModel() const;
+	BuildListModel* getBuildListModel() const;
+	InstallListModel* getInstallListModel() const;
+	QAbstractItemModel* getDependenciesListModel() const;
 private:
 	DatabaseProvider *databaseProvider;
 	BuilderHandler *builderHandler;
@@ -31,7 +32,7 @@ private slots:
 	void connectToDatabase(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
 	void disconnectFromDatabase();
-	void checkDependencies();
+	void testDependencies();
 	void installPatch();
 	void buildPatch();
 	void openPatchFile(const QString &filePath);
@@ -40,7 +41,7 @@ signals:
 		const QString &server, const int port);
 	void notConnectedToDatabase(const QString &errorMessage);
 	void disconnectedFromDatabase();
-	void checkPassed();
+	void testPassed();
 	void patchInstalled();
 	void patchNotInstalled(const QString &errorMessage);
 	void patchBuilt();

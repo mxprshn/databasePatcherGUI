@@ -27,7 +27,7 @@ InstallListModel* UiController::getInstallListModel() const
 	return installListModel;
 }
 
-DependenciesListModel* UiController::getDependenciesListModel() const
+QAbstractItemModel* UiController::getDependenciesListModel() const
 {
 	return dependenciesListModel;
 }
@@ -53,14 +53,14 @@ void UiController::disconnectFromDatabase()
 	emit disconnectedFromDatabase();
 }
 
-void UiController::checkDependencies()
+void UiController::testDependencies()
 {
 	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(databaseProvider->server())
 		.arg(databaseProvider->port()).arg(databaseProvider->database()).arg(databaseProvider->user())
 		.arg(databaseProvider->password());
 	const QStringList installerArguments = { connectionInfo, "check" };
 	dependenciesListModel->getTestResult(installerHandler->testDependencies(installerArguments));
-	emit checkPassed();
+	emit testPassed();
 }
 
 void UiController::installPatch()

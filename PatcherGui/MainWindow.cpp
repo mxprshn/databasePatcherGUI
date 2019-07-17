@@ -3,6 +3,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QDialogButtonBox>
+#include <QAbstractItemModel>
 #include "MainWindow.h"
 #include "BuilderWidget.h"
 #include "InstallerWidget.h"
@@ -21,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	initializeActions();
 	initializeMainMenu();
-	initializeModeTabs();
+	initializeTabs();
 	initializeDocks();
 	initializeToolBars();
 
@@ -40,11 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this->mainController, SIGNAL(disconnectedFromDatabase()), this, SLOT(setDefaultConnectionInfo()));
 	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(show()));
 	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
-
-	setCentralWidget(modeTab);
-	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
-	addToolBar(Qt::TopToolBarArea, mainToolBar);
-	setMinimumSize(800, 600);
+	connect(installerWidget->getTestAction(), SIGNAL(triggered()), mainController, SLOT(testDependencies()));
 }
 
 void MainWindow::initializeActions()
@@ -52,11 +49,9 @@ void MainWindow::initializeActions()
 	loginAction = new QAction(QIcon(":/images/addDatabase.svg"),"Connect to database...", this);
 	logoutAction = new QAction(QIcon(":/images/removeDatabase.svg"), "Disconnect", this);
 	logoutAction->setDisabled(true);
-
-	
 }
 
-void MainWindow::initializeModeTabs()
+void MainWindow::initializeTabs()
 {
 	modeTab = new QTabWidget;
 	modeTab->addTab(builderWidget, "Build");

@@ -31,7 +31,7 @@ private:
 	QPlainTextEdit *logOutput;
 	QDockWidget *logOutputDock;
 
-	void initializeModeTabs();
+	void initializeTabs();
 	QTabWidget *modeTab;
 	BuilderWidget *builderWidget;
 	InstallerWidget *installerWidget;
@@ -46,7 +46,7 @@ private:
 	void initializeToolBars();
 	QLabel *databaseInformation;
 
-private slots:	
+private slots:
 	void requestConnection();
 	void setConnectionInfo(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);

@@ -20,6 +20,6 @@ private:
 	QProcess *installProcess;
 
 signals:
-	void testFinished();
+	void testPassed();
 	//void installFinished();
 };
