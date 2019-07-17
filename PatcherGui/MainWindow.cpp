@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
 
-	connect(this->loginWindow, SIGNAL(loginButtonClicked()), this, SLOT(requestConnection()));
+	connect(this->loginWindow, SIGNAL(connectButtonClicked()), this, SLOT(requestConnection()));
 	connect(this, SIGNAL(connectionRequested(const QString&, const QString&, const QString&, const QString&, const int)),
 		this->mainController, SLOT(connectToDatabase(const QString&, const QString&, const QString&, const QString&, const int)));
 	connect(this->mainController, SIGNAL(connectedToDatabase(const QString&, const QString&, const QString&, const QString&, const int)),
@@ -42,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(show()));
 	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
 	connect(installerWidget->getTestAction(), SIGNAL(triggered()), mainController, SLOT(testDependencies()));
+
+	setCentralWidget(modeTab);
+	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
+	addToolBar(Qt::TopToolBarArea, mainToolBar);
+	setMinimumSize(800, 600);
 }
 
 void MainWindow::initializeActions()
