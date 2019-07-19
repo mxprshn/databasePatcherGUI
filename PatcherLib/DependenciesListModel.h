@@ -29,6 +29,6 @@ private:
 	QHash<int, QString> typeIcons;
 	QHash<int, QString> statusIcons;
 	QHash<int, QString> typeNames;
-	static const int columnAmount = 3;
-	static const int statusColumnIndex = 2;
+	static const int columnAmount = 4;
+	static const int statusColumnIndex = 3;
 };

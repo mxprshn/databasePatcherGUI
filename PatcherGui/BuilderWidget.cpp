@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QToolButton>
 #include <QGridLayout>
+#include <QTreeView>
 #include "BuilderWidget.h"
 
 BuilderWidget::BuilderWidget(QWidget *parent)
@@ -33,9 +34,9 @@ void BuilderWidget::initializeItemList()
 {
 	itemListLayout = new QVBoxLayout;
 	itemListGroupBox = new QGroupBox("Build list");
-	itemListWidget = new QListWidget;
+	itemListView = new QTreeView;
 
-	itemListLayout->addWidget(itemListWidget);
+	itemListLayout->addWidget(itemListView);
 	
 	itemListGroupBox->setLayout(itemListLayout);
 	mainLayout->addWidget(itemListGroupBox, 1, 0);
@@ -99,6 +100,18 @@ void BuilderWidget::initializeAddItemBox()
 
 	mainLayout->addWidget(addItemGroupBox, 0, 0);
 }
+
+void BuilderWidget::setObjectTypeListModel(QAbstractItemModel* model)
+{
+	typeComboBox->setModel(model);
+}
+
+void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
+{
+	itemListView->setModel(model);
+}
+
+
 
 
 

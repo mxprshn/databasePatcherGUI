@@ -14,6 +14,8 @@ class QComboBox;
 class QLineEdit;
 class QToolButton;
 class QSize;
+class QAbstractItemModel;
+class QTreeView;
 
 class BuilderWidget : public QWidget, public Ui::BuilderWidget
 {
@@ -23,7 +25,8 @@ public:
 
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
-
+	void setObjectTypeListModel(QAbstractItemModel *model);
+	void setBuildListModel(QAbstractItemModel *model);
 private:
 
 	void initializeItemList();
@@ -39,7 +42,7 @@ private:
 	QVBoxLayout *toolsLayout;
 
 	QGroupBox *itemListGroupBox;
-	QListWidget *itemListWidget;
+	QTreeView *itemListView;
 
 	QGroupBox *addItemGroupBox;
 	QComboBox *typeComboBox;

@@ -104,9 +104,15 @@
     <ClCompile Include="DependenciesListModel.cpp" />
     <ClCompile Include="InstallerHandler.cpp" />
     <ClCompile Include="InstallListModel.cpp" />
+    <ClCompile Include="ObjectTypeListModel.cpp" />
+    <ClCompile Include="PatchListElement.cpp" />
     <ClCompile Include="UiController.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="PatchListElement.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
+    </QtMoc>
     <QtMoc Include="DatabaseProvider.h" />
     <QtMoc Include="DependenciesListElement.h" />
     <QtMoc Include="DependenciesListModel.h" />
@@ -127,6 +133,11 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
     </QtMoc>
+    <ClInclude Include="ObjectTypeListModel.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
+    </ClInclude>
+    <ClInclude Include="ObjectType.h" />
     <ClInclude Include="patcherlib_global.h" />
   </ItemGroup>
   <ItemGroup>

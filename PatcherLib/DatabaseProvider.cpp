@@ -65,6 +65,36 @@ void DatabaseProvider::disconnect()
 	QSqlDatabase::removeDatabase(connectionName);
 }
 
+bool DatabaseProvider::tableExists(const QString& name)
+{
+	return true;
+}
+
+bool DatabaseProvider::sequenceExists(const QString& name)
+{
+	return true;
+}
+
+bool DatabaseProvider::functionExists(const QString& name)
+{
+	return true;
+}
+
+bool DatabaseProvider::viewExists(const QString& name)
+{
+	return true;
+}
+
+bool DatabaseProvider::triggerExists(const QString& name)
+{
+	return true;
+}
+
+bool DatabaseProvider::indexExists(const QString& name)
+{
+	return true;
+}
+
 
 DatabaseProvider::~DatabaseProvider()
 {

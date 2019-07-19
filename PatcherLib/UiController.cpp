@@ -1,4 +1,5 @@
 #include <QBitArray>
+#include <QFile>
 #include "UiController.h"
 #include "DatabaseProvider.h"
 #include "BuilderHandler.h"
@@ -6,6 +7,7 @@
 #include "BuildListModel.h"
 #include "InstallListModel.h"
 #include "DependenciesListModel.h"
+#include "ObjectTypeListModel.h"
 
 UiController::UiController(QObject* parent)
 	: databaseProvider(new DatabaseProvider(this))
@@ -14,15 +16,16 @@ UiController::UiController(QObject* parent)
 	, buildListModel(new BuildListModel(this))
 	, installListModel(new InstallListModel(this))
 	, dependenciesListModel(new DependenciesListModel(this))
+	, objectTypeListModel(new ObjectTypeListModel(this))
 {
 }
 
-BuildListModel* UiController::getBuildListModel() const
+QAbstractItemModel* UiController::getBuildListModel() const
 {
 	return buildListModel;
 }
 
-InstallListModel* UiController::getInstallListModel() const
+QAbstractItemModel* UiController::getInstallListModel() const
 {
 	return installListModel;
 }
@@ -30,6 +33,11 @@ InstallListModel* UiController::getInstallListModel() const
 QAbstractItemModel* UiController::getDependenciesListModel() const
 {
 	return dependenciesListModel;
+}
+
+QAbstractItemModel* UiController::getObjectTypeListModel() const
+{
+	return objectTypeListModel;
 }
 
 void UiController::connectToDatabase(const QString &database, const QString &user, const QString &password,
@@ -76,4 +84,73 @@ void UiController::buildPatch()
 void UiController::openPatchFile(const QString &filePath)
 {
 	
+}
+
+void UiController::addObject(const int modelIndex, const QString& name)
+{
+	if (modelIndex != script)
+	{
+		auto exists = false;
+		ObjectType type = typeCount;
+
+		switch (modelIndex)
+		{
+			case table:
+			{
+				exists = databaseProvider->tableExists(name);
+				type = table;
+				break;
+			}
+			case sequence:
+			{
+				exists = databaseProvider->sequenceExists(name);
+				type = sequence;
+				break;
+			}
+			case function:
+			{
+				exists = databaseProvider->functionExists(name);
+				type = function;
+				break;
+			}
+			case view:
+			{
+				exists = databaseProvider->viewExists(name);
+				type = view;
+				break;
+			}
+			case trigger:
+			{
+				exists = databaseProvider->triggerExists(name);
+				type = trigger;
+				break;
+			}
+			case index:
+			{
+				exists = databaseProvider->indexExists(name);
+				type = index;
+				break;
+			}
+		}
+
+		if (exists)
+		{
+			buildListModel->addObject(type, name);
+		}
+		else
+		{
+			emit objectNotFound();
+		}
+	}
+	else
+	{
+		if (QFile::exists(name))
+		{
+			buildListModel->addObject(script, name);
+		}
+		else
+		{
+			emit scriptNotFound();
+		}
+	}
 }

@@ -110,8 +110,10 @@ void InstallerWidget::setDependenciesListModel(QAbstractItemModel* model)
 	dependenciesListView->setModel(model);
 	dependenciesListView->setRootIsDecorated(false);
 	dependenciesListView->header()->setStretchLastSection(false);
-	dependenciesListView->header()->setSectionResizeMode(1, QHeaderView::ResizeMode::Stretch);
-	dependenciesListView->header()->setSectionResizeMode(2, QHeaderView::ResizeMode::ResizeToContents);
+	dependenciesListView->header()->setSectionResizeMode(0, QHeaderView::ResizeMode::ResizeToContents);
+	dependenciesListView->header()->setSectionResizeMode(1, QHeaderView::ResizeMode::ResizeToContents);
+	dependenciesListView->header()->setSectionResizeMode(2, QHeaderView::ResizeMode::Stretch);
+	dependenciesListView->header()->setSectionResizeMode(3, QHeaderView::ResizeMode::ResizeToContents);
 }
 
 void InstallerWidget::setInstallListModel(QAbstractItemModel* model)

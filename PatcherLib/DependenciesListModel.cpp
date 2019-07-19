@@ -12,21 +12,21 @@ DependenciesListModel::DependenciesListModel(QObject *parent)
 	statusIcons.insert(DependenciesListElement::CheckStatus::satisfied, ":/images/checked.svg");
 	statusIcons.insert(DependenciesListElement::CheckStatus::notSatisfied, ":/images/error.svg");
 
-	typeIcons.insert(DependenciesListElement::ObjectType::table, ":/images/table.svg");
-	typeIcons.insert(DependenciesListElement::ObjectType::function, ":/images/function.svg");
-	typeIcons.insert(DependenciesListElement::ObjectType::sequence, ":/images/sequence.svg");
-	typeIcons.insert(DependenciesListElement::ObjectType::index, ":/images/function.svg");
-	typeIcons.insert(DependenciesListElement::ObjectType::trigger, ":/images/function.svg");
-	typeIcons.insert(DependenciesListElement::ObjectType::view, ":/images/view.svg");
+	typeIcons.insert(ObjectType::table, ":/images/table.svg");
+	typeIcons.insert(ObjectType::function, ":/images/function.svg");
+	typeIcons.insert(ObjectType::sequence, ":/images/sequence.svg");
+	typeIcons.insert(ObjectType::index, ":/images/function.svg");
+	typeIcons.insert(ObjectType::trigger, ":/images/function.svg");
+	typeIcons.insert(ObjectType::view, ":/images/view.svg");
 
-	typeNames.insert(DependenciesListElement::ObjectType::table, "table");
-	typeNames.insert(DependenciesListElement::ObjectType::function, "function");
-	typeNames.insert(DependenciesListElement::ObjectType::sequence, "sequence");
-	typeNames.insert(DependenciesListElement::ObjectType::index, "index");
-	typeNames.insert(DependenciesListElement::ObjectType::trigger, "trigger");
-	typeNames.insert(DependenciesListElement::ObjectType::view, "view");
+	typeNames.insert(ObjectType::table, "table");
+	typeNames.insert(ObjectType::function, "function");
+	typeNames.insert(ObjectType::sequence, "sequence");
+	typeNames.insert(ObjectType::index, "index");
+	typeNames.insert(ObjectType::trigger, "trigger");
+	typeNames.insert(ObjectType::view, "view");
 
-	parseDependenciesFromFile("Dependencies.txt");
+	parseDependenciesFromFile("DependencyList.dpn");
 }
 
 DependenciesListModel::~DependenciesListModel()
@@ -58,7 +58,11 @@ QVariant DependenciesListModel::data(const QModelIndex& index, int role) const
 						}
 					case 1:
 						{
-							return elements[index.row()]->getName();
+							return elements[index.row()]->getScheme();
+						}
+					case 2:
+						{
+						return elements[index.row()]->getName();
 						}
 				}
 			}
@@ -70,7 +74,7 @@ QVariant DependenciesListModel::data(const QModelIndex& index, int role) const
 					{
 						return QIcon(typeIcons[elements[index.row()]->getType()]);
 					}
-					case 2:
+					case 3:
 					{
 						return QIcon(statusIcons[elements[index.row()]->getStatus()]);
 					}
@@ -78,7 +82,7 @@ QVariant DependenciesListModel::data(const QModelIndex& index, int role) const
 			}
 		case Qt::CheckStateRole:
 			{
-				if (index.column() == 2)
+				if (index.column() == 3)
 				{
 					return elements[index.row()]->getIsReadyToInstall() ? Qt::Checked : Qt::Unchecked;
 				}				
@@ -102,11 +106,15 @@ QVariant DependenciesListModel::headerData(int section, Qt::Orientation orientat
 					}
 				case 1:
 					{
-						return QString("Name");
+						return QString("Scheme");
 					}
 				case 2:
 					{
-						return QString("Status");
+						return QString("Name");
+					}
+				case 3:
+					{
+					return QString("Status");
 					}
 			}
 
@@ -129,38 +137,39 @@ bool DependenciesListModel::parseDependenciesFromFile(const QString& filePath)
 
 	while (!input.atEnd())
 	{
-		QString typeName = "";
+		QString schemeName = "";
 		QString name = "";
-		DependenciesListElement::ObjectType type = DependenciesListElement::ObjectType::unidentified;
+		QString typeName = "";
+		ObjectType type = ObjectType::typeCount;
 
-		input >> typeName >> name;
+		input >> schemeName >> name >> typeName;
 
 		if (typeName == "table")
 		{
-			type = DependenciesListElement::ObjectType::table;
+			type = ObjectType::table;
 		}
 		if (typeName == "function")
 		{
-			type = DependenciesListElement::ObjectType::function;
+			type = ObjectType::function;
 		}
 		if (typeName == "sequence")
 		{
-			type = DependenciesListElement::ObjectType::sequence;
+			type = ObjectType::sequence;
 		}
 		if (typeName == "view")
 		{
-			type = DependenciesListElement::ObjectType::view;
+			type = ObjectType::view;
 		}
 		if (typeName == "trigger")
 		{
-			type = DependenciesListElement::ObjectType::trigger;
+			type = ObjectType::trigger;
 		}
 		if (typeName == "index")
 		{
-			type = DependenciesListElement::ObjectType::index;
+			type = ObjectType::index;
 		}
 
-		elements.push_back(new DependenciesListElement(this, type, name));
+		elements.push_back(new DependenciesListElement(this, type, schemeName, name));
 	}
 
 	file.close();

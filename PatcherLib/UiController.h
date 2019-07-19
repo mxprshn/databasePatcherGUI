@@ -11,6 +11,7 @@ class InstallerHandler;
 class BuildListModel;
 class InstallListModel;
 class DependenciesListModel;
+class ObjectTypeListModel;
 
 class PATCHERLIB_EXPORT UiController : public QObject
 {
@@ -18,9 +19,10 @@ class PATCHERLIB_EXPORT UiController : public QObject
 
 public:
 	explicit UiController(QObject *parent = Q_NULLPTR);
-	BuildListModel* getBuildListModel() const;
-	InstallListModel* getInstallListModel() const;
+	QAbstractItemModel* getBuildListModel() const;
+	QAbstractItemModel* getInstallListModel() const;
 	QAbstractItemModel* getDependenciesListModel() const;
+	QAbstractItemModel *getObjectTypeListModel() const;
 private:
 	DatabaseProvider *databaseProvider;
 	BuilderHandler *builderHandler;
@@ -28,6 +30,7 @@ private:
 	BuildListModel *buildListModel;
 	InstallListModel *installListModel;
 	DependenciesListModel *dependenciesListModel;
+	ObjectTypeListModel *objectTypeListModel;
 private slots:
 	void connectToDatabase(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
@@ -36,6 +39,7 @@ private slots:
 	void installPatch();
 	void buildPatch();
 	void openPatchFile(const QString &filePath);
+	void addObject(const int modelIndex, const QString &name);
 signals:
 	void connectedToDatabase(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
@@ -48,4 +52,6 @@ signals:
 	void patchNotBuilt(const QString &errorMessage);
 	void patchFileOpened();
 	void patchFileNotOpened(const QString &errorMessage);
+	void objectNotFound();
+	void scriptNotFound();
 };
