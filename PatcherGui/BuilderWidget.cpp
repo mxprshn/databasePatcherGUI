@@ -24,6 +24,8 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	initializeAddItemBox();
 
 	setLayout(mainLayout);
+
+	connect(this->addButton, SIGNAL(clicked()), this, SIGNAL(addButtonClicked()));
 }
 
 BuilderWidget::~BuilderWidget()
@@ -89,10 +91,13 @@ void BuilderWidget::initializeAddItemBox()
 	addItemGroupBox = new QGroupBox("Add item");
 
 	typeComboBox = new QComboBox;
+	schemeComboBox = new QComboBox;
 	itemNameEdit = new QLineEdit;
 	addButton = new QPushButton(QIcon(":/images/addFile.svg"), "Add");
 
 	addItemLayout->addWidget(typeComboBox);
+	addItemLayout->addWidget(schemeComboBox);
+	typeComboBox->setFixedSize(150,25);
 	addItemLayout->addWidget(itemNameEdit);
 	addItemLayout->addWidget(addButton);
 
@@ -110,6 +115,18 @@ void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
 {
 	itemListView->setModel(model);
 }
+
+QString BuilderWidget::getItemNameInput()
+{
+	return itemNameEdit->text();
+}
+
+int BuilderWidget::getObjectTypeIndex()
+{
+	return typeComboBox->currentIndex();
+}
+
+
 
 
 

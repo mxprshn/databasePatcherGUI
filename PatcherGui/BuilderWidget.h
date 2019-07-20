@@ -27,6 +27,8 @@ public:
 	~BuilderWidget();
 	void setObjectTypeListModel(QAbstractItemModel *model);
 	void setBuildListModel(QAbstractItemModel *model);
+	QString getItemNameInput();
+	int getObjectTypeIndex();
 private:
 
 	void initializeItemList();
@@ -46,6 +48,8 @@ private:
 
 	QGroupBox *addItemGroupBox;
 	QComboBox *typeComboBox;
+	QComboBox *schemeComboBox;
+	QListWidget *schemeListWidget;
 	QLineEdit *itemNameEdit;
 
 	QPushButton *addButton;
@@ -53,4 +57,7 @@ private:
 	QToolButton *moveUpButton;
 	QToolButton *moveDownButton;
 	QToolButton *buildButton;
+
+signals:
+	void addButtonClicked();
 };

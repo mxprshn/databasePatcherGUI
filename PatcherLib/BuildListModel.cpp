@@ -1,3 +1,4 @@
+#include <QIcon>
 #include "BuildListModel.h"
 
 BuildListModel::BuildListModel(QObject *parent)
@@ -7,9 +8,9 @@ BuildListModel::BuildListModel(QObject *parent)
 		, {sequence, "sequence"}, {function, "function"}, {view, "view"}, {trigger, "trigger"}
 		, {ObjectType::index, "index"} });
 
-	typeIcons = new QHash<int, QString>({ {script, ":/images/table.svg"}, {table, ":/images/table.svg"}
-		, {sequence, ":/images/table.svg"}, {function, ":/images/table.svg"}, {view, ":/images/table.svg"}
-		, {trigger, ":/images/table.svg"}, {ObjectType::index, ":/images/table.svg"} });
+	typeIcons = new QHash<int, QString>({ {script, ":/images/script.svg"}, {table, ":/images/table.svg"}
+		, {sequence, ":/images/sequence.svg"}, {function, ":/images/function.svg"}, {view, ":/images/view.svg"}
+		, {trigger, ":/images/trigger.svg"}, {ObjectType::index, ":/images/index.svg"} });
 
 	elements = new QList<PatchListElement*>;
 }
@@ -50,7 +51,7 @@ QVariant BuildListModel::data(const QModelIndex& index, int role) const
 		{
 			if (index.column() == 0)
 			{
-				return typeIcons->value(elements->at(index.row())->getType());
+				return QIcon(typeIcons->value(elements->at(index.row())->getType()));
 			}
 		}
 	}
@@ -101,10 +102,9 @@ QString BuildListModel::getParametersString(const QList<QPair<QString, QString>>
 void BuildListModel::addObject(ObjectType type, const QString &name, const QString &scheme
 	, const QList<QPair<QString, QString>> &parameters)
 {
+	beginInsertRows(QModelIndex(), elements->count(), elements->count() + 1);
 	elements->append(new PatchListElement(this, type, name, scheme, parameters));
-	const QModelIndex topLeft = createIndex(elements->count() - 1, 0);
-	const QModelIndex bottomRight = createIndex(elements->count() - 1, columnAmount);
-	emit dataChanged(topLeft, bottomRight);
+	endInsertRows();
 }
 
 QStringList BuildListModel::getObjectList()
@@ -128,4 +128,3 @@ BuildListModel::~BuildListModel()
 	delete elements;
 	delete typeIcons;
 }
-

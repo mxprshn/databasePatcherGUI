@@ -48,6 +48,7 @@ private:
 
 private slots:
 	void requestConnection();
+	void requestAddition();
 	void setConnectionInfo(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
 	void setDefaultConnectionInfo();
@@ -55,4 +56,5 @@ private slots:
 signals:
 	void connectionRequested(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
+	void additionRequested(const int modelIndex, const QString &name);
 };

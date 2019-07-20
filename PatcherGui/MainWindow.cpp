@@ -44,6 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(show()));
 	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
 	connect(installerWidget->getTestAction(), SIGNAL(triggered()), mainController, SLOT(testDependencies()));
+	connect(this->builderWidget, SIGNAL(addButtonClicked()), this, SLOT(requestAddition()));
+	connect(this, SIGNAL(additionRequested(const int, const QString&)), this->mainController
+		, SLOT(addObject(const int, const QString&)));
 
 	setCentralWidget(modeTab);
 	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
@@ -96,6 +99,12 @@ void MainWindow::requestConnection()
 	emit connectionRequested(loginWindow->getDatabaseInput(), loginWindow->getUsernameInput(),
 		loginWindow->getPasswordInput(), loginWindow->getHostInput(), loginWindow->getPortInput());
 }
+
+void MainWindow::requestAddition()
+{
+	emit additionRequested(builderWidget->getObjectTypeIndex(), builderWidget->getItemNameInput());
+}
+
 
 void MainWindow::setConnectionInfo(const QString& database, const QString& user, const QString& password, const QString& server, const int port)
 {
