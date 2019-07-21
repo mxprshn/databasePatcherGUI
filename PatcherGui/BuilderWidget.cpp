@@ -26,6 +26,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	setLayout(mainLayout);
 
 	connect(this->addButton, SIGNAL(clicked()), this, SIGNAL(addButtonClicked()));
+	connect(this->buildButton, SIGNAL(clicked()), this, SIGNAL(buildButtonClicked()));
 }
 
 BuilderWidget::~BuilderWidget()
@@ -125,10 +126,3 @@ int BuilderWidget::getObjectTypeIndex()
 {
 	return typeComboBox->currentIndex();
 }
-
-
-
-
-
-
-

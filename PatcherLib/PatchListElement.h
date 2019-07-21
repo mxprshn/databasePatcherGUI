@@ -9,14 +9,14 @@ class PatchListElement : public QObject
 
 public:
 	PatchListElement(QObject *parent, ObjectType type, const QString &name, const QString &scheme = ""
-		, const QList<QPair<QString, QString>> &parameters = {});
+		, const QVector<QPair<QString, QString>> &parameters = {});
 	ObjectType getType();
 	QString getName();
 	QString getScheme();
-	QList<QPair<QString, QString>> getParameters();
+	QVector<QPair<QString, QString>> getParameters();
 private:
 	ObjectType type;
 	QString name;
 	QString scheme;
-	QList<QPair<QString, QString>> parameters;
+	QVector<QPair<QString, QString>> parameters;
 };

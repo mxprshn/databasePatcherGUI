@@ -60,4 +60,5 @@ private:
 
 signals:
 	void addButtonClicked();
+	void buildButtonClicked();
 };

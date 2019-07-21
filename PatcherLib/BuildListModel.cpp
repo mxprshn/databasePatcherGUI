@@ -12,11 +12,12 @@ BuildListModel::BuildListModel(QObject *parent)
 		, {sequence, ":/images/sequence.svg"}, {function, ":/images/function.svg"}, {view, ":/images/view.svg"}
 		, {trigger, ":/images/trigger.svg"}, {ObjectType::index, ":/images/index.svg"} });
 
-	elements = new QList<PatchListElement*>;
+	elements = new QVector<PatchListElement*>;
 }
 
 int BuildListModel::rowCount(const QModelIndex& parent) const
 {
+	// check if valid index?
 	return elements->count();
 }
 
@@ -59,7 +60,6 @@ QVariant BuildListModel::data(const QModelIndex& index, int role) const
 	return QVariant();
 }
 
-
 QVariant BuildListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Horizontal)
@@ -87,40 +87,43 @@ QVariant BuildListModel::headerData(int section, Qt::Orientation orientation, in
 	return QVariant();
 }
 
-QString BuildListModel::getParametersString(const QList<QPair<QString, QString>> &parameters)
-{
-	QString result = "( ";
-
-	for (auto i = 0; i < parameters.count(); ++i)
-	{
-		result += parameters[i].second + " ";
-	}
-
-	return result + ")";
-}
-
 void BuildListModel::addObject(ObjectType type, const QString &name, const QString &scheme
-	, const QList<QPair<QString, QString>> &parameters)
+	, const QVector<QPair<QString, QString>> &parameters)
 {
 	beginInsertRows(QModelIndex(), elements->count(), elements->count() + 1);
 	elements->append(new PatchListElement(this, type, name, scheme, parameters));
 	endInsertRows();
 }
 
-QStringList BuildListModel::getObjectList()
+int BuildListModel::count() const
 {
-	QStringList result;
-
-	for (auto i = 0; i < elements->count(); ++i)
-	{
-		result.append(elements->at(i)->getScheme() + " " + elements->at(i)->getName() + " "
-			+ typeNames->value(elements->at(i)->getType()) +  " "
-			+ getParametersString(elements->at(i)->getParameters()));
-	}
-
-	return result;
+	return elements->count();
 }
 
+ObjectType BuildListModel::getType(int index) const
+{
+	return elements->at(index)->getType();
+}
+
+QString BuildListModel::getTypeName(int index) const
+{
+	return typeNames->value(elements->at(index)->getType());
+}
+
+QString BuildListModel::getSchemeName(int index) const
+{
+	return elements->at(index)->getScheme();
+}
+
+QString BuildListModel::getName(int index) const
+{
+	return elements->at(index)->getName();
+}
+
+QVector<QPair<QString, QString>> BuildListModel::getParameters(int index) const
+{
+	return elements->at(index)->getParameters();
+}
 
 BuildListModel::~BuildListModel()
 {

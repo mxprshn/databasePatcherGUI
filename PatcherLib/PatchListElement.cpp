@@ -1,7 +1,7 @@
 #include "PatchListElement.h"
 
 PatchListElement::PatchListElement(QObject *parent, ObjectType type, const QString &name, const QString &scheme
-	, const QList<QPair<QString, QString>> &parameters)
+	, const QVector<QPair<QString, QString>> &parameters)
 	: QObject(parent)
 	, type(type)
 	, name(name)
@@ -25,7 +25,7 @@ QString PatchListElement::getScheme()
 	return scheme;
 }
 
-QList<QPair<QString, QString>> PatchListElement::getParameters()
+QVector<QPair<QString, QString>> PatchListElement::getParameters()
 {
 	return parameters;
 }

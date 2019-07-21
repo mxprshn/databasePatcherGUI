@@ -4,6 +4,7 @@
 #include "DatabaseProvider.h"
 #include "BuilderHandler.h"
 #include "InstallerHandler.h"
+#include "FileHandler.h"
 #include "BuildListModel.h"
 #include "InstallListModel.h"
 #include "DependenciesListModel.h"
@@ -78,7 +79,7 @@ void UiController::installPatch()
 
 void UiController::buildPatch()
 {
-	
+	FileHandler::makePatchList(*this->buildListModel, "BuildList.txt");
 }
 
 void UiController::openPatchFile(const QString &filePath)

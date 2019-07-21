@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this->builderWidget, SIGNAL(addButtonClicked()), this, SLOT(requestAddition()));
 	connect(this, SIGNAL(additionRequested(const int, const QString&)), this->mainController
 		, SLOT(addObject(const int, const QString&)));
+	connect(this->builderWidget, SIGNAL(buildButtonClicked()), this->mainController, SLOT(buildPatch()));
 
 	setCentralWidget(modeTab);
 	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
