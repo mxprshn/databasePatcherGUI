@@ -8,12 +8,17 @@
 #include <QToolButton>
 #include <QGridLayout>
 #include <QTreeView>
+#include <QRegExp>
+#include <QValidator>
+#include <QLabel>
 #include "BuilderWidget.h"
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
+	, functionInputRegex("\\S+ \\((([^,\\(\\) ]+, )*([^, \\(\\)]+)+)?\\)")
+	, functionInputValidator(new QRegExpValidator(functionInputRegex, this))
 {
 	setupUi(this);
 
@@ -88,19 +93,23 @@ void BuilderWidget::initializeToolButtons()
 
 void BuilderWidget::initializeAddItemBox()
 {
-	addItemLayout = new QHBoxLayout;
+	addItemLayout = new QGridLayout;
 	addItemGroupBox = new QGroupBox("Add item");
 
 	typeComboBox = new QComboBox;
 	schemeComboBox = new QComboBox;
 	itemNameEdit = new QLineEdit;
+	itemNameEdit->setValidator(functionInputValidator);
+
 	addButton = new QPushButton(QIcon(":/images/addFile.svg"), "Add");
 
-	addItemLayout->addWidget(typeComboBox);
-	addItemLayout->addWidget(schemeComboBox);
-	typeComboBox->setFixedSize(150,25);
-	addItemLayout->addWidget(itemNameEdit);
-	addItemLayout->addWidget(addButton);
+	inputStatusLabel = new QLabel("");
+
+	addItemLayout->addWidget(typeComboBox, 0, 0);
+	addItemLayout->addWidget(schemeComboBox, 0, 1);
+	addItemLayout->addWidget(itemNameEdit, 0, 2);
+	addItemLayout->addWidget(addButton, 0, 3);
+	addItemLayout->addWidget(inputStatusLabel, 1, 2);
 
 	addItemGroupBox->setLayout(addItemLayout);
 
@@ -126,3 +135,15 @@ int BuilderWidget::getObjectTypeIndex()
 {
 	return typeComboBox->currentIndex();
 }
+
+//void BuilderWidget::validateFunctionInput()
+//{
+//	if (typeComboBox->currentIndex() == function)
+//	{
+//		QCursor cursor = itemNameEdit->cursor();
+//		if (functionInputValidator->validate(itemNameEdit->text(), cursor.pos()) == QValidator::Acceptable)
+//		{
+//			
+//		}
+//	}
+//}

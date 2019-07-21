@@ -10,6 +10,9 @@
 #include "LoginWindow.h"
 #include "UiController.h"
 
+//Here is regex for function line edit
+// *\S+ *\((([^, ]+ *, *)* *([^, ]+)+)? *\) *
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, mainController(new UiController(this))

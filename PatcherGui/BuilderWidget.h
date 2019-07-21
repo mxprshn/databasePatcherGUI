@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include "ObjectType.h"
 #include "ui_BuilderWidget.h"
 
 class QListWidget;
@@ -16,6 +17,8 @@ class QToolButton;
 class QSize;
 class QAbstractItemModel;
 class QTreeView;
+class QValidator;
+class QLabel;
 
 class BuilderWidget : public QWidget, public Ui::BuilderWidget
 {
@@ -39,9 +42,11 @@ private:
 	const QSize toolButtonIconSize;
 
 	QGridLayout *mainLayout;
-	QHBoxLayout *addItemLayout;
+	QGridLayout *addItemLayout;
 	QVBoxLayout *itemListLayout;
 	QVBoxLayout *toolsLayout;
+
+	QLabel *inputStatusLabel;
 
 	QGroupBox *itemListGroupBox;
 	QTreeView *itemListView;
@@ -58,7 +63,13 @@ private:
 	QToolButton *moveDownButton;
 	QToolButton *buildButton;
 
+	QRegExp functionInputRegex;;
+	QValidator *functionInputValidator;
+
 signals:
 	void addButtonClicked();
 	void buildButtonClicked();
+//
+//private slots:
+//	void validateFunctionInput();
 };
