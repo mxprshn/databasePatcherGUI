@@ -1,5 +1,6 @@
 #include <QBitArray>
 #include <QFile>
+#include <QSqlQueryModel>
 #include "UiController.h"
 #include "DatabaseProvider.h"
 #include "BuilderHandler.h"
@@ -16,6 +17,7 @@ UiController::UiController(QObject* parent)
 	, buildListModel(new BuildListModel(this))
 	, installListModel(new InstallListModel(this))
 	, dependenciesListModel(new DependenciesListModel(this))
+	, schemaListModel(new QSqlQueryModel)
 {
 }
 
@@ -51,6 +53,7 @@ void UiController::connectToDatabase(const QString &database, const QString &use
 
 void UiController::disconnectFromDatabase()
 {
+	schemaListModel->clear();
 	databaseProvider->disconnect();
 	emit disconnectedFromDatabase();
 }
@@ -80,33 +83,33 @@ void UiController::openPatchFile(const QString &filePath)
 	
 }
 
-void UiController::addObject(const int modelIndex, const QString& name)
+void UiController::addObject(const int typeIndex, const QString &schema, const QString &input)
 {
-	if (modelIndex != script)
+	if (typeIndex != script)
 	{
 		auto exists = false;
-		auto objectName = name;
+		auto objectName = input;
 		ObjectType type = typeCount;
 		QStringList parameters = {};
 
-		switch (modelIndex)
+		switch (typeIndex)
 		{
 			case table:
 			{
-				exists = databaseProvider->tableExists(name);
+				exists = databaseProvider->tableExists(input);
 				type = table;
 				break;
 			}
 			case sequence:
 			{
-				exists = databaseProvider->sequenceExists(name);
+				exists = databaseProvider->sequenceExists(input);
 				type = sequence;
 				break;
 			}
 			case function:
 			{
-				exists = databaseProvider->functionExists(name);
-				auto splitResult = name.split(QRegExp("(\\ |\\,|\\(|\\))"), QString::SkipEmptyParts);
+				exists = databaseProvider->functionExists(input);
+				auto splitResult = input.split(QRegExp("(\\ |\\,|\\(|\\))"), QString::SkipEmptyParts);
 				objectName = splitResult.first();
 				splitResult.pop_front();
 				parameters = splitResult;
@@ -115,19 +118,19 @@ void UiController::addObject(const int modelIndex, const QString& name)
 			}
 			case view:
 			{
-				exists = databaseProvider->viewExists(name);
+				exists = databaseProvider->viewExists(input);
 				type = view;
 				break;
 			}
 			case trigger:
 			{
-				exists = databaseProvider->triggerExists(name);
+				exists = databaseProvider->triggerExists(input);
 				type = trigger;
 				break;
 			}
 			case index:
 			{
-				exists = databaseProvider->indexExists(name);
+				exists = databaseProvider->indexExists(input);
 				type = index;
 				break;
 			}
@@ -135,7 +138,7 @@ void UiController::addObject(const int modelIndex, const QString& name)
 
 		if (exists)
 		{
-			buildListModel->addObject(type, objectName, "", parameters);
+			buildListModel->addObject(type, objectName, schema, parameters);
 		}
 		else
 		{
@@ -144,14 +147,25 @@ void UiController::addObject(const int modelIndex, const QString& name)
 	}
 	else
 	{
-		if (QFile::exists(name))
+		if (QFile::exists(input))
 		{
-			buildListModel->addObject(script, name);
+			buildListModel->addObject(script, input);
 		}
 		else
 		{
 			emit scriptNotFound();
 		}
 	}
+}
+
+QAbstractItemModel* UiController::getSchemaListModel() const
+{
+	databaseProvider->initSchemaListModel(*schemaListModel);
+	return schemaListModel;
+}
+
+UiController::~UiController()
+{
+	disconnectFromDatabase();
 }
 

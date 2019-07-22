@@ -134,6 +134,11 @@ void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
 	itemListView->setModel(model);
 }
 
+void BuilderWidget::setSchemaComboBoxModel(QAbstractItemModel* model)
+{
+	schemeComboBox->setModel(model);
+}
+
 QString BuilderWidget::getItemNameInput()
 {
 	return itemNameEdit->text();
@@ -142,6 +147,11 @@ QString BuilderWidget::getItemNameInput()
 int BuilderWidget::getObjectTypeIndex()
 {
 	return typeComboBox->currentData().toInt();
+}
+
+QString BuilderWidget::getCurrentSchemaName()
+{
+	return schemeComboBox->currentText();
 }
 
 void BuilderWidget::onWrongFunctionInput()

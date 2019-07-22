@@ -10,8 +10,7 @@
 #include "LoginWindow.h"
 #include "UiController.h"
 
-//Here is regex for function line edit
-// *\S+ *\((([^, ]+ *, *)* *([^, ]+)+)? *\) *
+// Fix disconnection
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -47,8 +46,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
 	connect(installerWidget->getTestAction(), SIGNAL(triggered()), mainController, SLOT(testDependencies()));
 	connect(this->builderWidget, SIGNAL(addButtonClicked()), this, SLOT(requestAddition()));
-	connect(this, SIGNAL(additionRequested(const int, const QString&)), this->mainController
-		, SLOT(addObject(const int, const QString&)));
+	connect(this, SIGNAL(additionRequested(const int, const QString&, const QString&)), this->mainController
+		, SLOT(addObject(const int, const QString&, const QString&)));
 	connect(this->builderWidget, SIGNAL(buildButtonClicked()), this->mainController, SLOT(buildPatch()));
 
 	setCentralWidget(modeTab);
@@ -105,7 +104,7 @@ void MainWindow::requestConnection()
 
 void MainWindow::requestAddition()
 {
-	emit additionRequested(builderWidget->getObjectTypeIndex(), builderWidget->getItemNameInput());
+	emit additionRequested(builderWidget->getObjectTypeIndex(), builderWidget->getCurrentSchemaName(), builderWidget->getItemNameInput());
 }
 
 
@@ -114,6 +113,7 @@ void MainWindow::setConnectionInfo(const QString& database, const QString& user,
 	databaseInformation->setText("Connected to \"" + database + "\" as \"" + user + "\"");
 	loginAction->setDisabled(true);
 	logoutAction->setEnabled(true);
+	builderWidget->setSchemaComboBoxModel(mainController->getSchemaListModel());
 }
 
 void MainWindow::showConnectionError(const QString &errorMessage)

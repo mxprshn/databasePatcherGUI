@@ -3,6 +3,7 @@
 #include <QObject>
 
 class QSqlDatabase;
+class QSqlQueryModel;
 
 class DatabaseProvider : public QObject
 {
@@ -30,4 +31,6 @@ public:
 	bool viewExists(const QString &name);
 	bool triggerExists(const QString &name);
 	bool indexExists(const QString &name);
+
+	void initSchemaListModel(QSqlQueryModel &model);
 };

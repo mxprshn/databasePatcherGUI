@@ -1,5 +1,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlQueryModel>
 #include "DatabaseProvider.h"
 
 DatabaseProvider::DatabaseProvider(QObject *parent)
@@ -95,6 +97,11 @@ bool DatabaseProvider::indexExists(const QString& name)
 	return true;
 }
 
+void DatabaseProvider::initSchemaListModel(QSqlQueryModel &model)
+{
+	model.setQuery("SELECT schema_name FROM information_schema.schemata");
+	// Check something
+}
 
 DatabaseProvider::~DatabaseProvider()
 {

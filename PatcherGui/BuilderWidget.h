@@ -29,7 +29,9 @@ public:
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
 	void setBuildListModel(QAbstractItemModel *model);
+	void setSchemaComboBoxModel(QAbstractItemModel *model);
 	QString getItemNameInput();
+	QString getCurrentSchemaName();
 	int getObjectTypeIndex();
 private:
 	void initializeItemList();
