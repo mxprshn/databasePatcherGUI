@@ -11,13 +11,15 @@
 #include <QRegExp>
 #include <QValidator>
 #include <QLabel>
+#include <QToolTip>
 #include "BuilderWidget.h"
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
+	, wrongFunctionInputMessage("Invalid signature.")
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
-	, functionInputRegex("\\S+ \\((([^,\\(\\) ]+, )*([^, \\(\\)]+)+)?\\)")
+	, functionInputRegex("[^,\\(\\) ]+ \\((([^,\\(\\) ]+, )*([^, \\(\\)]+)+)?\\)")
 	, functionInputValidator(new QRegExpValidator(functionInputRegex, this))
 {
 	setupUi(this);
@@ -31,6 +33,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 
 	connect(this->addButton, SIGNAL(clicked()), this, SIGNAL(addButtonClicked()));
 	connect(this->buildButton, SIGNAL(clicked()), this, SIGNAL(buildButtonClicked()));
+	connect(this->itemNameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
 }
 
 BuilderWidget::~BuilderWidget()
@@ -106,12 +109,14 @@ void BuilderWidget::initializeAddItemBox()
 	typeComboBox->addItem(QIcon(":/images/index.svg"), "index", index);
 
 	schemeComboBox = new QComboBox;
+
 	itemNameEdit = new QLineEdit;
 	itemNameEdit->setValidator(functionInputValidator);
+	itemNameEdit->setPlaceholderText("function_name ([arg_name_1, ][arg_name_2, ] ... )");
 
 	addButton = new QPushButton(QIcon(":/images/addFile.svg"), "Add");
 
-	inputStatusLabel = new QLabel("");
+	inputStatusLabel = new QLabel(wrongFunctionInputMessage);
 
 	addItemLayout->addWidget(typeComboBox, 0, 0);
 	addItemLayout->addWidget(schemeComboBox, 0, 1);
@@ -123,13 +128,6 @@ void BuilderWidget::initializeAddItemBox()
 
 	mainLayout->addWidget(addItemGroupBox, 0, 0);
 }
-
-//void BuilderWidget::setObjectTypeListModel(QAbstractItemModel* model)
-//{
-//	typeComboBox->setModel(model);
-//	typeComboBox->setView(typeListWidget);
-//
-//}
 
 void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
 {
@@ -146,14 +144,15 @@ int BuilderWidget::getObjectTypeIndex()
 	return typeComboBox->currentData().toInt();
 }
 
-//void BuilderWidget::validateFunctionInput()
-//{
-//	if (typeComboBox->currentIndex() == function)
-//	{
-//		QCursor cursor = itemNameEdit->cursor();
-//		if (functionInputValidator->validate(itemNameEdit->text(), cursor.pos()) == QValidator::Acceptable)
-//		{
-//			
-//		}
-//	}
-//}
+void BuilderWidget::onWrongFunctionInput()
+{
+	if (itemNameEdit->hasAcceptableInput())
+	{
+		inputStatusLabel->setText("Valid signature.");
+	}
+	else
+	{
+		inputStatusLabel->setText(wrongFunctionInputMessage);
+	}
+}
+

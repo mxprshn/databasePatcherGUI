@@ -37,6 +37,7 @@ private:
 	void initializeAddItemBox();
 
 	static const int smallIconSize = 15;
+	const QString wrongFunctionInputMessage;
 
 	const QSize toolButtonSize;
 	const QSize toolButtonIconSize;
@@ -69,7 +70,7 @@ private:
 signals:
 	void addButtonClicked();
 	void buildButtonClicked();
-//
-//private slots:
-//	void validateFunctionInput();
+
+private slots:
+	void onWrongFunctionInput();
 };

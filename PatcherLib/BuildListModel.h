@@ -16,14 +16,14 @@ public:
 	QVariant data(const QModelIndex& index, int role) const override;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	void addObject(ObjectType type, const QString &name, const QString &scheme = ""
-		, const QVector<QPair<QString, QString>> &parameters = {});
+		, const QStringList &parameters = {});
 
 	int count() const;
 	ObjectType getType(int index) const;
 	QString getTypeName(int index) const;
 	QString getSchemeName(int index) const;
 	QString getName(int index) const;
-	QVector<QPair<QString, QString>> getParameters(int index) const;
+	QStringList getParameters(int index) const;
 private:
 	QHash<int, QString> *typeIcons;
 	QHash<int, QString> *typeNames;

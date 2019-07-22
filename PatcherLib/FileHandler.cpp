@@ -40,13 +40,13 @@ bool FileHandler::makePatchList(const BuildListModel &model, const QString &path
 	return true;
 }
 
-QString FileHandler::getParametersString(const QVector<QPair<QString, QString>>& parameters)
+QString FileHandler::getParametersString(const QStringList& parameters)
 {
 	QString result = "( ";
 
 	for (auto i = 0; i < parameters.count(); ++i)
 	{
-		result += parameters[i].second + " ";
+		result += parameters[i] + " ";
 	}
 
 	return result + ")";

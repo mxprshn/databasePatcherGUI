@@ -12,5 +12,5 @@ public:
 	static bool makePatchList(const BuildListModel &model, const QString &path);
 	// static bool parseDependenciesList(const DependenciesListModel &model, const QString &path);
 private:
-	static QString getParametersString(const QVector<QPair<QString, QString>> &parameters);
+	static QString getParametersString(const QStringList &parameters);
 };

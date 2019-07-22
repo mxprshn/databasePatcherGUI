@@ -88,7 +88,7 @@ QVariant BuildListModel::headerData(int section, Qt::Orientation orientation, in
 }
 
 void BuildListModel::addObject(ObjectType type, const QString &name, const QString &scheme
-	, const QVector<QPair<QString, QString>> &parameters)
+	, const QStringList &parameters)
 {
 	beginInsertRows(QModelIndex(), elements->count(), elements->count() + 1);
 	elements->append(new PatchListElement(this, type, name, scheme, parameters));
@@ -120,7 +120,7 @@ QString BuildListModel::getName(int index) const
 	return elements->at(index)->getName();
 }
 
-QVector<QPair<QString, QString>> BuildListModel::getParameters(int index) const
+QStringList BuildListModel::getParameters(int index) const
 {
 	return elements->at(index)->getParameters();
 }

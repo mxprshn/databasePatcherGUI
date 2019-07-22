@@ -85,7 +85,9 @@ void UiController::addObject(const int modelIndex, const QString& name)
 	if (modelIndex != script)
 	{
 		auto exists = false;
+		auto objectName = name;
 		ObjectType type = typeCount;
+		QStringList parameters = {};
 
 		switch (modelIndex)
 		{
@@ -104,6 +106,10 @@ void UiController::addObject(const int modelIndex, const QString& name)
 			case function:
 			{
 				exists = databaseProvider->functionExists(name);
+				auto splitResult = name.split(QRegExp("(\\ |\\,|\\(|\\))"), QString::SkipEmptyParts);
+				objectName = splitResult.first();
+				splitResult.pop_front();
+				parameters = splitResult;
 				type = function;
 				break;
 			}
@@ -129,7 +135,7 @@ void UiController::addObject(const int modelIndex, const QString& name)
 
 		if (exists)
 		{
-			buildListModel->addObject(type, name);
+			buildListModel->addObject(type, objectName, "", parameters);
 		}
 		else
 		{
@@ -148,3 +154,4 @@ void UiController::addObject(const int modelIndex, const QString& name)
 		}
 	}
 }
+
