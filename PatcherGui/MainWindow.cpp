@@ -30,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent)
 	initializeToolBars();
 
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
-	builderWidget->setObjectTypeListModel(mainController->getObjectTypeListModel());
 	builderWidget->setBuildListModel(mainController->getBuildListModel());
 
 	connect(this->loginWindow, SIGNAL(connectButtonClicked()), this, SLOT(requestConnection()));

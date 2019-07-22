@@ -28,15 +28,15 @@ public:
 
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
-	void setObjectTypeListModel(QAbstractItemModel *model);
 	void setBuildListModel(QAbstractItemModel *model);
 	QString getItemNameInput();
 	int getObjectTypeIndex();
 private:
-
 	void initializeItemList();
 	void initializeToolButtons();
 	void initializeAddItemBox();
+
+	static const int smallIconSize = 15;
 
 	const QSize toolButtonSize;
 	const QSize toolButtonIconSize;

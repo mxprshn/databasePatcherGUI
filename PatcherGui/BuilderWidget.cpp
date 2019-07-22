@@ -21,7 +21,6 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	, functionInputValidator(new QRegExpValidator(functionInputRegex, this))
 {
 	setupUi(this);
-
 	mainLayout = new QGridLayout;
 
 	initializeItemList();
@@ -97,6 +96,15 @@ void BuilderWidget::initializeAddItemBox()
 	addItemGroupBox = new QGroupBox("Add item");
 
 	typeComboBox = new QComboBox;
+	typeComboBox->setIconSize(QSize(smallIconSize, smallIconSize));
+	typeComboBox->addItem(QIcon(":/images/script.svg"), "script", script);
+	typeComboBox->addItem(QIcon(":/images/table.svg"), "table", table);
+	typeComboBox->addItem(QIcon(":/images/sequence.svg"), "sequence", sequence);
+	typeComboBox->addItem(QIcon(":/images/function.svg"), "function", function);
+	typeComboBox->addItem(QIcon(":/images/view.svg"), "view", view);
+	typeComboBox->addItem(QIcon(":/images/trigger.svg"), "trigger", trigger);
+	typeComboBox->addItem(QIcon(":/images/index.svg"), "index", index);
+
 	schemeComboBox = new QComboBox;
 	itemNameEdit = new QLineEdit;
 	itemNameEdit->setValidator(functionInputValidator);
@@ -116,10 +124,12 @@ void BuilderWidget::initializeAddItemBox()
 	mainLayout->addWidget(addItemGroupBox, 0, 0);
 }
 
-void BuilderWidget::setObjectTypeListModel(QAbstractItemModel* model)
-{
-	typeComboBox->setModel(model);
-}
+//void BuilderWidget::setObjectTypeListModel(QAbstractItemModel* model)
+//{
+//	typeComboBox->setModel(model);
+//	typeComboBox->setView(typeListWidget);
+//
+//}
 
 void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
 {
@@ -133,7 +143,7 @@ QString BuilderWidget::getItemNameInput()
 
 int BuilderWidget::getObjectTypeIndex()
 {
-	return typeComboBox->currentIndex();
+	return typeComboBox->currentData().toInt();
 }
 
 //void BuilderWidget::validateFunctionInput()

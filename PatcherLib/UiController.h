@@ -11,7 +11,6 @@ class InstallerHandler;
 class BuildListModel;
 class InstallListModel;
 class DependenciesListModel;
-class ObjectTypeListModel;
 
 class PATCHERLIB_EXPORT UiController : public QObject
 {
@@ -22,7 +21,6 @@ public:
 	QAbstractItemModel* getBuildListModel() const;
 	QAbstractItemModel* getInstallListModel() const;
 	QAbstractItemModel* getDependenciesListModel() const;
-	QAbstractItemModel *getObjectTypeListModel() const;
 private:
 	DatabaseProvider *databaseProvider;
 	BuilderHandler *builderHandler;
@@ -30,7 +28,6 @@ private:
 	BuildListModel *buildListModel;
 	InstallListModel *installListModel;
 	DependenciesListModel *dependenciesListModel;
-	ObjectTypeListModel *objectTypeListModel;
 private slots:
 	void connectToDatabase(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);

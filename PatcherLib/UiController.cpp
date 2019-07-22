@@ -8,7 +8,6 @@
 #include "BuildListModel.h"
 #include "InstallListModel.h"
 #include "DependenciesListModel.h"
-#include "ObjectTypeListModel.h"
 
 UiController::UiController(QObject* parent)
 	: databaseProvider(new DatabaseProvider(this))
@@ -17,7 +16,6 @@ UiController::UiController(QObject* parent)
 	, buildListModel(new BuildListModel(this))
 	, installListModel(new InstallListModel(this))
 	, dependenciesListModel(new DependenciesListModel(this))
-	, objectTypeListModel(new ObjectTypeListModel(this))
 {
 }
 
@@ -34,11 +32,6 @@ QAbstractItemModel* UiController::getInstallListModel() const
 QAbstractItemModel* UiController::getDependenciesListModel() const
 {
 	return dependenciesListModel;
-}
-
-QAbstractItemModel* UiController::getObjectTypeListModel() const
-{
-	return objectTypeListModel;
 }
 
 void UiController::connectToDatabase(const QString &database, const QString &user, const QString &password,
