@@ -17,25 +17,22 @@
 
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
-	, installerProgram("patchInstaller.exe")
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
-	, dependenciesListModel(new DependenciesListModel(this))
-	, installerHandler(new InstallerHandler(this, "PatchInstaller_exe.exe"))
 {
 	setupUi(this);
 	mainLayout = new QGridLayout;
 
 	initializeItemLists();
 	initializeOpenPatchBox();
-	initializeActions();
 	initializeToolButtons();
 
-	setLayout(mainLayout);
-}
+	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
+	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
+		SIGNAL(testButtonClicked()));
+	connect(this->testButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
 
-InstallerWidget::~InstallerWidget()
-{
+	setLayout(mainLayout);
 }
 
 void InstallerWidget::initializeItemLists()
@@ -57,13 +54,6 @@ void InstallerWidget::initializeItemLists()
 
 	mainLayout->addWidget(itemListGroupBox, 1, 0);
 	mainLayout->addWidget(dependenciesListGroupBox, 1, 1);
-
-	dependenciesListModel->parseDependenciesFromFile(":/data/dependencies.txt");
-	dependenciesListView->setModel(dependenciesListModel);
-	dependenciesListView->setRootIsDecorated(false);
-	dependenciesListView->header()->setStretchLastSection(false);
-	dependenciesListView->header()->setSectionResizeMode(1, QHeaderView::ResizeMode::Stretch);
-	dependenciesListView->header()->setSectionResizeMode(2, QHeaderView::ResizeMode::ResizeToContents);
 }
 
 void InstallerWidget::initializeOpenPatchBox()
@@ -95,8 +85,6 @@ void InstallerWidget::initializeToolButtons()
 	testButton->setIconSize(toolButtonIconSize);
 	testButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-	connect(this->testButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
-
 	installButton = new QToolButton;
 	installButton->setIcon(QIcon(":/images/install.svg"));
 	installButton->setText("Install");
@@ -111,20 +99,26 @@ void InstallerWidget::initializeToolButtons()
 	mainLayout->addLayout(toolsLayout, 0, 2, 2, 1);
 }
 
-void InstallerWidget::initializeActions()
+QAction* InstallerWidget::getTestAction() const
 {
-	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
-	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
-		SLOT(requestTest()));
-}
-
-void InstallerWidget::requestTest()
-{
-	dependenciesListModel->getTestResult(installerHandler->testDependencies(QStringList() << "testString" << "check"));
+	return testDependenciesAction;
 }
 
 
+void InstallerWidget::setDependenciesListModel(QAbstractItemModel* model)
+{
+	dependenciesListView->setModel(model);
+	dependenciesListView->setRootIsDecorated(false);
+	dependenciesListView->header()->setStretchLastSection(false);
+	dependenciesListView->header()->setSectionResizeMode(0, QHeaderView::ResizeMode::ResizeToContents);
+	dependenciesListView->header()->setSectionResizeMode(1, QHeaderView::ResizeMode::ResizeToContents);
+	dependenciesListView->header()->setSectionResizeMode(2, QHeaderView::ResizeMode::Stretch);
+	dependenciesListView->header()->setSectionResizeMode(3, QHeaderView::ResizeMode::ResizeToContents);
+}
 
+void InstallerWidget::setInstallListModel(QAbstractItemModel* model)
+{
+}
 
 
 

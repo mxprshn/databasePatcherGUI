@@ -1,23 +1,13 @@
 #pragma once
 
 #include <QObject>
+#include "ObjectType.h"
 
 class DependenciesListElement : public QObject
 {
 	Q_OBJECT
 
 public:
-
-	enum ObjectType
-	{
-		unidentified,
-		table,
-		sequence,
-		function,
-		view,
-		trigger,
-		index
-	};
 
 	enum CheckStatus
 	{
@@ -26,7 +16,7 @@ public:
 		notSatisfied
 	};
 
-	DependenciesListElement(QObject *parent, ObjectType type, const QString &name);
+	DependenciesListElement(QObject *parent, ObjectType type, const QString &scheme, const QString &name);
 	~DependenciesListElement();
 
 	void setSatisfied();
@@ -35,6 +25,7 @@ public:
 
 	ObjectType getType() const;
 	QString getName() const;
+	QString getScheme() const;
 	CheckStatus getStatus() const;
 	bool getIsReadyToInstall() const;
 
@@ -42,6 +33,7 @@ private:
 
 	ObjectType type;
 	QString name;
+	QString scheme;
 	CheckStatus status;
 	bool isReadyToInstall;
 };

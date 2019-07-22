@@ -24,6 +24,10 @@ public:
 
 	void disconnect();
 
-	//bool exists(const QString &objectType, const QString &objectName, const QString &connectionName);
-
+	bool tableExists(const QString &name);
+	bool sequenceExists(const QString &name);
+	bool functionExists(const QString &name);
+	bool viewExists(const QString &name);
+	bool triggerExists(const QString &name);
+	bool indexExists(const QString &name);
 };

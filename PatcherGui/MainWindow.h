@@ -14,27 +14,24 @@ class QLabel;
 class BuilderWidget;
 class InstallerWidget;
 class LoginWindow;
-class DatabaseProvider;
+class UiController;
+class QDialogButtonBox;
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
 	Q_OBJECT
 
 public:
-
 	MainWindow(QWidget *parent = Q_NULLPTR);
-	~MainWindow();
-
 private:
-
+	UiController *mainController;
 	LoginWindow *loginWindow;
-	DatabaseProvider *databaseProvider;
 
 	void initializeDocks();
 	QPlainTextEdit *logOutput;
 	QDockWidget *logOutputDock;
 
-	void initializeModeTabs();
+	void initializeTabs();
 	QTabWidget *modeTab;
 	BuilderWidget *builderWidget;
 	InstallerWidget *installerWidget;
@@ -49,10 +46,15 @@ private:
 	void initializeToolBars();
 	QLabel *databaseInformation;
 
-private slots:	
-
-	void login(const QString &database, const QString &user, const QString &password,
-		const QString &server, const int port) const;
-
-	void logout();
+private slots:
+	void requestConnection();
+	void requestAddition();
+	void setConnectionInfo(const QString &database, const QString &user, const QString &password,
+		const QString &server, const int port);
+	void setDefaultConnectionInfo();
+	void showConnectionError(const QString &errorMessage);
+signals:
+	void connectionRequested(const QString &database, const QString &user, const QString &password,
+		const QString &server, const int port);
+	void additionRequested(const int modelIndex, const QString &name);
 };

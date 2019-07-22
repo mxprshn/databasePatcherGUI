@@ -1,11 +1,12 @@
 #include "DependenciesListElement.h"
 
-DependenciesListElement::DependenciesListElement(QObject *parent, ObjectType type, const QString &name)
+DependenciesListElement::DependenciesListElement(QObject *parent, ObjectType type, const QString &scheme, const QString &name)
 	: QObject(parent)
 	, type(type)
 	, name(name)
 	, status(waitingForCheck)
 	, isReadyToInstall(false)
+	, scheme(scheme)
 {
 }
 
@@ -24,7 +25,7 @@ void DependenciesListElement::setReadyToInstall()
 	isReadyToInstall = true;
 }
 
-DependenciesListElement::ObjectType DependenciesListElement::getType() const
+ObjectType DependenciesListElement::getType() const
 {
 	return type;
 }
@@ -43,6 +44,11 @@ DependenciesListElement::CheckStatus DependenciesListElement::getStatus() const
 QString DependenciesListElement::getName() const
 {
 	return name;
+}
+
+QString DependenciesListElement::getScheme() const
+{
+	return scheme;
 }
 
 DependenciesListElement::~DependenciesListElement()

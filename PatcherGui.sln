@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PatcherGui", "PatcherGui\PatcherGui.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DatabaseProvider", "DatabaseProvider\DatabaseProvider.vcxproj", "{E2406D69-4470-4D77-A078-05F678E5068C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PatcherLib", "PatcherLib\PatcherLib.vcxproj", "{C6723A54-E11C-4D8B-900A-2E86DF4AEE0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Debug|x64.Build.0 = Debug|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.Build.0 = Release|x64
-		{E2406D69-4470-4D77-A078-05F678E5068C}.Debug|x64.ActiveCfg = Debug|x64
-		{E2406D69-4470-4D77-A078-05F678E5068C}.Debug|x64.Build.0 = Debug|x64
-		{E2406D69-4470-4D77-A078-05F678E5068C}.Release|x64.ActiveCfg = Release|x64
-		{E2406D69-4470-4D77-A078-05F678E5068C}.Release|x64.Build.0 = Release|x64
+		{C6723A54-E11C-4D8B-900A-2E86DF4AEE0A}.Debug|x64.ActiveCfg = Debug|x64
+		{C6723A54-E11C-4D8B-900A-2E86DF4AEE0A}.Debug|x64.Build.0 = Debug|x64
+		{C6723A54-E11C-4D8B-900A-2E86DF4AEE0A}.Release|x64.ActiveCfg = Release|x64
+		{C6723A54-E11C-4D8B-900A-2E86DF4AEE0A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
