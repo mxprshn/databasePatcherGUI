@@ -46,6 +46,10 @@ void BuilderWidget::initializeItemList()
 	itemListGroupBox = new QGroupBox("Build list");
 	itemListView = new QTreeView;
 
+	itemListView->setDragEnabled(true);
+	itemListView->setAcceptDrops(true);
+	itemListView->setDropIndicatorShown(true);
+
 	itemListLayout->addWidget(itemListView);
 	
 	itemListGroupBox->setLayout(itemListLayout);

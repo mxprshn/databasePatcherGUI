@@ -87,6 +87,19 @@ QVariant BuildListModel::headerData(int section, Qt::Orientation orientation, in
 	return QVariant();
 }
 
+Qt::DropActions BuildListModel::supportedDropActions() const
+{
+	return Qt::MoveAction;
+}
+
+Qt::DropActions BuildListModel::supportedDragActions() const
+{
+	return Qt::MoveAction;
+}
+
+// Add rows()
+// Maybe replace vector with list for drag&drop efficiency
+
 void BuildListModel::addObject(ObjectType type, const QString &name, const QString &scheme
 	, const QStringList &parameters)
 {

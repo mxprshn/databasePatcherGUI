@@ -56,6 +56,9 @@
     <ClCompile Include="FileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PatchListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="patcherlib_global.h">
@@ -94,6 +97,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="PatchListElement.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="PatchListWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
