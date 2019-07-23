@@ -5,6 +5,8 @@
 class QSqlDatabase;
 class QSqlQueryModel;
 
+// MAKE IT STATIC!
+
 class DatabaseProvider : public QObject
 {
 	Q_OBJECT

@@ -13,9 +13,11 @@
 #include <QLabel>
 #include <QToolTip>
 #include "BuilderWidget.h"
+#include "PatchListWidget.h"
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
+	, buildListWidget(new PatchListWidget(this))
 	, wrongFunctionInputMessage("Invalid signature.")
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
@@ -31,7 +33,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 
 	setLayout(mainLayout);
 
-	connect(this->addButton, SIGNAL(clicked()), this, SIGNAL(addButtonClicked()));
+	connect(this->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
 	connect(this->buildButton, SIGNAL(clicked()), this, SIGNAL(buildButtonClicked()));
 	connect(this->itemNameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
 }
@@ -46,11 +48,10 @@ void BuilderWidget::initializeItemList()
 	itemListGroupBox = new QGroupBox("Build list");
 	itemListView = new QTreeView;
 
-	itemListView->setDragEnabled(true);
-	itemListView->setAcceptDrops(true);
-	itemListView->setDropIndicatorShown(true);
+	buildListWidget->setColumnCount(3);
+	buildListWidget->setHeaderLabels(QStringList{ "Type", "Schema", "Name" });
 
-	itemListLayout->addWidget(itemListView);
+	itemListLayout->addWidget(buildListWidget);
 	
 	itemListGroupBox->setLayout(itemListLayout);
 	mainLayout->addWidget(itemListGroupBox, 1, 0);
@@ -132,6 +133,17 @@ void BuilderWidget::initializeAddItemBox()
 
 	mainLayout->addWidget(addItemGroupBox, 0, 0);
 }
+
+void BuilderWidget::onAddButtonClicked()
+{
+	auto *newItem = new QTreeWidgetItem(buildListWidget);
+	newItem->setIcon(0, QIcon(PatchListWidget::typeIcon(typeComboBox->currentData().toInt())));
+	newItem->setText(0, PatchListWidget::typeName(typeComboBox->currentData().toInt()));
+	newItem->setText(1, schemeComboBox->currentText());
+	newItem->setText(2, itemNameEdit->text());
+	buildListWidget->addTopLevelItem(newItem);
+}
+
 
 void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
 {

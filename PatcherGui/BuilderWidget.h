@@ -19,6 +19,7 @@ class QAbstractItemModel;
 class QTreeView;
 class QValidator;
 class QLabel;
+class PatchListWidget;
 
 class BuilderWidget : public QWidget, public Ui::BuilderWidget
 {
@@ -34,6 +35,10 @@ public:
 	QString getCurrentSchemaName();
 	int getObjectTypeIndex();
 private:
+	// feature
+	PatchListWidget *buildListWidget;
+	//
+
 	void initializeItemList();
 	void initializeToolButtons();
 	void initializeAddItemBox();
@@ -75,4 +80,7 @@ signals:
 
 private slots:
 	void onWrongFunctionInput();
+	//
+	void onAddButtonClicked();
+	//
 };
