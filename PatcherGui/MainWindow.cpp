@@ -29,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
 	initializeToolBars();
 
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
-	builderWidget->setBuildListModel(mainController->getBuildListModel());
 
 	connect(this->loginWindow, SIGNAL(connectButtonClicked()), this, SLOT(requestConnection()));
 	connect(this, SIGNAL(connectionRequested(const QString&, const QString&, const QString&, const QString&, const int)),

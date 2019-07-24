@@ -20,6 +20,7 @@ class QTreeView;
 class QValidator;
 class QLabel;
 class PatchListWidget;
+class PatchList;
 
 class BuilderWidget : public QWidget, public Ui::BuilderWidget
 {
@@ -29,7 +30,6 @@ public:
 
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
-	void setBuildListModel(QAbstractItemModel *model);
 	void setSchemaComboBoxModel(QAbstractItemModel *model);
 	QString getItemNameInput();
 	QString getCurrentSchemaName();
@@ -37,8 +37,8 @@ public:
 private:
 	// feature
 	PatchListWidget *buildListWidget;
+	PatchList *patchList;
 	//
-
 	void initializeItemList();
 	void initializeToolButtons();
 	void initializeAddItemBox();
@@ -57,7 +57,6 @@ private:
 	QLabel *inputStatusLabel;
 
 	QGroupBox *itemListGroupBox;
-	QTreeView *itemListView;
 
 	QGroupBox *addItemGroupBox;
 	QComboBox *typeComboBox;
@@ -76,9 +75,9 @@ private:
 
 signals:
 	void addButtonClicked();
-	void buildButtonClicked();
 
 private slots:
 	void onWrongFunctionInput();
 	void onAddButtonClicked();
+	void onBuildButtonClicked();
 };

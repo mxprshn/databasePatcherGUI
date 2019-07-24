@@ -14,10 +14,12 @@
 #include <QToolTip>
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
+#include "PatchList.h"
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
 	, buildListWidget(new PatchListWidget(this))
+	, patchList(new PatchList)
 	, wrongFunctionInputMessage("Invalid signature.")
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
@@ -34,22 +36,19 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	setLayout(mainLayout);
 
 	connect(this->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
-	connect(this->buildButton, SIGNAL(clicked()), this, SIGNAL(buildButtonClicked()));
+	connect(this->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
 	connect(this->itemNameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
 }
 
 BuilderWidget::~BuilderWidget()
 {
+	delete patchList;
 }
 
 void BuilderWidget::initializeItemList()
 {
 	itemListLayout = new QVBoxLayout;
 	itemListGroupBox = new QGroupBox("Build list");
-	itemListView = new QTreeView;
-
-	buildListWidget->setColumnCount(3);
-	buildListWidget->setHeaderLabels(QStringList{ "Type", "Schema", "Name" });
 
 	itemListLayout->addWidget(buildListWidget);
 	
@@ -137,17 +136,25 @@ void BuilderWidget::initializeAddItemBox()
 void BuilderWidget::onAddButtonClicked()
 {
 	auto *newItem = new QTreeWidgetItem(buildListWidget);
-	newItem->setIcon(0, QIcon(PatchListWidget::typeIcon(typeComboBox->currentData().toInt())));
-	newItem->setText(0, PatchListWidget::typeName(typeComboBox->currentData().toInt()));
-	newItem->setText(1, schemeComboBox->currentText());
-	newItem->setText(2, itemNameEdit->text());
+	newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(typeComboBox->currentData().toInt())));
+	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchListWidget::typeName(typeComboBox->currentData().toInt()));
+	newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, schemeComboBox->currentText());
+	newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, itemNameEdit->text());
 	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
 	buildListWidget->addTopLevelItem(newItem);
 }
 
-void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
+void BuilderWidget::onBuildButtonClicked()
 {
-	itemListView->setModel(model);
+	for (auto i = 0; i < buildListWidget->topLevelItemCount(); ++i)
+	{
+		patchList->add(buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::TypeColumn)
+			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::SchemaColumn)
+			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
+	}
+
+	patchList->exportFile("PatchList.txt");
+	patchList->clear();
 }
 
 void BuilderWidget::setSchemaComboBoxModel(QAbstractItemModel* model)

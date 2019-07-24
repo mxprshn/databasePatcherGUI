@@ -4,38 +4,33 @@
 #include <QSqlQueryModel>
 #include "DatabaseProvider.h"
 
-DatabaseProvider::DatabaseProvider(QObject *parent)
-	: QObject(parent)
-{
-}
-
-QString DatabaseProvider::database() const
+QString DatabaseProvider::database()
 {
 	return QSqlDatabase::database().databaseName();
 }
 
-QString DatabaseProvider::user() const
+QString DatabaseProvider::user()
 {
 	return QSqlDatabase::database().userName();
 }
 
-QString DatabaseProvider::password() const
+QString DatabaseProvider::password()
 {
 	return QSqlDatabase::database().password();
 }
 
-QString DatabaseProvider::server() const
+QString DatabaseProvider::server()
 {
 	return QSqlDatabase::database().hostName();
 }
 
-int DatabaseProvider::port() const
+int DatabaseProvider::port()
 {
 	return QSqlDatabase::database().port();
 }
 
 bool DatabaseProvider::connect(const QString &database, const QString &user, const QString &password,
-	const QString &server, const int port, QString &errorMessage) const
+	const QString &server, const int port, QString &errorMessage)
 {
 	auto connection = QSqlDatabase::addDatabase("QPSQL");
 	connection.setDatabaseName(database);
@@ -79,6 +74,7 @@ bool DatabaseProvider::sequenceExists(const QString& name)
 
 bool DatabaseProvider::functionExists(const QString& name)
 {
+
 	return true;
 }
 
@@ -101,9 +97,4 @@ void DatabaseProvider::initSchemaListModel(QSqlQueryModel &model)
 {
 	model.setQuery("SELECT schema_name FROM information_schema.schemata");
 	// Check something
-}
-
-DatabaseProvider::~DatabaseProvider()
-{
-	disconnect();
 }

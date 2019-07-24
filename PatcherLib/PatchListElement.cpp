@@ -1,31 +1,30 @@
 #include "PatchListElement.h"
 
-PatchListElement::PatchListElement(QObject *parent, ObjectType type, const QString &name, const QString &scheme
+PatchListElement::PatchListElement(const QString &type, const QString &name, const QString &schema
 	, const QStringList &parameters)
-	: QObject(parent)
-	, type(type)
+	: type(type)
 	, name(name)
-	, scheme(scheme)
+	, scheme(schema)
 	, parameters(parameters)
 {
 }
 
-ObjectType PatchListElement::getType()
+QString PatchListElement::getType() const
 {
 	return type;
 }
 
-QString PatchListElement::getName()
+QString PatchListElement::getName() const
 {
 	return name;
 }
 
-QString PatchListElement::getScheme()
+QString PatchListElement::getScheme() const
 {
 	return scheme;
 }
 
-QStringList PatchListElement::getParameters()
+QStringList PatchListElement::getParameters() const
 {
 	return parameters;
 }

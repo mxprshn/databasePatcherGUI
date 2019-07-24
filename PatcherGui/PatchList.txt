@@ -1,0 +1,2 @@
+information_schema ololo table ( foo_1 foo_2 )
+information_schema ololo script

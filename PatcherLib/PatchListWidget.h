@@ -7,8 +7,15 @@ class PatchListWidget : public QTreeWidget
 	Q_OBJECT
 
 public:
+	enum ColumnIndexes
+	{
+		TypeColumn,
+		SchemaColumn,
+		NameColumn
+	};
 	PatchListWidget(QWidget *parent);
 	~PatchListWidget();
+	QStringList itemList() const;
 	static QString typeIcon(int typeIndex);
 	static QString typeName(int typeIndex);
 private:

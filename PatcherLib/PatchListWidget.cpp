@@ -14,12 +14,37 @@ const QHash<int, QString> *PatchListWidget::typeIcons = new QHash<int, QString>(
 PatchListWidget::PatchListWidget(QWidget *parent)
 	: QTreeWidget(parent)
 {
+	setColumnCount(3);
+	QStringList headerLabels;
+	headerLabels.insert(TypeColumn, "Type");
+	headerLabels.insert(SchemaColumn, "Schema");
+	headerLabels.insert(NameColumn, "Name");
+	setHeaderLabels(headerLabels);
 	setRootIsDecorated(false);
 	setSelectionMode(SingleSelection);
 	setDragEnabled(true);
 	viewport()->setAcceptDrops(true);
 	setDropIndicatorShown(true);
 	setDragDropMode(InternalMove);
+}
+
+QStringList PatchListWidget::itemList() const
+{
+	QStringList result;
+
+	for (auto i = 0; i < topLevelItemCount(); ++i)
+	{
+		QString currentString = "";
+
+		for (auto j = 0; j < columnCount(); ++j)
+		{
+			currentString += topLevelItem(i)->text(j);
+		}
+
+		result.append(currentString);
+	}
+
+	return result;
 }
 
 QString PatchListWidget::typeIcon(int typeIndex)
