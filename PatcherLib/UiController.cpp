@@ -51,9 +51,9 @@ void UiController::disconnectFromDatabase()
 
 void UiController::testDependencies()
 {
-	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(databaseProvider->server())
-		.arg(databaseProvider->port()).arg(databaseProvider->database()).arg(databaseProvider->user())
-		.arg(databaseProvider->password());
+	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(databaseProvider->database())
+		.arg(databaseProvider->user()).arg(databaseProvider->password()).arg(databaseProvider->server())
+		.arg(databaseProvider->port());
 	const QStringList installerArguments = { connectionInfo, "check" };
 	dependenciesListModel->getTestResult(installerHandler->testDependencies(installerArguments));
 	emit testPassed();

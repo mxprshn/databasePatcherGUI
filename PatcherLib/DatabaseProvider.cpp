@@ -67,19 +67,25 @@ bool DatabaseProvider::tableExists(const QString &schema, const QString &name)
 	QSqlQuery check;
 	check.prepare("SELECT EXISTS (SELECT * FROM information_schema.tables WHERE table_schema = ?"
 		"AND table_name = ?)");
-	check.bindValue(schema);
-	check.bindValue(":table", name);
-	// Add check maybe
+	check.addBindValue(schema);
+	check.addBindValue(name);
+	// Add check maybe and remove smth?
 	check.exec();
 	check.next();
-	auto temp = check.value("exists").toString();
-	return temp == "true";
-	return true;
+	return check.value("exists").toBool();
 }
 
-bool DatabaseProvider::sequenceExists(const QString& name)
+bool DatabaseProvider::sequenceExists(const QString &schema, const QString &name)
 {
-	return true;
+	QSqlQuery check;
+	check.prepare("SELECT EXISTS (SELECT * FROM information_schema.sequences WHERE sequence_schema = ?"
+		"AND sequence_name = ?)");
+	check.addBindValue(schema);
+	check.addBindValue(name);
+	// Add check maybe and remove smth?
+	check.exec();
+	check.next();
+	return check.value("exists").toBool();
 }
 
 bool DatabaseProvider::functionExists(const QString& name)
@@ -87,14 +93,31 @@ bool DatabaseProvider::functionExists(const QString& name)
 	return true;
 }
 
-bool DatabaseProvider::viewExists(const QString& name)
+bool DatabaseProvider::viewExists(const QString &schema, const QString &name)
 {
-	return true;
+	QSqlQuery check;
+	check.prepare("SELECT EXISTS (SELECT * FROM information_schema.views WHERE table_schema = ?"
+		"AND table_name = ?)");
+	check.addBindValue(schema);
+	check.addBindValue(name);
+	// Add check maybe and remove smth?
+	check.exec();
+	check.next();
+	return check.value("exists").toBool();
 }
 
-bool DatabaseProvider::triggerExists(const QString& name)
+bool DatabaseProvider::triggerExists(const QString &schema, const QString &name)
 {
-	return true;
+	// Fix THIS!
+	QSqlQuery check;
+	check.prepare("SELECT EXISTS (SELECT * FROM information_schema.triggers WHERE trigger_schema = ?"
+		"AND trigger_name = ?)");
+	check.addBindValue(schema);
+	check.addBindValue(name);
+	// Add check maybe and remove smth?
+	check.exec();
+	check.next();
+	return check.value("exists").toBool();
 }
 
 bool DatabaseProvider::indexExists(const QString& name)

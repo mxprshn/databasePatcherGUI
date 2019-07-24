@@ -1,2 +1,3 @@
-information_schema ololo table ( foo_1 foo_2 )
-information_schema ololo script
+public test_seq sequence
+public courses table
+public exams table

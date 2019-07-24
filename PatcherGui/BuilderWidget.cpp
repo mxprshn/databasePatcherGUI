@@ -136,7 +136,32 @@ void BuilderWidget::initializeAddItemBox()
 
 void BuilderWidget::onAddButtonClicked()
 {
-	if (!DatabaseProvider::tableExists(schemeComboBox->currentText(), itemNameEdit->text()))
+	auto exists = false;
+
+	switch (typeComboBox->currentData().toInt())
+	{
+		case table:
+		{
+			exists = DatabaseProvider::tableExists(schemeComboBox->currentText(), itemNameEdit->text());
+			break;
+		}
+		case sequence:
+		{
+			exists = DatabaseProvider::sequenceExists(schemeComboBox->currentText(), itemNameEdit->text());
+			break;
+		}
+		case view:
+		{
+			exists = DatabaseProvider::viewExists(schemeComboBox->currentText(), itemNameEdit->text());
+			break;
+		}
+		case trigger:
+		{
+			exists = DatabaseProvider::triggerExists(schemeComboBox->currentText(), itemNameEdit->text());
+		}
+	}
+
+	if (!exists)
 	{
 		return;
 	}
