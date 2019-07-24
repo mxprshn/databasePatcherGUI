@@ -80,7 +80,5 @@ signals:
 
 private slots:
 	void onWrongFunctionInput();
-	//
 	void onAddButtonClicked();
-	//
 };

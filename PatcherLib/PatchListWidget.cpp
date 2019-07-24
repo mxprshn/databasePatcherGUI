@@ -1,3 +1,5 @@
+#include <QDropEvent>
+
 #include "PatchListWidget.h"
 #include "ObjectType.h"
 
@@ -12,8 +14,12 @@ const QHash<int, QString> *PatchListWidget::typeIcons = new QHash<int, QString>(
 PatchListWidget::PatchListWidget(QWidget *parent)
 	: QTreeWidget(parent)
 {
-	// Should it be here???
 	setRootIsDecorated(false);
+	setSelectionMode(SingleSelection);
+	setDragEnabled(true);
+	viewport()->setAcceptDrops(true);
+	setDropIndicatorShown(true);
+	setDragDropMode(InternalMove);
 }
 
 QString PatchListWidget::typeIcon(int typeIndex)
@@ -25,6 +31,12 @@ QString PatchListWidget::typeIcon(int typeIndex)
 QString PatchListWidget::typeName(int typeIndex)
 {
 	return typeNames->value(typeIndex);
+}
+
+void PatchListWidget::dropEvent(QDropEvent *event)
+{
+	QTreeWidget::dropEvent(event);
+	setCurrentItem(itemAt(event->pos()));
 }
 
 PatchListWidget::~PatchListWidget()

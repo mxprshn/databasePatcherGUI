@@ -141,9 +141,9 @@ void BuilderWidget::onAddButtonClicked()
 	newItem->setText(0, PatchListWidget::typeName(typeComboBox->currentData().toInt()));
 	newItem->setText(1, schemeComboBox->currentText());
 	newItem->setText(2, itemNameEdit->text());
+	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
 	buildListWidget->addTopLevelItem(newItem);
 }
-
 
 void BuilderWidget::setBuildListModel(QAbstractItemModel* model)
 {
