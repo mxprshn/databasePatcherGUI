@@ -15,6 +15,7 @@
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
 #include "PatchList.h"
+#include "DatabaseProvider.h"
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
@@ -135,6 +136,11 @@ void BuilderWidget::initializeAddItemBox()
 
 void BuilderWidget::onAddButtonClicked()
 {
+	if (!DatabaseProvider::tableExists(schemeComboBox->currentText(), itemNameEdit->text()))
+	{
+		return;
+	}
+
 	auto *newItem = new QTreeWidgetItem(buildListWidget);
 	newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(typeComboBox->currentData().toInt())));
 	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchListWidget::typeName(typeComboBox->currentData().toInt()));
@@ -188,4 +194,3 @@ void BuilderWidget::onWrongFunctionInput()
 		inputStatusLabel->setText(wrongFunctionInputMessage);
 	}
 }
-

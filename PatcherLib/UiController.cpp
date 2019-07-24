@@ -9,8 +9,7 @@
 #include "DependenciesListModel.h"
 
 UiController::UiController(QObject* parent)
-	: databaseProvider(new DatabaseProvider(this))
-	, builderHandler(new BuilderHandler(this, "builder.exe"))
+	: builderHandler(new BuilderHandler(this, "builder.exe"))
 	, installerHandler(new InstallerHandler(this, "PatchInstaller_exe.exe"))
 	, installListModel(new InstallListModel(this))
 	, dependenciesListModel(new DependenciesListModel(this))
@@ -60,9 +59,13 @@ void UiController::testDependencies()
 	emit testPassed();
 }
 
-void UiController::installPatch()
+QString UiController::installPatch()
 {
-	
+	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(databaseProvider->database())
+		.arg(databaseProvider->user()).arg(databaseProvider->password()).arg(databaseProvider->server())
+		.arg(databaseProvider->port());
+	const QStringList installerArguments = { connectionInfo, "install", "C:\\Users\\mxprshn\\Desktop\\test" };
+	return(installerHandler->install(installerArguments));
 }
 
 

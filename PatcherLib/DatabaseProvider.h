@@ -22,7 +22,7 @@ public:
 
 	static void disconnect();
 
-	static bool tableExists(const QString &name);
+	static bool tableExists(const QString &schema, const QString &name);
 	static bool sequenceExists(const QString &name);
 	static bool functionExists(const QString &name);
 	static bool viewExists(const QString &name);

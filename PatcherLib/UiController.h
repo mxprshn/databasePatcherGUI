@@ -22,6 +22,7 @@ public:
 	QAbstractItemModel* getInstallListModel() const;
 	QAbstractItemModel* getDependenciesListModel() const;
 	QAbstractItemModel* getSchemaListModel() const;
+	QString installPatch();
 private:
 	DatabaseProvider *databaseProvider;
 	BuilderHandler *builderHandler;
@@ -34,7 +35,6 @@ private slots:
 		const QString &server, const int port);
 	void disconnectFromDatabase();
 	void testDependencies();
-	void installPatch();
 	void openPatchFile(const QString &filePath);
 signals:
 	void connectedToDatabase(const QString &database, const QString &user, const QString &password,

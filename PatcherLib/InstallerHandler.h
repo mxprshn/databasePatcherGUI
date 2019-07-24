@@ -12,7 +12,7 @@ class InstallerHandler : public QObject
 public:
 	InstallerHandler(QObject *parent, const QString &program);
 	~InstallerHandler();
-	//bool install(const QStringList &loginData);
+	QString install(const QStringList &loginData);
 	QBitArray testDependencies(const QStringList &loginData);
 
 private:
@@ -21,5 +21,5 @@ private:
 
 signals:
 	void testPassed();
-	//void installFinished();
+	void installFinished();
 };

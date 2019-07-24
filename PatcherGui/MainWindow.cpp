@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this, SIGNAL(additionRequested(const int, const QString&, const QString&)), this->mainController
 		, SLOT(addObject(const int, const QString&, const QString&)));
 	connect(this->builderWidget, SIGNAL(buildButtonClicked()), this->mainController, SLOT(buildPatch()));
+	connect(this->installerWidget, SIGNAL(installButtonClicked()), this, SLOT(install()));
 
 	setCentralWidget(modeTab);
 	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
@@ -126,4 +127,9 @@ void MainWindow::setDefaultConnectionInfo()
 	databaseInformation->setText("Connect to database!");
 	loginAction->setEnabled(true);
 	logoutAction->setDisabled(true);
+}
+
+void MainWindow::install()
+{
+	this->logOutput->setPlainText(mainController->installPatch());
 }

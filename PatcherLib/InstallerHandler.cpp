@@ -1,12 +1,26 @@
 #include "InstallerHandler.h"
 #include <QBitArray>
 #include <QProcess>
+#include <QMessageBox>
+#include <QIcon>
 
 InstallerHandler::InstallerHandler(QObject *parent, const QString &program)
 	: QObject(parent)
 	, program(program)
 {
 	installProcess = new QProcess(this);
+}
+
+QString InstallerHandler::install(const QStringList& loginData)
+{
+	connect(this->installProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SIGNAL(installFinished()));
+	installProcess->start(program, loginData);
+	//installProcess->write("rs");
+	installProcess->waitForFinished();
+	QBitArray testResult;
+	installProcess->setReadChannel(QProcess::ProcessChannel::StandardOutput);
+	QByteArray readData = installProcess->readAllStandardOutput();
+	return QString(readData);
 }
 
 QBitArray InstallerHandler::testDependencies(const QStringList &loginData)

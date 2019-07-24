@@ -62,8 +62,18 @@ void DatabaseProvider::disconnect()
 	QSqlDatabase::removeDatabase(connectionName);
 }
 
-bool DatabaseProvider::tableExists(const QString& name)
+bool DatabaseProvider::tableExists(const QString &schema, const QString &name)
 {
+	QSqlQuery check;
+	check.prepare("SELECT EXISTS (SELECT * FROM information_schema.tables WHERE table_schema = ?"
+		"AND table_name = ?)");
+	check.bindValue(schema);
+	check.bindValue(":table", name);
+	// Add check maybe
+	check.exec();
+	check.next();
+	auto temp = check.value("exists").toString();
+	return temp == "true";
 	return true;
 }
 
@@ -74,7 +84,6 @@ bool DatabaseProvider::sequenceExists(const QString& name)
 
 bool DatabaseProvider::functionExists(const QString& name)
 {
-
 	return true;
 }
 

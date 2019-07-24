@@ -53,6 +53,7 @@ private slots:
 		const QString &server, const int port);
 	void setDefaultConnectionInfo();
 	void showConnectionError(const QString &errorMessage);
+	void install();
 signals:
 	void connectionRequested(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
