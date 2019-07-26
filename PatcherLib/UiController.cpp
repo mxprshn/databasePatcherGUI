@@ -10,7 +10,6 @@
 
 UiController::UiController(QObject* parent)
 	: builderHandler(new BuilderHandler(this, "builder.exe"))
-	, installerHandler(new InstallerHandler(this, "PatchInstaller_exe.exe"))
 	, installListModel(new InstallListModel(this))
 	, dependenciesListModel(new DependenciesListModel(this))
 	, schemaListModel(new QSqlQueryModel)
@@ -51,23 +50,17 @@ void UiController::disconnectFromDatabase()
 
 void UiController::testDependencies()
 {
-	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(databaseProvider->database())
-		.arg(databaseProvider->user()).arg(databaseProvider->password()).arg(databaseProvider->server())
-		.arg(databaseProvider->port());
-	const QStringList installerArguments = { connectionInfo, "check" };
-	dependenciesListModel->getTestResult(installerHandler->testDependencies(installerArguments));
+	dependenciesListModel->getTestResult(InstallerHandler::testDependencies(DatabaseProvider::database()
+		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::server(), DatabaseProvider::port(), "C:\\Users\\mxprshn\\Desktop\\test"));
 	emit testPassed();
 }
 
 QString UiController::installPatch()
 {
-	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(databaseProvider->database())
-		.arg(databaseProvider->user()).arg(databaseProvider->password()).arg(databaseProvider->server())
-		.arg(databaseProvider->port());
-	const QStringList installerArguments = { connectionInfo, "install", "C:\\Users\\mxprshn\\Desktop\\test" };
-	return(installerHandler->install(installerArguments));
+	InstallerHandler::installPatch(DatabaseProvider::database()
+		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::server(), DatabaseProvider::port(), "C:\\Users\\mxprshn\\Desktop\\test");
+	return "";
 }
-
 
 void UiController::openPatchFile(const QString &filePath)
 {

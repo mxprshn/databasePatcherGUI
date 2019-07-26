@@ -7,7 +7,7 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QGroupBox;
 class QTabWidget;
-class QPlainTextEdit;
+class QTextEdit;
 class QMenu;
 class QAction;
 class QLabel;
@@ -16,6 +16,7 @@ class InstallerWidget;
 class LoginWindow;
 class UiController;
 class QDialogButtonBox;
+class LogOutputDevice;
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -24,11 +25,12 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 public:
 	MainWindow(QWidget *parent = Q_NULLPTR);
 private:
+	LogOutputDevice *logOutputDevice;
 	UiController *mainController;
 	LoginWindow *loginWindow;
 
 	void initializeDocks();
-	QPlainTextEdit *logOutput;
+	QTextEdit *logOutput;
 	QDockWidget *logOutputDock;
 
 	void initializeTabs();

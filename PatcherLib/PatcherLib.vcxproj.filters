@@ -56,6 +56,9 @@
     <ClCompile Include="PatchList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LogOutputDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="patcherlib_global.h">
@@ -81,9 +84,6 @@
     <QtMoc Include="DependenciesListModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="InstallerHandler.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="BuilderHandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -94,6 +94,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="PatchListWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="InstallerHandler.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="LogOutputDevice.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

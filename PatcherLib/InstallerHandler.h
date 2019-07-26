@@ -2,24 +2,27 @@
 
 #include <QObject>
 
-class QProcess;
 class QBitArray;
+class QString;
+class QStringList;
+class QIODevice;
+class QProcess;
 
-class InstallerHandler : public QObject
+class InstallerHandler : QObject
 {
 	Q_OBJECT
 
 public:
-	InstallerHandler(QObject *parent, const QString &program);
-	~InstallerHandler();
-	QString install(const QStringList &loginData);
-	QBitArray testDependencies(const QStringList &loginData);
-
+	// Error handling???
+	// And should I disconnect connections?
+	static void setProgram(const QString &newProgram);
+	static void setOutputDevice(QIODevice &newDevice);
+	static bool installPatch(const QString &database, const QString &user, const QString &password,
+		const QString &server, int port, const QString &path);
+	static QBitArray testDependencies(const QString &database, const QString &user, const QString &password,
+		const QString &server, int port, const QString &path);
 private:
-	const QString program;
-	QProcess *installProcess;
-
-signals:
-	void testPassed();
-	void installFinished();
+	static QString program;
+	static QIODevice *outputDevice;
+	static QProcess installerProcess;
 };

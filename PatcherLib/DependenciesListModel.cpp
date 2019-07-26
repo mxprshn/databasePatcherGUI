@@ -26,7 +26,7 @@ DependenciesListModel::DependenciesListModel(QObject *parent)
 	typeNames.insert(ObjectType::trigger, "trigger");
 	typeNames.insert(ObjectType::view, "view");
 
-	parseDependenciesFromFile("DependencyList.dpn");
+	parseDependenciesFromFile("C:\\Users\\mxprshn\\Desktop\\test\\DependencyList.dpn");
 }
 
 DependenciesListModel::~DependenciesListModel()
@@ -178,9 +178,9 @@ bool DependenciesListModel::parseDependenciesFromFile(const QString& filePath)
 
 void DependenciesListModel::getTestResult(const QBitArray& testResult)
 {
-	for (auto i = 0; i < testResult.count(); ++i)
+	for (auto i = 0; i < testResult.count() - 1; ++i)
 	{
-		if (testResult[i])
+		if (testResult[i + 1])
 		{
 			elements[i]->setSatisfied();
 			elements[i]->setReadyToInstall();

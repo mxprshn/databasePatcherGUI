@@ -2,6 +2,7 @@
 #include <QDockWidget>
 #include <QLabel>
 #include <QMessageBox>
+#include <QTextStream>
 #include <QDialogButtonBox>
 #include <QAbstractItemModel>
 #include "MainWindow.h"
@@ -9,11 +10,14 @@
 #include "InstallerWidget.h"
 #include "LoginWindow.h"
 #include "UiController.h"
+#include "LogOutputDevice.h"
+#include "InstallerHandler.h"
 
 // Fix disconnection
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
+	, logOutputDevice(new LogOutputDevice(this))
 	, mainController(new UiController(this))
 	, loginWindow(new LoginWindow(this))
 	, builderWidget(new BuilderWidget)
@@ -27,6 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
 	initializeTabs();
 	initializeDocks();
 	initializeToolBars();
+
+	logOutputDevice->setTextEdit(logOutput);
+	logOutputDevice->open(QIODevice::WriteOnly | QIODevice::Text);
+	InstallerHandler::setOutputDevice(*logOutputDevice);
+	logOutputDevice->write("ololo");
 
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
 
@@ -74,7 +83,7 @@ void MainWindow::initializeTabs()
 void MainWindow::initializeDocks()
 {
 	logOutputDock = new QDockWidget("Log output", this);
-	logOutput = new QPlainTextEdit;
+	logOutput = new QTextEdit;
 	logOutputDock->setWidget(logOutput);
 	logOutputDock->setAllowedAreas(Qt::BottomDockWidgetArea);	
 }
@@ -131,5 +140,5 @@ void MainWindow::setDefaultConnectionInfo()
 
 void MainWindow::install()
 {
-	this->logOutput->setPlainText(mainController->installPatch());
+	mainController->installPatch();
 }
