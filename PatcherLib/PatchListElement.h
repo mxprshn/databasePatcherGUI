@@ -1,21 +1,21 @@
 #pragma once
 
-#include <QObject>
-#include "ObjectType.h"
+#include <QStringList>
 
-class PatchListElement : public QObject
+class QString;
+
+// Think about pointer to parameters
+
+class PatchListElement
 {
-	Q_OBJECT
-
 public:
-	PatchListElement(QObject *parent, ObjectType type, const QString &name, const QString &scheme = ""
-		, const QStringList &parameters = {});
-	ObjectType getType();
-	QString getName();
-	QString getScheme();
-	QStringList getParameters();
+	PatchListElement(const QString &type, const QString &name, const QString &schema, const QStringList &parameters);
+	QString getType() const;
+	QString getName() const;
+	QString getScheme() const;
+	QStringList getParameters() const;
 private:
-	ObjectType type;
+	QString type;
 	QString name;
 	QString scheme;
 	QStringList parameters;

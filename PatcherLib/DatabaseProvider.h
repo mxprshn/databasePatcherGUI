@@ -1,36 +1,31 @@
 #pragma once
 
-#include <QObject>
-
 class QSqlDatabase;
 class QSqlQueryModel;
 
-class DatabaseProvider : public QObject
+// MAKE IT STATIC!
+
+class DatabaseProvider
 {
-	Q_OBJECT
-
 public:
+	static QString database();
+	static QString user();
+	static QString password();
+	static QString server();
+	static int port();
 
-	DatabaseProvider(QObject *parent);
-	~DatabaseProvider();
+	// Maybe it should return some kind of error index
+	static bool connect(const QString &database, const QString &user, const QString &password,
+		const QString &server, const int port, QString &errorMessage);
 
-	QString database() const;
-	QString user() const;
-	QString password() const;
-	QString server() const;
-	int port() const;
+	static void disconnect();
 
-	bool connect(const QString &database, const QString &user, const QString &password,
-		const QString &server, const int port, QString &errorMessage) const;
+	static bool tableExists(const QString &schema, const QString &name);
+	static bool sequenceExists(const QString &schema, const QString &name);
+	static bool functionExists(const QString &schema, const QString &signature);
+	static bool viewExists(const QString &schema, const QString &name);
+	static bool triggerExists(const QString &schema, const QString &name);
+	static bool indexExists(const QString &schema, const QString &name);
 
-	void disconnect();
-
-	bool tableExists(const QString &name);
-	bool sequenceExists(const QString &name);
-	bool functionExists(const QString &name);
-	bool viewExists(const QString &name);
-	bool triggerExists(const QString &name);
-	bool indexExists(const QString &name);
-
-	void initSchemaListModel(QSqlQueryModel &model);
+	static void initSchemaListModel(QSqlQueryModel &model);
 };

@@ -47,4 +47,6 @@ private:
 	QToolButton *testButton;
 	QToolButton *installButton;
 	QAction *testDependenciesAction;
+signals:
+	void installButtonClicked();
 };

@@ -31,6 +31,7 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
 		SIGNAL(testButtonClicked()));
 	connect(this->testButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
+	connect(this->installButton, SIGNAL(clicked()), this, SIGNAL(installButtonClicked()));
 
 	setLayout(mainLayout);
 }

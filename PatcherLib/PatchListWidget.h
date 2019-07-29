@@ -7,6 +7,19 @@ class PatchListWidget : public QTreeWidget
 	Q_OBJECT
 
 public:
-	PatchListWidget(QObject *parent);
+	enum ColumnIndexes
+	{
+		TypeColumn,
+		SchemaColumn,
+		NameColumn
+	};
+	PatchListWidget(QWidget *parent);
 	~PatchListWidget();
+	QStringList itemList() const;
+	static QString typeIcon(int typeIndex);
+	static QString typeName(int typeIndex);
+private:
+	void dropEvent(QDropEvent *event) override;
+	static const QHash<int, QString> *typeIcons;
+	static const QHash<int, QString> *typeNames;
 };

@@ -2,6 +2,7 @@
 #include <QDockWidget>
 #include <QLabel>
 #include <QMessageBox>
+#include <QTextStream>
 #include <QDialogButtonBox>
 #include <QAbstractItemModel>
 #include "MainWindow.h"
@@ -9,11 +10,14 @@
 #include "InstallerWidget.h"
 #include "LoginWindow.h"
 #include "UiController.h"
+#include "LogOutputDevice.h"
+#include "InstallerHandler.h"
 
 // Fix disconnection
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
+	, logOutputDevice(new LogOutputDevice(this))
 	, mainController(new UiController(this))
 	, loginWindow(new LoginWindow(this))
 	, builderWidget(new BuilderWidget)
@@ -28,8 +32,12 @@ MainWindow::MainWindow(QWidget *parent)
 	initializeDocks();
 	initializeToolBars();
 
+	logOutputDevice->setTextEdit(logOutput);
+	logOutputDevice->open(QIODevice::WriteOnly);
+	InstallerHandler::setOutputDevice(*logOutputDevice);
+	logOutputDevice->write("ololo\n\rololololol");
+
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
-	builderWidget->setBuildListModel(mainController->getBuildListModel());
 
 	connect(this->loginWindow, SIGNAL(connectButtonClicked()), this, SLOT(requestConnection()));
 	connect(this, SIGNAL(connectionRequested(const QString&, const QString&, const QString&, const QString&, const int)),
@@ -49,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this, SIGNAL(additionRequested(const int, const QString&, const QString&)), this->mainController
 		, SLOT(addObject(const int, const QString&, const QString&)));
 	connect(this->builderWidget, SIGNAL(buildButtonClicked()), this->mainController, SLOT(buildPatch()));
+	connect(this->installerWidget, SIGNAL(installButtonClicked()), this, SLOT(install()));
 
 	setCentralWidget(modeTab);
 	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
@@ -74,7 +83,7 @@ void MainWindow::initializeTabs()
 void MainWindow::initializeDocks()
 {
 	logOutputDock = new QDockWidget("Log output", this);
-	logOutput = new QPlainTextEdit;
+	logOutput = new QTextEdit;
 	logOutputDock->setWidget(logOutput);
 	logOutputDock->setAllowedAreas(Qt::BottomDockWidgetArea);	
 }
@@ -127,4 +136,9 @@ void MainWindow::setDefaultConnectionInfo()
 	databaseInformation->setText("Connect to database!");
 	loginAction->setEnabled(true);
 	logoutAction->setDisabled(true);
+}
+
+void MainWindow::install()
+{
+	mainController->installPatch();
 }

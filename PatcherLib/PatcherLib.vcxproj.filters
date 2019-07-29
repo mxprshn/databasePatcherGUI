@@ -44,19 +44,19 @@
     <ClCompile Include="BuilderHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BuildListModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InstallListModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PatchListElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileHandler.cpp">
+    <ClCompile Include="PatchListWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PatchListWidget.cpp">
+    <ClCompile Include="PatchList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogOutputDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -67,27 +67,24 @@
     <ClInclude Include="ObjectType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FileHandler.h">
+    <ClInclude Include="PatchList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchListElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="DatabaseProvider.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="DependenciesListElement.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DependenciesListModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="InstallerHandler.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="BuilderHandler.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="BuildListModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="InstallListModel.h">
@@ -96,10 +93,13 @@
     <QtMoc Include="UiController.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="PatchListElement.h">
+    <QtMoc Include="PatchListWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="PatchListWidget.h">
+    <QtMoc Include="InstallerHandler.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="LogOutputDevice.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
