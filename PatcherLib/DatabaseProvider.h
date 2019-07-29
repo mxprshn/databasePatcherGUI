@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QObject>
-
 class QSqlDatabase;
 class QSqlQueryModel;
 
@@ -24,10 +22,10 @@ public:
 
 	static bool tableExists(const QString &schema, const QString &name);
 	static bool sequenceExists(const QString &schema, const QString &name);
-	static bool functionExists(const QString &name);
+	static bool functionExists(const QString &schema, const QString &signature);
 	static bool viewExists(const QString &schema, const QString &name);
 	static bool triggerExists(const QString &schema, const QString &name);
-	static bool indexExists(const QString &name);
+	static bool indexExists(const QString &schema, const QString &name);
 
 	static void initSchemaListModel(QSqlQueryModel &model);
 };

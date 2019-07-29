@@ -48,16 +48,17 @@ bool InstallerHandler::installPatch(const QString &database, const QString &user
 	return true;
 }
 
-QBitArray InstallerHandler::testDependencies(const QString &database, const QString &user, const QString &password,
+QBitArray InstallerHandler::checkDependencies(const QString &database, const QString &user, const QString &password,
 	const QString &server, int port, const QString &path)
 {
-	QBitArray testResult(1, true);
+	QBitArray checkResult(1, true);
 
 	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(database).arg(user).arg(password).arg(server)
 		.arg(port);
 	const QStringList arguments = { connectionInfo, "check", path };
 
 	// Not sure if it is ok when process destructed.
+	// Fix code table for output
 	connect(&installerProcess, &QProcess::readyReadStandardError, [] ()
 	{
 		if (outputDevice)
@@ -70,41 +71,41 @@ QBitArray InstallerHandler::testDependencies(const QString &database, const QStr
 
 	if (!installerProcess.waitForStarted())
 	{
-		testResult[0] = false;
-		return testResult;
+		checkResult[0] = false;
+		return checkResult;
 	}
 
 	if (!installerProcess.waitForFinished() || installerProcess.exitCode() != 0)
 	{
-		testResult[0] = false;
-		return testResult;
+		checkResult[0] = false;
+		return checkResult;
 	}
-	
-	installerProcess.setReadChannel(QProcess::ProcessChannel::StandardOutput);
-	QByteArray readData = installerProcess.readAllStandardOutput();
-	testResult.resize(readData.count() + 1);
 
-	for (auto i = 1; i <= testResult.count(); ++i)
+	installerProcess.setReadChannel(QProcess::ProcessChannel::StandardOutput);
+	QByteArray readData = installerProcess.readAll();
+	checkResult.resize(readData.count() + 1);
+
+	for (auto i = 1; i <= checkResult.count(); ++i)
 	{
-		switch (readData[i])
+		switch (readData[i - 1])
 		{
 			case '0':
 			{
-				testResult[i] = false;
+				checkResult[i] = false;
 				break;
 			}
 			case '1':
 			{
-				testResult[i] = true;
+				checkResult[i] = true;
 				break;
 			}
 			default:
 			{
-				testResult[0] = false;
-				return testResult;
+				checkResult[0] = false;
+				return checkResult;
 			}
 		}
 	}
 
-	return testResult;
+	return checkResult;
 }

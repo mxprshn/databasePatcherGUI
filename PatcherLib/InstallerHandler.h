@@ -19,7 +19,7 @@ public:
 	static void setOutputDevice(QIODevice &newDevice);
 	static bool installPatch(const QString &database, const QString &user, const QString &password,
 		const QString &server, int port, const QString &path);
-	static QBitArray testDependencies(const QString &database, const QString &user, const QString &password,
+	static QBitArray checkDependencies(const QString &database, const QString &user, const QString &password,
 		const QString &server, int port, const QString &path);
 private:
 	static QString program;

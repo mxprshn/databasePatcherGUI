@@ -38,6 +38,8 @@ private:
 	// feature
 	PatchListWidget *buildListWidget;
 	PatchList *patchList;
+	void addToPatchListWidget(int type, const QString &schemaName, const QString &itemName);
+	void addScripts();
 	//
 	void initializeItemList();
 	void initializeToolButtons();

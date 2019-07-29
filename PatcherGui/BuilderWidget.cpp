@@ -12,6 +12,8 @@
 #include <QValidator>
 #include <QLabel>
 #include <QToolTip>
+#include <QDir>
+#include <QFileDialog>
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
 #include "PatchList.h"
@@ -24,7 +26,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	, wrongFunctionInputMessage("Invalid signature.")
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
-	, functionInputRegex("[^,\\(\\) ]+ \\((([^,\\(\\) ]+, )*([^, \\(\\)]+)+)?\\)")
+	, functionInputRegex("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)")
 	, functionInputValidator(new QRegExpValidator(functionInputRegex, this))
 {
 	setupUi(this);
@@ -158,22 +160,62 @@ void BuilderWidget::onAddButtonClicked()
 		case trigger:
 		{
 			exists = DatabaseProvider::triggerExists(schemeComboBox->currentText(), itemNameEdit->text());
+			break;
+		}
+		case function:
+		{
+			exists = DatabaseProvider::functionExists(schemeComboBox->currentText(), itemNameEdit->text());
+			break;
+		}
+		case index:
+		{
+			exists = DatabaseProvider::indexExists(schemeComboBox->currentText(), itemNameEdit->text());
+			break;
+		}
+		case script:
+		{
+			addScripts();
+			return;
 		}
 	}
 
-	if (!exists)
+	if (exists)
 	{
-		return;
+		addToPatchListWidget(typeComboBox->currentData().toInt(), schemeComboBox->currentText(), itemNameEdit->text());
+	}
+}
+
+void BuilderWidget::addScripts()
+{
+	QStringList fileList;
+
+	if (itemNameEdit->text().isEmpty())
+	{
+		fileList = QFileDialog::getOpenFileNames(this, "Open script file", "", "*.sql");
+	}
+	else if (QFile::exists(itemNameEdit->text()))
+	{
+		fileList.append(itemNameEdit->text());
 	}
 
+	for (auto i = 0; i < fileList.count(); ++i)
+	{
+		addToPatchListWidget(script, "", fileList[i]);
+	}
+}
+
+
+void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, const QString &itemName)
+{
 	auto *newItem = new QTreeWidgetItem(buildListWidget);
-	newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(typeComboBox->currentData().toInt())));
-	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchListWidget::typeName(typeComboBox->currentData().toInt()));
-	newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, schemeComboBox->currentText());
-	newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, itemNameEdit->text());
+	newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(type)));
+	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchListWidget::typeName(type));
+	newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, schemaName);
+	newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, itemName);
 	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
 	buildListWidget->addTopLevelItem(newItem);
 }
+
 
 void BuilderWidget::onBuildButtonClicked()
 {
