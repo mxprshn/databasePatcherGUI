@@ -82,4 +82,6 @@ private slots:
 	void onWrongFunctionInput();
 	void onAddButtonClicked();
 	void onBuildButtonClicked();
+	void onRemoveButtonClicked();
+	void buildPatch();
 };

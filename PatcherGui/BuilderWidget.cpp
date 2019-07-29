@@ -14,10 +14,13 @@
 #include <QToolTip>
 #include <QDir>
 #include <QFileDialog>
+#include <QMessageBox>
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
 #include "PatchList.h"
 #include "DatabaseProvider.h"
+
+// Some freezes in patch list?
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
@@ -41,6 +44,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	connect(this->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
 	connect(this->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
 	connect(this->itemNameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
+	connect(this->removeButton, SIGNAL(clicked()), this, SLOT(onRemoveButtonClicked()));
 }
 
 BuilderWidget::~BuilderWidget()
@@ -191,11 +195,23 @@ void BuilderWidget::addScripts()
 
 	if (itemNameEdit->text().isEmpty())
 	{
-		fileList = QFileDialog::getOpenFileNames(this, "Open script file", "", "*.sql");
+		// Anyway, it opens aligned to top left corner, they say it's because qt uses Windows settings
+		fileList = QFileDialog::getOpenFileNames(this, "Open script file", "", "SQL Script Files (*.sql)");
 	}
-	else if (QFile::exists(itemNameEdit->text()))
+	else
 	{
-		fileList.append(itemNameEdit->text());
+		const QFileInfo fileInfo(itemNameEdit->text());
+
+		if (fileInfo.exists() && fileInfo.suffix() == "sql")
+		{
+			fileList.append(itemNameEdit->text());
+		}
+		else
+		{
+			QMessageBox::warning(this, "File not opened"
+				, "File does not exist or is not a SQL script file (*.sql)."
+				, QMessageBox::Cancel, QMessageBox::Cancel);
+		}
 	}
 
 	for (auto i = 0; i < fileList.count(); ++i)
@@ -203,7 +219,6 @@ void BuilderWidget::addScripts()
 		addToPatchListWidget(script, "", fileList[i]);
 	}
 }
-
 
 void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, const QString &itemName)
 {
@@ -219,16 +234,40 @@ void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, co
 
 void BuilderWidget::onBuildButtonClicked()
 {
-	for (auto i = 0; i < buildListWidget->topLevelItemCount(); ++i)
-	{
-		patchList->add(buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::TypeColumn)
-			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::SchemaColumn)
-			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
-	}
+	const auto dialogResult = QMessageBox::information(this, "Patch list order information"
+		, "For successful further installation of the built script it is recommended to keep the following"
+		" order of patch list:\n\n"
+		"- sequences\n"
+		"- tables\n"
+		"- views\n"
+		"- indexes\n"
+		"- functions\n"
+		"- triggers\n"
+		"- scripts\n\n"
+		"Are you sure to continue?"
+		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
 
-	patchList->exportFile("PatchList.txt");
-	patchList->clear();
+	if (dialogResult == QMessageBox::Ok)
+	{
+		buildPatch();
+	}
 }
+
+void BuilderWidget::onRemoveButtonClicked()
+{
+	// What is the difference between selected and current items?
+	// Also it crashes when the list is empty!!!
+	const auto dialogResult = QMessageBox::warning(this, "Remove item", "Are you sure to remove " +
+		buildListWidget->currentItem()->text(PatchListWidget::ColumnIndexes::NameColumn) +
+		" from patch list?"
+		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+	if (dialogResult == QMessageBox::Ok)
+	{
+		buildListWidget->takeTopLevelItem(buildListWidget->currentIndex().row());
+	}
+}
+
 
 void BuilderWidget::setSchemaComboBoxModel(QAbstractItemModel* model)
 {
@@ -260,4 +299,17 @@ void BuilderWidget::onWrongFunctionInput()
 	{
 		inputStatusLabel->setText(wrongFunctionInputMessage);
 	}
+}
+
+void BuilderWidget::buildPatch()
+{
+	for (auto i = 0; i < buildListWidget->topLevelItemCount(); ++i)
+	{
+		patchList->add(buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::TypeColumn)
+			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::SchemaColumn)
+			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
+	}
+
+	patchList->exportFile("PatchList.txt");
+	patchList->clear();
 }

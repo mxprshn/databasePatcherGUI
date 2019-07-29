@@ -3,6 +3,8 @@
 #include "PatchListWidget.h"
 #include "ObjectType.h"
 
+// Multiple selection?
+
 const QHash<int, QString> *PatchListWidget::typeNames = new QHash<int, QString>({ {script, "script"}, {table, "table"}
 	, {sequence, "sequence"}, {function, "function"}, {view, "view"}, {trigger, "trigger"}
 	, {index, "index"} });

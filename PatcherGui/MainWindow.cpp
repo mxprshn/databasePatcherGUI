@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
 	logOutputDevice->setTextEdit(logOutput);
 	logOutputDevice->open(QIODevice::WriteOnly);
 	InstallerHandler::setOutputDevice(*logOutputDevice);
-	logOutputDevice->write("ololo\n\rololololol");
 
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
 

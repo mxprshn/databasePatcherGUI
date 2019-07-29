@@ -144,6 +144,7 @@ bool DatabaseProvider::indexExists(const QString &schema, const QString &name)
 
 void DatabaseProvider::initSchemaListModel(QSqlQueryModel &model)
 {
-	model.setQuery("SELECT schema_name FROM information_schema.schemata");
+	model.setQuery("SELECT schema_name FROM information_schema.schemata WHERE"
+		" schema_name NOT IN ('pg_catalog', 'information_schema');");
 	// Check something
 }
