@@ -1,27 +1,28 @@
 D:/Терком/Doors/public/tables/errors.sql script
-D:/Терком/Doors/public/tables/math_blob.sql script
 D:/Терком/Doors/public/tables/math_blob_1.sql script
 D:/Терком/Doors/public/tables/math_blob_2.sql script
-D:/Терком/Doors/public/tables/math_blob_3.sql script
-D:/Терком/Doors/public/tables/math_blob_4.sql script
-D:/Терком/Doors/public/tables/math_blob_5.sql script
 D:/Терком/Doors/public/tables/math_blob_6.sql script
 D:/Терком/Doors/public/tables/math_blob_7.sql script
-D:/Терком/Doors/public/tables/math_blob_8.sql script
+D:/Терком/Doors/public/tables/math_blob_4.sql script
 D:/Терком/Doors/public/tables/math_blob_9.sql script
+D:/Терком/Doors/public/tables/math_blob.sql script
+D:/Терком/Doors/public/tables/math_blob_8.sql script
+D:/Терком/Doors/public/tables/math_blob_5.sql script
 D:/Терком/Doors/public/tables/math_blob_10.sql script
-D:/Терком/Doors/public/tables/math_blob_type.sql script
+D:/Терком/Doors/public/tables/role_action.sql script
 D:/Терком/Doors/public/tables/object_source.sql script
 D:/Терком/Doors/public/tables/object_source_role.sql script
 D:/Терком/Doors/public/tables/placeholder.sql script
 D:/Терком/Doors/public/tables/query.sql script
-D:/Терком/Doors/public/tables/query_attributes.sql script
-D:/Терком/Doors/public/tables/role_action.sql script
-D:/Терком/Doors/public/tables/roles.sql script
 D:/Терком/Doors/public/tables/serie.sql script
 D:/Терком/Doors/public/tables/stickers_fdw.sql script
+D:/Терком/Doors/public/tables/math_blob_type.sql script
+public errors table
+D:/Терком/Doors/public/tables/query_attributes.sql script
 D:/Терком/Doors/public/tables/test.sql script
 D:/Терком/Doors/public/tables/user_full_info.sql script
+D:/Терком/Doors/public/tables/roles.sql script
 D:/Терком/Doors/public/tables/user_role.sql script
 D:/Терком/Doors/public/tables/users.sql script
 D:/Терком/Doors/public/tables/v_object_source_id.sql script
+public errors table
