@@ -35,36 +35,16 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	setupUi(this);
 	mainLayout = new QGridLayout;
 
-	initializeItemList();
-	initializeToolButtons();
-	initializeAddItemBox();
-
-	setLayout(mainLayout);
-
-	connect(this->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
-	connect(this->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
-	connect(this->itemNameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
-	connect(this->removeButton, SIGNAL(clicked()), this, SLOT(onRemoveButtonClicked()));
-}
-
-BuilderWidget::~BuilderWidget()
-{
-	delete patchList;
-}
-
-void BuilderWidget::initializeItemList()
-{
 	itemListLayout = new QVBoxLayout;
+
+
 	itemListGroupBox = new QGroupBox("Build list");
 
 	itemListLayout->addWidget(buildListWidget);
-	
+
 	itemListGroupBox->setLayout(itemListLayout);
 	mainLayout->addWidget(itemListGroupBox, 1, 0);
-}
 
-void BuilderWidget::initializeToolButtons()
-{
 	toolsLayout = new QVBoxLayout;
 
 	removeButton = new QToolButton;
@@ -102,10 +82,7 @@ void BuilderWidget::initializeToolButtons()
 	toolsLayout->addWidget(buildButton);
 
 	mainLayout->addLayout(toolsLayout, 0, 1, 2, 1);
-}
 
-void BuilderWidget::initializeAddItemBox()
-{
 	addItemLayout = new QGridLayout;
 	addItemGroupBox = new QGroupBox("Add item");
 
@@ -138,6 +115,18 @@ void BuilderWidget::initializeAddItemBox()
 	addItemGroupBox->setLayout(addItemLayout);
 
 	mainLayout->addWidget(addItemGroupBox, 0, 0);
+
+	setLayout(mainLayout);
+
+	connect(this->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
+	connect(this->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
+	connect(this->itemNameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
+	connect(this->removeButton, SIGNAL(clicked()), this, SLOT(onRemoveButtonClicked()));
+}
+
+BuilderWidget::~BuilderWidget()
+{
+	delete patchList;
 }
 
 void BuilderWidget::onAddButtonClicked()

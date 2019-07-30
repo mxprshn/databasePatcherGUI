@@ -40,10 +40,6 @@ private:
 	PatchList *patchList;
 	void addToPatchListWidget(int type, const QString &schemaName, const QString &itemName);
 	void addScripts();
-	//
-	void initializeItemList();
-	void initializeToolButtons();
-	void initializeAddItemBox();
 
 	static const int smallIconSize = 15;
 	const QString wrongFunctionInputMessage;
