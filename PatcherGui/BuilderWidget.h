@@ -15,28 +15,15 @@ class BuilderWidget : public QWidget
 	Q_OBJECT
 
 public:
-
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
 	void setSchemaComboBoxModel(QAbstractItemModel *model);
-	QString getItemNameInput();
-	QString getCurrentSchemaName();
-	int getObjectTypeIndex();
 private:
 	Ui::BuilderWidget *ui;
-
 	PatchList *patchList;
 	void addToPatchListWidget(int type, const QString &schemaName, const QString &itemName);
-	void addScripts();
-
-	const QString wrongFunctionInputMessage;
-
-	QRegExp functionInputRegex;;
+	void addScripts(const QString &input);
 	QValidator *functionInputValidator;
-
-signals:
-	void addButtonClicked();
-
 private slots:
 	void onAddButtonClicked();
 	void onBuildButtonClicked();
@@ -47,5 +34,5 @@ private slots:
 	void onItemSelectionChanged();
 	void onCurrentTypeChanged(int type);
 	void onNameTextChanged(const QString &input);
-	bool buildPatch(const QString &path);
+	bool startPatchBuild(const QString &path);
 };

@@ -7,6 +7,7 @@ class PatchListWidget : public QTreeWidget
 	Q_OBJECT
 
 public:
+
 	enum ColumnIndexes
 	{
 		TypeColumn,

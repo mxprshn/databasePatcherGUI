@@ -2,7 +2,7 @@
 #include <QProcess>
 #include <QIODevice>
 
-QString BuilderHandler::program = "PatchInstaller_exe.exe";
+QString BuilderHandler::program = "PatchBuilder_exe.exe";
 QProcess BuilderHandler::builderProcess;
 QIODevice *BuilderHandler::outputDevice;
 

@@ -169,7 +169,7 @@
          </size>
         </property>
         <property name="placeholderText">
-         <string>SQL script file path (leave empty to open in explorer)</string>
+         <string>SQL script file paths (leave empty to open in explorer)</string>
         </property>
        </widget>
       </item>
