@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
 	logOutputDevice->setTextEdit(logOutput);
 	logOutputDevice->open(QIODevice::WriteOnly);
 	InstallerHandler::setOutputDevice(*logOutputDevice);
-	logOutputDevice->write("ololo\n\rololololol");
 
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
 
@@ -53,10 +52,6 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(show()));
 	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
 	connect(installerWidget->getTestAction(), SIGNAL(triggered()), mainController, SLOT(testDependencies()));
-	connect(this->builderWidget, SIGNAL(addButtonClicked()), this, SLOT(requestAddition()));
-	connect(this, SIGNAL(additionRequested(const int, const QString&, const QString&)), this->mainController
-		, SLOT(addObject(const int, const QString&, const QString&)));
-	connect(this->builderWidget, SIGNAL(buildButtonClicked()), this->mainController, SLOT(buildPatch()));
 	connect(this->installerWidget, SIGNAL(installButtonClicked()), this, SLOT(install()));
 
 	setCentralWidget(modeTab);
@@ -109,11 +104,6 @@ void MainWindow::requestConnection()
 {
 	emit connectionRequested(loginWindow->getDatabaseInput(), loginWindow->getUsernameInput(),
 		loginWindow->getPasswordInput(), loginWindow->getHostInput(), loginWindow->getPortInput());
-}
-
-void MainWindow::requestAddition()
-{
-	emit additionRequested(builderWidget->getObjectTypeIndex(), builderWidget->getCurrentSchemaName(), builderWidget->getItemNameInput());
 }
 
 

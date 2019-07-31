@@ -4,18 +4,19 @@
 
 #include "PatchList.h"
 #include "PatchListElement.h"
+#include "ObjectType.h"
 
 PatchList::PatchList()
 	: elements(new QList<PatchListElement*>)
 {
 }
 
-void PatchList::add(const QString &typeName, const QString &schemaName, const QString &fullName)
+void PatchList::add(int type, const QString &typeName, const QString &schemaName, const QString &fullName)
 {
 	auto splitResult = fullName.split(QRegExp("(\\ |\\,|\\(|\\))"), QString::SkipEmptyParts);
 	const auto itemName = splitResult.first();
 	splitResult.pop_front();
-	elements->append(new PatchListElement(typeName, itemName, schemaName, splitResult));
+	elements->append(new PatchListElement(type, typeName, itemName, schemaName, splitResult));
 }
 
 void PatchList::clear()
@@ -41,19 +42,20 @@ bool PatchList::exportFile(const QString &path) const
 
 	for (auto i = 0; i < elements->count(); ++i)
 	{
-		auto schema = elements->at(i)->getScheme();
-		auto name = elements->at(i)->getName();
-		auto type = elements->at(i)->getType();
-		auto parameters = elements->at(i)->getParameters();
+		const auto schema = elements->at(i)->getSchema();
+		const auto name = elements->at(i)->getName();
+		const auto type = elements->at(i)->getType();
+		const auto typeName = elements->at(i)->getTypeName();
+		const auto parameters = elements->at(i)->getParameters();
 
 		if (schema != "")
 		{
 			patchFileStream << schema << " ";
 		}
 
-		patchFileStream << name << " " << type;
+		patchFileStream << name << " " << typeName;
 
-		if (!parameters.isEmpty())
+		if (type == function)
 		{
 			patchFileStream << " " << getParametersString(parameters);
 		}

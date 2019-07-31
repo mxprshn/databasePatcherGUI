@@ -3,6 +3,8 @@
 #include "PatchListWidget.h"
 #include "ObjectType.h"
 
+// Multiple selection?
+
 const QHash<int, QString> *PatchListWidget::typeNames = new QHash<int, QString>({ {script, "script"}, {table, "table"}
 	, {sequence, "sequence"}, {function, "function"}, {view, "view"}, {trigger, "trigger"}
 	, {index, "index"} });
@@ -46,6 +48,22 @@ QStringList PatchListWidget::itemList() const
 
 	return result;
 }
+
+bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, const class QString &name)
+{
+	const auto foundItems = findItems(name, Qt::MatchFixedString, NameColumn);
+
+	for (auto i = 0; i < foundItems.count(); ++i)
+	{
+		if (foundItems.at(i)->text(TypeColumn) == typeName(typeIndex) && foundItems.at(i)->text(SchemaColumn) == schema)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 
 QString PatchListWidget::typeIcon(int typeIndex)
 {

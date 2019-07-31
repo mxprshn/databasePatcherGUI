@@ -1,263 +1,380 @@
 #include <QListWidget>
 #include <QLayout>
 #include <QAction>
-#include <QGroupBox>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QComboBox>
-#include <QToolButton>
-#include <QGridLayout>
-#include <QTreeView>
 #include <QRegExp>
 #include <QValidator>
-#include <QLabel>
-#include <QToolTip>
-#include <QDir>
 #include <QFileDialog>
+#include <QMessageBox>
+
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
 #include "PatchList.h"
 #include "DatabaseProvider.h"
+#include "ObjectType.h"
+#include "BuilderHandler.h"
+#include "ui_BuilderWidget.h"
+
+// Some freezes in patch list?
+// Rename layouts in Ui
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
-	, buildListWidget(new PatchListWidget(this))
+	, ui(new Ui::BuilderWidget)
 	, patchList(new PatchList)
-	, wrongFunctionInputMessage("Invalid signature.")
-	, toolButtonSize(QSize(90, 70))
-	, toolButtonIconSize(QSize(35, 35))
-	, functionInputRegex("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)")
-	, functionInputValidator(new QRegExpValidator(functionInputRegex, this))
+	, functionInputValidator(new QRegExpValidator(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"), this))
 {
-	setupUi(this);
-	mainLayout = new QGridLayout;
+	ui->setupUi(this);
 
-	initializeItemList();
-	initializeToolButtons();
-	initializeAddItemBox();
+	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", script);
+	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", table);
+	ui->typeComboBox->addItem(QIcon(":/images/sequence.svg"), "sequence", sequence);
+	ui->typeComboBox->addItem(QIcon(":/images/function.svg"), "function", function);
+	ui->typeComboBox->addItem(QIcon(":/images/view.svg"), "view", view);
+	ui->typeComboBox->addItem(QIcon(":/images/trigger.svg"), "trigger", trigger);
+	ui->typeComboBox->addItem(QIcon(":/images/index.svg"), "index", index);
 
-	setLayout(mainLayout);
-
-	connect(this->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
-	connect(this->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
-	connect(this->itemNameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
+	connect(ui->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
+	connect(ui->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
+	connect(ui->nameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
+	connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(onRemoveButtonClicked()));
+	connect(ui->buildListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onItemSelectionChanged()));
+	connect(ui->typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentTypeChanged(int)));
+	connect(ui->moveUpButton, SIGNAL(clicked()), this, SLOT(onMoveUpButtonClicked()));
+	connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(onMoveDownButtonClicked()));
+	connect(ui->explorerButton, SIGNAL(clicked()), this, SLOT(onExplorerButtonClicked()));
+	connect(ui->nameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onNameTextChanged(const QString&)));
 }
 
 BuilderWidget::~BuilderWidget()
 {
 	delete patchList;
-}
-
-void BuilderWidget::initializeItemList()
-{
-	itemListLayout = new QVBoxLayout;
-	itemListGroupBox = new QGroupBox("Build list");
-
-	itemListLayout->addWidget(buildListWidget);
-	
-	itemListGroupBox->setLayout(itemListLayout);
-	mainLayout->addWidget(itemListGroupBox, 1, 0);
-}
-
-void BuilderWidget::initializeToolButtons()
-{
-	toolsLayout = new QVBoxLayout;
-
-	removeButton = new QToolButton;
-	removeButton->setIcon(QIcon(":/images/removeFile.svg"));
-	removeButton->setText("Remove");
-	removeButton->setFixedSize(toolButtonSize);
-	removeButton->setIconSize(toolButtonIconSize);
-	removeButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
-	moveUpButton = new QToolButton;
-	moveUpButton->setIcon(QIcon(":/images/upArrow.svg"));
-	moveUpButton->setText("Move up");
-	moveUpButton->setFixedSize(toolButtonSize);
-	moveUpButton->setIconSize(toolButtonIconSize);
-	moveUpButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
-	moveDownButton = new QToolButton;
-	moveDownButton->setIcon(QIcon(":/images/downArrow.svg"));
-	moveDownButton->setText("Move down");
-	moveDownButton->setFixedSize(toolButtonSize);
-	moveDownButton->setIconSize(toolButtonIconSize);
-	moveDownButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
-	buildButton = new QToolButton;
-	buildButton->setIcon(QIcon(":/images/hammer.svg"));
-	buildButton->setText("Build");
-	buildButton->setFixedSize(toolButtonSize);
-	buildButton->setIconSize(toolButtonIconSize);
-	buildButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-
-	toolsLayout->addWidget(removeButton);
-	toolsLayout->addWidget(moveUpButton);
-	toolsLayout->addWidget(moveDownButton);
-	toolsLayout->addStretch(1);
-	toolsLayout->addWidget(buildButton);
-
-	mainLayout->addLayout(toolsLayout, 0, 1, 2, 1);
-}
-
-void BuilderWidget::initializeAddItemBox()
-{
-	addItemLayout = new QGridLayout;
-	addItemGroupBox = new QGroupBox("Add item");
-
-	typeComboBox = new QComboBox;
-	typeComboBox->setIconSize(QSize(smallIconSize, smallIconSize));
-	typeComboBox->addItem(QIcon(":/images/script.svg"), "script", script);
-	typeComboBox->addItem(QIcon(":/images/table.svg"), "table", table);
-	typeComboBox->addItem(QIcon(":/images/sequence.svg"), "sequence", sequence);
-	typeComboBox->addItem(QIcon(":/images/function.svg"), "function", function);
-	typeComboBox->addItem(QIcon(":/images/view.svg"), "view", view);
-	typeComboBox->addItem(QIcon(":/images/trigger.svg"), "trigger", trigger);
-	typeComboBox->addItem(QIcon(":/images/index.svg"), "index", index);
-
-	schemeComboBox = new QComboBox;
-
-	itemNameEdit = new QLineEdit;
-	itemNameEdit->setValidator(functionInputValidator);
-	itemNameEdit->setPlaceholderText("function_name ([arg_name_1, ][arg_name_2, ] ... )");
-
-	addButton = new QPushButton(QIcon(":/images/addFile.svg"), "Add");
-
-	inputStatusLabel = new QLabel(wrongFunctionInputMessage);
-
-	addItemLayout->addWidget(typeComboBox, 0, 0);
-	addItemLayout->addWidget(schemeComboBox, 0, 1);
-	addItemLayout->addWidget(itemNameEdit, 0, 2);
-	addItemLayout->addWidget(addButton, 0, 3);
-	addItemLayout->addWidget(inputStatusLabel, 1, 2);
-
-	addItemGroupBox->setLayout(addItemLayout);
-
-	mainLayout->addWidget(addItemGroupBox, 0, 0);
+	delete ui;
 }
 
 void BuilderWidget::onAddButtonClicked()
 {
+	const auto nameInput = ui->nameEdit->text().remove(QRegExp("\\ "));
+
+	if (ui->typeComboBox->currentData().toInt() == script)
+	{
+		addScripts(nameInput);
+		return;
+	}
+
+	if (!DatabaseProvider::isConnected())
+	{
+		// Add opening login window
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	if (ui->buildListWidget->itemExists(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput))
+	{
+		QMessageBox::warning(this, "Item not added"
+			, ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
+			+ " " + ui->nameEdit->text() + " already exists in patch list."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
 	auto exists = false;
 
-	switch (typeComboBox->currentData().toInt())
+	switch (ui->typeComboBox->currentData().toInt())
 	{
 		case table:
 		{
-			exists = DatabaseProvider::tableExists(schemeComboBox->currentText(), itemNameEdit->text());
+			exists = DatabaseProvider::tableExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
 		case sequence:
 		{
-			exists = DatabaseProvider::sequenceExists(schemeComboBox->currentText(), itemNameEdit->text());
+			exists = DatabaseProvider::sequenceExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
 		case view:
 		{
-			exists = DatabaseProvider::viewExists(schemeComboBox->currentText(), itemNameEdit->text());
+			exists = DatabaseProvider::viewExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
 		case trigger:
 		{
-			exists = DatabaseProvider::triggerExists(schemeComboBox->currentText(), itemNameEdit->text());
+			exists = DatabaseProvider::triggerExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
 		case function:
 		{
-			exists = DatabaseProvider::functionExists(schemeComboBox->currentText(), itemNameEdit->text());
+			exists = DatabaseProvider::functionExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
 		case index:
 		{
-			exists = DatabaseProvider::indexExists(schemeComboBox->currentText(), itemNameEdit->text());
+			exists = DatabaseProvider::indexExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
-		}
-		case script:
-		{
-			addScripts();
-			return;
 		}
 	}
 
 	if (exists)
 	{
-		addToPatchListWidget(typeComboBox->currentData().toInt(), schemeComboBox->currentText(), itemNameEdit->text());
+		addToPatchListWidget(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput);
+		ui->nameEdit->clear();
+	}
+	else
+	{
+		QMessageBox::warning(this, "Item not added"
+			, ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
+				+ " " + ui->nameEdit->text() + " does not exist in current database."
+			, QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
 
-void BuilderWidget::addScripts()
+void BuilderWidget::addScripts(const QString &input)
 {
 	QStringList fileList;
 
-	if (itemNameEdit->text().isEmpty())
+	auto allScriptsExist = true;
+
+	if (input.isEmpty())
 	{
-		fileList = QFileDialog::getOpenFileNames(this, "Open script file", "", "*.sql");
+		// Anyway, it opens aligned to top left corner, they say it's because qt uses Windows settings
+		fileList = QFileDialog::getOpenFileNames(this, "Open script files", "", "SQL Script Files (*.sql)");
 	}
-	else if (QFile::exists(itemNameEdit->text()))
+	else
 	{
-		fileList.append(itemNameEdit->text());
-	}
+		const auto scriptPaths = input.split(QRegExp("\\,"), QString::SkipEmptyParts);
+
+		for (auto i = 0; i < scriptPaths.count(); ++i)
+		{
+			const QFileInfo fileInfo(scriptPaths.at(i));
+
+			if (fileInfo.exists() && fileInfo.suffix() == "sql")
+			{
+				fileList.append(fileInfo.filePath());
+			}
+			else
+			{
+				allScriptsExist = false;
+			}
+		}
+	}	
 
 	for (auto i = 0; i < fileList.count(); ++i)
 	{
-		addToPatchListWidget(script, "", fileList[i]);
-	}
-}
+		const auto currentFileName = fileList[i];
 
+		if (!ui->buildListWidget->itemExists(script, "", currentFileName))
+		{
+			addToPatchListWidget(script, "", currentFileName);
+		}
+		else
+		{
+			allScriptsExist = false;
+		}		
+	}
+
+	if (!allScriptsExist)
+	{
+		QMessageBox::warning(this, "Some scripts not added"
+			, "Some script files already exist in patch list, not found or are not SQL script files (*.sql) and were not added."
+			, QMessageBox::Ok, QMessageBox::Ok);
+	}
+	else
+	{
+		ui->nameEdit->clear();
+	}	
+}
 
 void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, const QString &itemName)
 {
-	auto *newItem = new QTreeWidgetItem(buildListWidget);
+	auto *newItem = new QTreeWidgetItem(ui->buildListWidget);
 	newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(type)));
 	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchListWidget::typeName(type));
+	newItem->setData(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole, type);
 	newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, schemaName);
 	newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, itemName);
 	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
-	buildListWidget->addTopLevelItem(newItem);
+	ui->buildListWidget->addTopLevelItem(newItem);
 }
 
+void BuilderWidget::onExplorerButtonClicked()
+{
+	ui->patchPathEdit->setText(QFileDialog::getExistingDirectory(this, "Choose build directory"));
+}
 
 void BuilderWidget::onBuildButtonClicked()
 {
-	for (auto i = 0; i < buildListWidget->topLevelItemCount(); ++i)
+	QDir patchDir;
+	patchDir.setPath(ui->patchPathEdit->text());
+
+	if (!patchDir.exists())
 	{
-		patchList->add(buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::TypeColumn)
-			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::SchemaColumn)
-			, buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
+		QMessageBox::warning(this, "Build error"
+			, "Target directory does not exist."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
 	}
 
-	patchList->exportFile("PatchList.txt");
-	patchList->clear();
+	const auto dialogResult = QMessageBox::information(this, "Patch list order information"
+		, "For successful further installation of the built script it is recommended to keep the following"
+		" order of patch list:\n\n"
+		"- sequences\n"
+		"- tables\n"
+		"- views\n"
+		"- indexes\n"
+		"- functions\n"
+		"- triggers\n"
+		"- scripts\n\n"
+		"Are you sure to continue?"
+		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+	if (dialogResult == QMessageBox::Ok)
+	{
+		if (startPatchBuild(ui->patchPathEdit->text()))
+		{
+			QApplication::beep();
+			QMessageBox::information(this, "Build completed"
+				, "Build completed. Watch logs for detailed information."
+				, QMessageBox::Ok, QMessageBox::Ok);
+		}
+		else
+		{
+			QApplication::beep();
+			QMessageBox::warning(this, "Build error"
+				, "Error occured. Watch logs for detailed information."
+				, QMessageBox::Ok, QMessageBox::Ok);
+			
+		}
+	}
+}
+
+void BuilderWidget::onRemoveButtonClicked()
+{
+	const auto dialogResult = QMessageBox::warning(this, "Remove item", "Are you sure to remove " +
+		ui->buildListWidget->currentItem()->text(PatchListWidget::ColumnIndexes::NameColumn) +
+		" from patch list?"
+		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+	if (dialogResult == QMessageBox::Ok && ui->buildListWidget->topLevelItemCount() != 0)
+	{
+		ui->buildListWidget->takeTopLevelItem(ui->buildListWidget->currentIndex().row());
+	}
+}
+
+void BuilderWidget::onMoveUpButtonClicked()
+{
+	if (ui->buildListWidget->topLevelItemCount() > 1 && ui->buildListWidget->currentIndex().row() > 0)
+	{
+		const auto selectedRow = ui->buildListWidget->currentIndex().row();
+		const auto selectedItem = ui->buildListWidget->takeTopLevelItem(ui->buildListWidget->currentIndex().row());
+		ui->buildListWidget->insertTopLevelItem(selectedRow - 1, selectedItem);
+		ui->buildListWidget->setCurrentItem(selectedItem);
+	}	
+}
+
+void BuilderWidget::onMoveDownButtonClicked()
+{
+	if (ui->buildListWidget->topLevelItemCount() > 1 && ui->buildListWidget->currentIndex().row() != ui->buildListWidget->topLevelItemCount() - 1)
+	{
+		const auto selectedRow = ui->buildListWidget->currentIndex().row();
+		const auto selectedItem = ui->buildListWidget->takeTopLevelItem(selectedRow);
+		ui->buildListWidget->insertTopLevelItem(selectedRow + 1, selectedItem);
+		ui->buildListWidget->setCurrentItem(selectedItem);
+	}	
+}
+
+void BuilderWidget::onItemSelectionChanged()
+{
+	if (ui->buildListWidget->selectedItems().isEmpty())
+	{
+		ui->moveUpButton->setDisabled(true);
+		ui->moveDownButton->setDisabled(true);
+		ui->removeButton->setDisabled(true);
+	}
+	else
+	{
+		ui->moveUpButton->setEnabled(true);
+		ui->moveDownButton->setEnabled(true);
+		ui->removeButton->setEnabled(true);
+	}
+}
+
+void BuilderWidget::onCurrentTypeChanged(int type)
+{
+	if (type == script)
+	{
+		ui->schemaComboBox->setDisabled(true);
+		ui->nameEdit->setPlaceholderText("SQL script file paths (leave empty to open in explorer)");
+		ui->nameLabel->setText("Path");
+	}
+	else if (!ui->schemaComboBox->isEnabled())
+	{
+		ui->schemaComboBox->setEnabled(true);
+	}
+
+	if (type != function && type != script)
+	{
+		ui->nameEdit->setPlaceholderText(ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
+			+ " name");
+		ui->nameLabel->setText("Name");
+	}
+
+	if (type == function)
+	{
+		ui->nameEdit->setPlaceholderText("Function signature (e.g. function(arg_1,arg_2))");
+		ui->nameLabel->setText("Signature (invalid, function may not be found))");
+		emit ui->nameEdit->textChanged(ui->nameEdit->text());
+	}
+}
+
+void BuilderWidget::onNameTextChanged(const QString &input)
+{
+	if (ui->typeComboBox->currentData().toInt() != function)
+	{
+		return;
+	}
+
+	// Validate method wants lvalues
+	auto position = 0;
+	auto text = input;
+
+	if (functionInputValidator->validate(text, position) == QValidator::Acceptable)
+	{
+		ui->nameLabel->setText("Signature (Valid)");
+	}
+	else
+	{
+		ui->nameLabel->setText("Signature (Invalid, function may not be found)");
+	}
 }
 
 void BuilderWidget::setSchemaComboBoxModel(QAbstractItemModel* model)
 {
-	schemeComboBox->setModel(model);
+	ui->schemaComboBox->setModel(model);
 }
 
-QString BuilderWidget::getItemNameInput()
+bool BuilderWidget::startPatchBuild(const QString &path)
 {
-	return itemNameEdit->text();
-}
-
-int BuilderWidget::getObjectTypeIndex()
-{
-	return typeComboBox->currentData().toInt();
-}
-
-QString BuilderWidget::getCurrentSchemaName()
-{
-	return schemeComboBox->currentText();
-}
-
-void BuilderWidget::onWrongFunctionInput()
-{
-	if (itemNameEdit->hasAcceptableInput())
+	for (auto i = 0; i < ui->buildListWidget->topLevelItemCount(); ++i)
 	{
-		inputStatusLabel->setText("Valid signature.");
+		patchList->add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole).toInt()
+			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::TypeColumn)
+			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::SchemaColumn)
+			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
 	}
-	else
+
+	// Where exactly should it be saved? FIX IT!
+
+	const QDir patchDir(path);
+
+	if (!patchList->exportFile(patchDir.filePath("PatchList.txt")))
 	{
-		inputStatusLabel->setText(wrongFunctionInputMessage);
+		patchList->clear();
+		return false;
 	}
+
+	patchList->clear();
+
+	return BuilderHandler::buildPatch(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
+		, DatabaseProvider::server(), DatabaseProvider::port(), path);
 }

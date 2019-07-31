@@ -9,14 +9,16 @@ class QString;
 class PatchListElement
 {
 public:
-	PatchListElement(const QString &type, const QString &name, const QString &schema, const QStringList &parameters);
-	QString getType() const;
+	PatchListElement(int type, const QString &typeName, const QString &name, const QString &schema, const QStringList &parameters);
+	int getType() const;
+	QString getTypeName() const;
 	QString getName() const;
-	QString getScheme() const;
+	QString getSchema() const;
 	QStringList getParameters() const;
 private:
-	QString type;
+	int type;
+	QString typeName;
 	QString name;
-	QString scheme;
+	QString schema;
 	QStringList parameters;
 };

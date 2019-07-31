@@ -29,6 +29,11 @@ int DatabaseProvider::port()
 	return QSqlDatabase::database().port();
 }
 
+bool DatabaseProvider::isConnected()
+{
+	return QSqlDatabase::database(QSqlDatabase::database().connectionName(), false).isOpen();
+}
+
 bool DatabaseProvider::connect(const QString &database, const QString &user, const QString &password,
 	const QString &server, const int port, QString &errorMessage)
 {
@@ -144,6 +149,7 @@ bool DatabaseProvider::indexExists(const QString &schema, const QString &name)
 
 void DatabaseProvider::initSchemaListModel(QSqlQueryModel &model)
 {
-	model.setQuery("SELECT schema_name FROM information_schema.schemata");
+	model.setQuery("SELECT schema_name FROM information_schema.schemata WHERE"
+		" schema_name NOT IN ('pg_catalog', 'information_schema');");
 	// Check something
 }

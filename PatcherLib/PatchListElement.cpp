@@ -1,17 +1,23 @@
 #include "PatchListElement.h"
 
-PatchListElement::PatchListElement(const QString &type, const QString &name, const QString &schema
+PatchListElement::PatchListElement(int type, const QString &typeName, const QString &name, const QString &schema
 	, const QStringList &parameters)
 	: type(type)
+	, typeName(typeName)
 	, name(name)
-	, scheme(schema)
+	, schema(schema)
 	, parameters(parameters)
 {
 }
 
-QString PatchListElement::getType() const
+int PatchListElement::getType() const
 {
 	return type;
+}
+
+QString PatchListElement::getTypeName() const
+{
+	return typeName;
 }
 
 QString PatchListElement::getName() const
@@ -19,9 +25,9 @@ QString PatchListElement::getName() const
 	return name;
 }
 
-QString PatchListElement::getScheme() const
+QString PatchListElement::getSchema() const
 {
-	return scheme;
+	return schema;
 }
 
 QStringList PatchListElement::getParameters() const
