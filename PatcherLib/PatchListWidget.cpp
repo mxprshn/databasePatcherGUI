@@ -49,6 +49,22 @@ QStringList PatchListWidget::itemList() const
 	return result;
 }
 
+bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, const class QString &name)
+{
+	const auto foundItems = findItems(name, Qt::MatchFixedString, NameColumn);
+
+	for (auto i = 0; i < foundItems.count(); ++i)
+	{
+		if (foundItems.at(i)->text(TypeColumn) == typeName(typeIndex) && foundItems.at(i)->text(SchemaColumn) == schema)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 QString PatchListWidget::typeIcon(int typeIndex)
 {
 	// Add invalid index handling

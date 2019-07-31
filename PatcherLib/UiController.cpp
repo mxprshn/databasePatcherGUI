@@ -9,8 +9,7 @@
 #include "DependenciesListModel.h"
 
 UiController::UiController(QObject* parent)
-	: builderHandler(new BuilderHandler(this, "builder.exe"))
-	, installListModel(new InstallListModel(this))
+	: installListModel(new InstallListModel(this))
 	, dependenciesListModel(new DependenciesListModel(this))
 	, schemaListModel(new QSqlQueryModel)
 {

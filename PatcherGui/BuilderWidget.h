@@ -38,13 +38,14 @@ signals:
 	void addButtonClicked();
 
 private slots:
-	void onWrongFunctionInput();
 	void onAddButtonClicked();
 	void onBuildButtonClicked();
+	void onExplorerButtonClicked();
 	void onMoveUpButtonClicked();
 	void onMoveDownButtonClicked();
 	void onRemoveButtonClicked();
 	void onItemSelectionChanged();
 	void onCurrentTypeChanged(int type);
-	void buildPatch();
+	void onNameTextChanged(const QString &input);
+	bool buildPatch(const QString &path);
 };

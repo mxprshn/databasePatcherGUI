@@ -42,7 +42,7 @@
        <number>7</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="horizontalSpacing">
        <number>7</number>
@@ -88,7 +88,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Name</string>
+         <string>Path</string>
         </property>
        </widget>
       </item>
@@ -168,6 +168,9 @@
           <height>25</height>
          </size>
         </property>
+        <property name="placeholderText">
+         <string>SQL script file path (leave empty to open in explorer)</string>
+        </property>
        </widget>
       </item>
       <item row="1" column="3">
@@ -230,7 +233,7 @@
        <number>7</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item>
        <widget class="PatchListWidget" name="buildListWidget"/>
@@ -447,6 +450,9 @@
           <width>16777215</width>
           <height>25</height>
          </size>
+        </property>
+        <property name="placeholderText">
+         <string>Build directory path</string>
         </property>
        </widget>
       </item>

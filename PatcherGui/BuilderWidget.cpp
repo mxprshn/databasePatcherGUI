@@ -20,6 +20,7 @@
 #include "PatchList.h"
 #include "DatabaseProvider.h"
 #include "ObjectType.h"
+#include "BuilderHandler.h"
 #include "ui_BuilderWidget.h"
 
 // Some freezes in patch list?
@@ -34,6 +35,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	, functionInputValidator(new QRegExpValidator(functionInputRegex, this))
 {
 	ui->setupUi(this);
+
 	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", script);
 	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", table);
 	ui->typeComboBox->addItem(QIcon(":/images/sequence.svg"), "sequence", sequence);
@@ -42,9 +44,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	ui->typeComboBox->addItem(QIcon(":/images/trigger.svg"), "trigger", trigger);
 	ui->typeComboBox->addItem(QIcon(":/images/index.svg"), "index", index);
 
-
-	ui->nameEdit->setValidator(functionInputValidator);
-	ui->nameEdit->setPlaceholderText("function_name ([arg_name_1, ][arg_name_2, ] ... )");
+	// ui->nameEdit->setValidator(functionInputValidator);
 
 	connect(ui->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
 	connect(ui->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
@@ -54,15 +54,43 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	connect(ui->typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentTypeChanged(int)));
 	connect(ui->moveUpButton, SIGNAL(clicked()), this, SLOT(onMoveUpButtonClicked()));
 	connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(onMoveDownButtonClicked()));
+	connect(ui->explorerButton, SIGNAL(clicked()), this, SLOT(onExplorerButtonClicked()));
+	connect(ui->nameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onNameTextChanged(const QString&)));
 }
 
 BuilderWidget::~BuilderWidget()
 {
+	delete patchList;
 	delete ui;
 }
 
 void BuilderWidget::onAddButtonClicked()
 {
+	if (ui->typeComboBox->currentData().toInt() == script)
+	{
+		addScripts();
+		return;
+	}
+
+	if (!DatabaseProvider::isConnected())
+	{
+		// Add opening login window
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	if (ui->buildListWidget->itemExists(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText()
+		, ui->nameEdit->text()))
+	{
+		QMessageBox::warning(this, "Item not added"
+			, ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
+			+ " " + ui->nameEdit->text() + " already exists in patch list."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
 	auto exists = false;
 
 	switch (ui->typeComboBox->currentData().toInt())
@@ -97,16 +125,19 @@ void BuilderWidget::onAddButtonClicked()
 			exists = DatabaseProvider::indexExists(ui->schemaComboBox->currentText(), ui->nameEdit->text());
 			break;
 		}
-		case script:
-		{
-			addScripts();
-			return;
-		}
 	}
 
 	if (exists)
 	{
 		addToPatchListWidget(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), ui->nameEdit->text());
+		ui->nameEdit->clear();
+	}
+	else
+	{
+		QMessageBox::warning(this, "Item not added"
+			, ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
+				+ " " + ui->nameEdit->text() + " does not exist in current database."
+			, QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
 
@@ -125,20 +156,42 @@ void BuilderWidget::addScripts()
 
 		if (fileInfo.exists() && fileInfo.suffix() == "sql")
 		{
-			fileList.append(ui->nameEdit->text());
+			fileList.append(fileInfo.filePath());
 		}
 		else
 		{
 			QMessageBox::warning(this, "File not opened"
-				, "File does not exist or is not a SQL script file (*.sql)."
-				, QMessageBox::Cancel, QMessageBox::Cancel);
+				, "File " + fileInfo.filePath() + " does not exist or is not a SQL script file (*.sql)."
+				, QMessageBox::Ok, QMessageBox::Ok);
 		}
 	}
+	
+	auto someScriptsExist = false;
 
 	for (auto i = 0; i < fileList.count(); ++i)
 	{
-		addToPatchListWidget(script, "", fileList[i]);
+		const auto currentFileName = fileList[i];
+
+		if (!ui->buildListWidget->itemExists(script, "", currentFileName))
+		{
+			addToPatchListWidget(script, "", currentFileName);
+		}
+		else
+		{
+			someScriptsExist = true;
+		}		
 	}
+
+	if (someScriptsExist)
+	{
+		QMessageBox::warning(this, "Some scripts not added"
+			, "Some script files already exist in patch list and were not added."
+			, QMessageBox::Ok, QMessageBox::Ok);
+	}
+	else
+	{
+		ui->nameEdit->clear();
+	}	
 }
 
 void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, const QString &itemName)
@@ -152,9 +205,24 @@ void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, co
 	ui->buildListWidget->addTopLevelItem(newItem);
 }
 
+void BuilderWidget::onExplorerButtonClicked()
+{
+	ui->patchPathEdit->setText(QFileDialog::getExistingDirectory(this, "Choose build directory"));
+}
 
 void BuilderWidget::onBuildButtonClicked()
 {
+	QDir patchDir;
+	patchDir.setPath(ui->patchPathEdit->text());
+
+	if (!patchDir.exists())
+	{
+		QMessageBox::warning(this, "Build error"
+			, "Target directory does not exist."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
 	const auto dialogResult = QMessageBox::information(this, "Patch list order information"
 		, "For successful further installation of the built script it is recommended to keep the following"
 		" order of patch list:\n\n"
@@ -170,7 +238,21 @@ void BuilderWidget::onBuildButtonClicked()
 
 	if (dialogResult == QMessageBox::Ok)
 	{
-		buildPatch();
+		if (buildPatch(ui->patchPathEdit->text()))
+		{
+			QApplication::beep();
+			QMessageBox::information(this, "Build completed"
+				, "Build completed. Watch logs for detailed information."
+				, QMessageBox::Ok, QMessageBox::Ok);
+		}
+		else
+		{
+			QApplication::beep();
+			QMessageBox::warning(this, "Build error"
+				, "Error occured. Watch logs for detailed information."
+				, QMessageBox::Ok, QMessageBox::Ok);
+			
+		}
 	}
 }
 
@@ -230,10 +312,47 @@ void BuilderWidget::onCurrentTypeChanged(int type)
 	if (type == script)
 	{
 		ui->schemaComboBox->setDisabled(true);
+		ui->nameEdit->setPlaceholderText("SQL script file path (leave empty to open in explorer)");
+		ui->nameLabel->setText("Path");
 	}
 	else if (!ui->schemaComboBox->isEnabled())
 	{
 		ui->schemaComboBox->setEnabled(true);
+	}
+
+	if (type != function && type != script)
+	{
+		ui->nameEdit->setPlaceholderText(ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
+			+ " name");
+		ui->nameLabel->setText("Name");
+	}
+
+	if (type == function)
+	{
+		ui->nameEdit->setPlaceholderText("Function signature (e.g. function(arg_1,arg_2))");
+		ui->nameLabel->setText("Signature (invalid, function may not be found))");
+		emit ui->nameEdit->textChanged(ui->nameEdit->text());
+	}
+}
+
+void BuilderWidget::onNameTextChanged(const QString &input)
+{
+	if (ui->typeComboBox->currentData().toInt() != function)
+	{
+		return;
+	}
+
+	// Validate method wants lvalues
+	auto position = 0;
+	auto text = input;
+
+	if (functionInputValidator->validate(text, position) == QValidator::Acceptable)
+	{
+		ui->nameLabel->setText("Signature (Valid)");
+	}
+	else
+	{
+		ui->nameLabel->setText("Signature (Invalid, function may not be found)");
 	}
 }
 
@@ -258,19 +377,7 @@ QString BuilderWidget::getCurrentSchemaName()
 	return ui->schemaComboBox->currentText();
 }
 
-void BuilderWidget::onWrongFunctionInput()
-{
-	if (ui->nameEdit->hasAcceptableInput())
-	{
-		ui->nameLabel->setText("Valid signature.");
-	}
-	else
-	{
-		ui->nameLabel->setText(wrongFunctionInputMessage);
-	}
-}
-
-void BuilderWidget::buildPatch()
+bool BuilderWidget::buildPatch(const QString &path)
 {
 	for (auto i = 0; i < ui->buildListWidget->topLevelItemCount(); ++i)
 	{
@@ -279,6 +386,18 @@ void BuilderWidget::buildPatch()
 			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
 	}
 
-	patchList->exportFile("PatchList.txt");
+	// Where exactly should it be saved? FIX IT!
+
+	const QDir patchDir(path);
+
+	if (!patchList->exportFile(patchDir.filePath("PatchList.txt")))
+	{
+		patchList->clear();
+		return false;
+	}
+
 	patchList->clear();
+
+	return BuilderHandler::buildPatch(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
+		, DatabaseProvider::server(), DatabaseProvider::port(), path);
 }

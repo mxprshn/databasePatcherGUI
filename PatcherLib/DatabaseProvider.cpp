@@ -29,6 +29,11 @@ int DatabaseProvider::port()
 	return QSqlDatabase::database().port();
 }
 
+bool DatabaseProvider::isConnected()
+{
+	return QSqlDatabase::database(QSqlDatabase::database().connectionName(), false).isOpen();
+}
+
 bool DatabaseProvider::connect(const QString &database, const QString &user, const QString &password,
 	const QString &server, const int port, QString &errorMessage)
 {

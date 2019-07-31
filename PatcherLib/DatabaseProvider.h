@@ -3,8 +3,6 @@
 class QSqlDatabase;
 class QSqlQueryModel;
 
-// MAKE IT STATIC!
-
 class DatabaseProvider
 {
 public:
@@ -13,6 +11,7 @@ public:
 	static QString password();
 	static QString server();
 	static int port();
+	static bool isConnected();
 
 	// Maybe it should return some kind of error index
 	static bool connect(const QString &database, const QString &user, const QString &password,
