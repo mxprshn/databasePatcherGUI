@@ -190,7 +190,7 @@ void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, co
 {
 	auto *newItem = new QTreeWidgetItem(ui->buildListWidget);
 	newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(type)));
-	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchListWidget::typeName(type));
+	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchList::typeName(type));
 	newItem->setData(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole, type);
 	newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, schemaName);
 	newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, itemName);
@@ -359,7 +359,6 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 	for (auto i = 0; i < ui->buildListWidget->topLevelItemCount(); ++i)
 	{
 		patchList->add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole).toInt()
-			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::TypeColumn)
 			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::SchemaColumn)
 			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
 	}

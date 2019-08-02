@@ -12,11 +12,17 @@
 #include <QProcess>
 #include <QBitArray>
 #include <QStringList>
+#include <QFile>
 #include "InstallerWidget.h"
 #include "InstallerHandler.h"
+#include "PatchListWidget.h"
+#include "PatchList.h"
+#include "PatchListElement.h"
+#include "ObjectType.h"
 
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
+	, patchList(new PatchList)
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
 {
@@ -26,6 +32,7 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	initializeItemLists();
 	initializeOpenPatchBox();
 	initializeToolButtons();
+	initPatchList();
 
 	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
 	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
@@ -36,6 +43,11 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	setLayout(mainLayout);
 }
 
+InstallerWidget::~InstallerWidget()
+{
+	delete patchList;
+}
+
 void InstallerWidget::initializeItemLists()
 {
 	itemListLayout = new QVBoxLayout;
@@ -44,7 +56,7 @@ void InstallerWidget::initializeItemLists()
 	itemListGroupBox = new QGroupBox("Patch");
 	dependenciesListGroupBox = new QGroupBox("Dependencies");
 
-	itemListWidget = new QListWidget;
+	itemListWidget = new PatchListWidget(this);
 	dependenciesListView = new QTreeView;
 
 	itemListLayout->addWidget(itemListWidget);
@@ -105,7 +117,6 @@ QAction* InstallerWidget::getTestAction() const
 	return testDependenciesAction;
 }
 
-
 void InstallerWidget::setDependenciesListModel(QAbstractItemModel* model)
 {
 	dependenciesListView->setModel(model);
@@ -117,9 +128,23 @@ void InstallerWidget::setDependenciesListModel(QAbstractItemModel* model)
 	dependenciesListView->header()->setSectionResizeMode(3, QHeaderView::ResizeMode::ResizeToContents);
 }
 
-void InstallerWidget::setInstallListModel(QAbstractItemModel* model)
+void InstallerWidget::initPatchList()
 {
+	patchList->importFile("PatchList.txt");
+
+	for (auto i = 0; i < patchList->count(); ++i)
+	{
+		auto *newItem = new QTreeWidgetItem(itemListWidget);
+		const auto type = patchList->at(i).getType();
+
+		newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(type)));
+		newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchList::typeName(type));
+		newItem->setData(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole, type);
+		newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, patchList->at(i).getSchema());
+		newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, patchList->at(i).getName()
+			+ QString(type == function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""));
+		newItem->setFlags(Qt::ItemIsEnabled);
+		itemListWidget->addTopLevelItem(newItem);
+	}
 }
-
-
 

@@ -2,12 +2,10 @@
 
 #include "PatchListWidget.h"
 #include "ObjectType.h"
+#include "PatchList.h"
 
 // Multiple selection?
-
-const QHash<int, QString> *PatchListWidget::typeNames = new QHash<int, QString>({ {script, "script"}, {table, "table"}
-	, {sequence, "sequence"}, {function, "function"}, {view, "view"}, {trigger, "trigger"}
-	, {index, "index"} });
+// And also maybe 
 
 const QHash<int, QString> *PatchListWidget::typeIcons = new QHash<int, QString>({ {script, ":/images/script.svg"}, {table, ":/images/table.svg"}
 	, {sequence, ":/images/sequence.svg"}, {function, ":/images/function.svg"}, {view, ":/images/view.svg"}
@@ -55,7 +53,7 @@ bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, con
 
 	for (auto i = 0; i < foundItems.count(); ++i)
 	{
-		if (foundItems.at(i)->text(TypeColumn) == typeName(typeIndex) && foundItems.at(i)->text(SchemaColumn) == schema)
+		if (foundItems.at(i)->text(TypeColumn) == PatchList::typeName(typeIndex) && foundItems.at(i)->text(SchemaColumn) == schema)
 		{
 			return true;
 		}
@@ -64,16 +62,10 @@ bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, con
 	return false;
 }
 
-
 QString PatchListWidget::typeIcon(int typeIndex)
 {
 	// Add invalid index handling
 	return typeIcons->value(typeIndex);
-}
-
-QString PatchListWidget::typeName(int typeIndex)
-{
-	return typeNames->value(typeIndex);
 }
 
 void PatchListWidget::dropEvent(QDropEvent *event)
@@ -84,6 +76,5 @@ void PatchListWidget::dropEvent(QDropEvent *event)
 
 PatchListWidget::~PatchListWidget()
 {
-	delete typeNames;
 	delete typeIcons;
 }
