@@ -17,6 +17,7 @@
 
 // Some freezes in patch list?
 // Rename layouts in Ui
+// Fix headers coming to infinity
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)

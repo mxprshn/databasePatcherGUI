@@ -103,13 +103,13 @@
         <property name="minimumSize">
          <size>
           <width>150</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>150</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="iconSize">
@@ -134,13 +134,13 @@
         <property name="minimumSize">
          <size>
           <width>150</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>150</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="frame">
@@ -159,13 +159,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="placeholderText">
@@ -184,13 +184,13 @@
         <property name="minimumSize">
          <size>
           <width>100</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>100</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="text">
@@ -413,13 +413,13 @@
         <property name="minimumSize">
          <size>
           <width>100</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>100</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="text">
@@ -442,13 +442,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>20</height>
+          <height>25</height>
          </size>
         </property>
         <property name="placeholderText">
@@ -460,14 +460,14 @@
        <widget class="QToolButton" name="explorerButton">
         <property name="minimumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="text">
