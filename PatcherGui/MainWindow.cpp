@@ -12,6 +12,7 @@
 #include "UiController.h"
 #include "LogOutputDevice.h"
 #include "InstallerHandler.h"
+#include "BuilderHandler.h"
 
 // Fix disconnection
 
@@ -35,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 	logOutputDevice->setTextEdit(logOutput);
 	logOutputDevice->open(QIODevice::WriteOnly);
 	InstallerHandler::setOutputDevice(*logOutputDevice);
+	BuilderHandler::setOutputDevice(*logOutputDevice);
 
 	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
 

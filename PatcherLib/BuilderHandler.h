@@ -14,12 +14,12 @@ class BuilderHandler : public QObject
 public:
 	// Error handling???
 	// And should I disconnect connections?
-	static void setProgram(const QString &newProgram);
 	static void setOutputDevice(QIODevice &newDevice);
 	static bool buildPatch(const QString &database, const QString &user, const QString &password,
-		const QString &server, int port, const QString &path);
+		const QString &server, int port, const QString &patchDir, const QString &buildListDir);
 private:
 	static QString program;
+	static QString templatesPath;
 	static QIODevice *outputDevice;
 	static QProcess builderProcess;
 };

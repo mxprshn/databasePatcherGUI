@@ -48,16 +48,18 @@ bool PatchList::exportFile(const QString &path) const
 		const auto typeName = elements->at(i)->getTypeName();
 		const auto parameters = elements->at(i)->getParameters();
 
-		if (schema != "")
+		if (type == script)
 		{
-			patchFileStream << schema << " ";
+			patchFileStream << typeName << " " << name;
 		}
-
-		patchFileStream << name << " " << typeName;
-
-		if (type == function)
+		else
 		{
-			patchFileStream << " " << getParametersString(parameters);
+			patchFileStream << schema << " " << name << " " << typeName;
+
+			if (type == function)
+			{
+				patchFileStream << " " << getParametersString(parameters);
+			}
 		}
 
 		if (i != elements->count() - 1)

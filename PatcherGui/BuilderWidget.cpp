@@ -5,6 +5,7 @@
 #include <QValidator>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDateTime>
 
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
@@ -365,9 +366,18 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 
 	// Where exactly should it be saved? FIX IT!
 
-	const QDir patchDir(path);
+	QDir patchDir(path);
+	const auto patchDirName = "build_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");
 
-	if (!patchList->exportFile(patchDir.filePath("PatchList.txt")))
+	if (!patchDir.mkdir(patchDirName))
+	{
+		patchList->clear();
+		return false;
+	}
+
+	patchDir.cd(patchDirName);
+
+	if (!patchList->exportFile(patchDir.absoluteFilePath("PatchList.txt")))
 	{
 		patchList->clear();
 		return false;
@@ -376,5 +386,5 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 	patchList->clear();
 
 	return BuilderHandler::buildPatch(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
-		, DatabaseProvider::server(), DatabaseProvider::port(), path);
+		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), patchDir.absoluteFilePath("PatchList.txt"));
 }

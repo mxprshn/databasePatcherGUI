@@ -3,13 +3,9 @@
 #include <QIODevice>
 
 QString BuilderHandler::program = "PatchBuilder_exe.exe";
+QString BuilderHandler::templatesPath = "Templates.ini";
 QProcess BuilderHandler::builderProcess;
 QIODevice *BuilderHandler::outputDevice;
-
-void BuilderHandler::setProgram(const QString &newProgram)
-{
-	program = newProgram;
-}
 
 void BuilderHandler::setOutputDevice(QIODevice &newDevice)
 {
@@ -17,12 +13,19 @@ void BuilderHandler::setOutputDevice(QIODevice &newDevice)
 }
 
 bool BuilderHandler::buildPatch(const QString& database, const QString& user, const QString& password
-	, const QString& server, int port, const QString& path)
+	, const QString& server, int port, const QString &patchDir, const QString &buildListDir)
 {
-	// This part should be adjusted to Timur's builder
 	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(database).arg(user).arg(password).arg(server)
 		.arg(port);
-	const QStringList arguments = { connectionInfo, "install", path };
+	const QStringList arguments = { "-d", patchDir, "-p", buildListDir, "-c", connectionInfo, "-t", templatesPath };
+
+	connect(&builderProcess, &QProcess::readyReadStandardOutput, []()
+	{
+		if (outputDevice)
+		{
+			outputDevice->write(builderProcess.readAllStandardOutput());
+		}
+	});
 
 	connect(&builderProcess, &QProcess::readyReadStandardError, []()
 	{
@@ -38,6 +41,8 @@ bool BuilderHandler::buildPatch(const QString& database, const QString& user, co
 	{
 		return false;
 	}
+
+	// Add exit code processing
 
 	if (!builderProcess.waitForFinished() || builderProcess.exitCode() != 0)
 	{
