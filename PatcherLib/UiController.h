@@ -34,7 +34,6 @@ private slots:
 	void connectToDatabase(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
 	void disconnectFromDatabase();
-	void testDependencies();
 	void openPatchFile(const QString &filePath);
 signals:
 	void connectedToDatabase(const QString &database, const QString &user, const QString &password,

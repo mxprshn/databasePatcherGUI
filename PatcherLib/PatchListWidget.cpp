@@ -5,7 +5,6 @@
 #include "PatchList.h"
 
 // Multiple selection?
-// And also maybe 
 
 const QHash<int, QString> *PatchListWidget::typeIcons = new QHash<int, QString>({ {script, ":/images/script.svg"}, {table, ":/images/table.svg"}
 	, {sequence, ":/images/sequence.svg"}, {function, ":/images/function.svg"}, {view, ":/images/view.svg"}
@@ -16,9 +15,9 @@ PatchListWidget::PatchListWidget(QWidget *parent)
 {
 	setColumnCount(3);
 	QStringList headerLabels;
-	headerLabels.insert(TypeColumn, "Type");
-	headerLabels.insert(SchemaColumn, "Schema");
-	headerLabels.insert(NameColumn, "Name");
+	headerLabels.insert(typeColumn, "Type");
+	headerLabels.insert(schemaColumn, "Schema");
+	headerLabels.insert(nameColumn, "Name");
 	setHeaderLabels(headerLabels);
 	setRootIsDecorated(false);
 	setSelectionMode(SingleSelection);
@@ -49,11 +48,11 @@ QStringList PatchListWidget::itemList() const
 
 bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, const class QString &name)
 {
-	const auto foundItems = findItems(name, Qt::MatchFixedString, NameColumn);
+	const auto foundItems = findItems(name, Qt::MatchFixedString, nameColumn);
 
 	for (auto i = 0; i < foundItems.count(); ++i)
 	{
-		if (foundItems.at(i)->text(TypeColumn) == PatchList::typeName(typeIndex) && foundItems.at(i)->text(SchemaColumn) == schema)
+		if (foundItems.at(i)->text(typeColumn) == PatchList::typeName(typeIndex) && foundItems.at(i)->text(schemaColumn) == schema)
 		{
 			return true;
 		}

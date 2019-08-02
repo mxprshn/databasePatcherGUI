@@ -16,6 +16,7 @@ class QTableView;
 class QAbstractItemModel;
 class PatchListWidget;
 class PatchList;
+class DependenciesListWidget;
 
 class InstallerWidget : public QWidget, public Ui::InstallerWidget
 {
@@ -25,10 +26,11 @@ public:
 	InstallerWidget(QWidget *parent = Q_NULLPTR);
 	~InstallerWidget();
 	QAction* getTestAction() const;
-	void setDependenciesListModel(QAbstractItemModel *model);
 private:
 	PatchList *patchList;
+	PatchList *dependenciesList;
 	void initPatchList();
+	void initDependenciesList();
 	void initializeOpenPatchBox();
 	void initializeItemLists();
 	void initializeToolButtons();
@@ -44,7 +46,7 @@ private:
 	QGroupBox *itemListGroupBox;
 	QGroupBox *dependenciesListGroupBox;
 	PatchListWidget *itemListWidget;
-	QTreeView *dependenciesListView;
+	DependenciesListWidget *dependenciesListWidget;
 	QLineEdit *patchPathLineEdit;
 	QPushButton *openPatchButton;
 	QPushButton *openExplorerButton;
@@ -53,4 +55,6 @@ private:
 	QAction *testDependenciesAction;
 signals:
 	void installButtonClicked();
+private slots:
+	void onCheckButtonClicked();
 };

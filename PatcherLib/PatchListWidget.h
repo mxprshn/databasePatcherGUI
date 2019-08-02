@@ -10,9 +10,9 @@ public:
 
 	enum ColumnIndexes
 	{
-		TypeColumn,
-		SchemaColumn,
-		NameColumn
+		typeColumn,
+		schemaColumn,
+		nameColumn
 	};
 
 	PatchListWidget(QWidget *parent);

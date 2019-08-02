@@ -59,6 +59,9 @@
     <ClCompile Include="LogOutputDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DependenciesListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="patcherlib_global.h">
@@ -100,6 +103,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="LogOutputDevice.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DependenciesListWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

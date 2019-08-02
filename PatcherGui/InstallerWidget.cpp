@@ -16,13 +16,16 @@
 #include "InstallerWidget.h"
 #include "InstallerHandler.h"
 #include "PatchListWidget.h"
+#include "DependenciesListWidget.h"
 #include "PatchList.h"
 #include "PatchListElement.h"
 #include "ObjectType.h"
+#include "DatabaseProvider.h"
 
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
 	, patchList(new PatchList)
+	, dependenciesList(new PatchList)
 	, toolButtonSize(QSize(90, 70))
 	, toolButtonIconSize(QSize(35, 35))
 {
@@ -33,10 +36,11 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	initializeOpenPatchBox();
 	initializeToolButtons();
 	initPatchList();
+	initDependenciesList();
 
 	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
 	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
-		SIGNAL(testButtonClicked()));
+		SLOT(onCheckButtonClicked()));
 	connect(this->testButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
 	connect(this->installButton, SIGNAL(clicked()), this, SIGNAL(installButtonClicked()));
 
@@ -46,6 +50,7 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 InstallerWidget::~InstallerWidget()
 {
 	delete patchList;
+	delete dependenciesList;
 }
 
 void InstallerWidget::initializeItemLists()
@@ -57,10 +62,10 @@ void InstallerWidget::initializeItemLists()
 	dependenciesListGroupBox = new QGroupBox("Dependencies");
 
 	itemListWidget = new PatchListWidget(this);
-	dependenciesListView = new QTreeView;
+	dependenciesListWidget = new DependenciesListWidget(this);
 
 	itemListLayout->addWidget(itemListWidget);
-	dependenciesListLayout->addWidget(dependenciesListView);
+	dependenciesListLayout->addWidget(dependenciesListWidget);
 
 	itemListGroupBox->setLayout(itemListLayout);
 	dependenciesListGroupBox->setLayout(dependenciesListLayout);
@@ -117,17 +122,6 @@ QAction* InstallerWidget::getTestAction() const
 	return testDependenciesAction;
 }
 
-void InstallerWidget::setDependenciesListModel(QAbstractItemModel* model)
-{
-	dependenciesListView->setModel(model);
-	dependenciesListView->setRootIsDecorated(false);
-	dependenciesListView->header()->setStretchLastSection(false);
-	dependenciesListView->header()->setSectionResizeMode(0, QHeaderView::ResizeMode::ResizeToContents);
-	dependenciesListView->header()->setSectionResizeMode(1, QHeaderView::ResizeMode::ResizeToContents);
-	dependenciesListView->header()->setSectionResizeMode(2, QHeaderView::ResizeMode::Stretch);
-	dependenciesListView->header()->setSectionResizeMode(3, QHeaderView::ResizeMode::ResizeToContents);
-}
-
 void InstallerWidget::initPatchList()
 {
 	patchList->importFile("PatchList.txt");
@@ -137,14 +131,44 @@ void InstallerWidget::initPatchList()
 		auto *newItem = new QTreeWidgetItem(itemListWidget);
 		const auto type = patchList->at(i).getType();
 
-		newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(type)));
-		newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchList::typeName(type));
-		newItem->setData(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole, type);
-		newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, patchList->at(i).getSchema());
-		newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, patchList->at(i).getName()
+		// Maybe make all this code as a method in widget?
+		newItem->setIcon(PatchListWidget::ColumnIndexes::typeColumn, QIcon(PatchListWidget::typeIcon(type)));
+		newItem->setText(PatchListWidget::ColumnIndexes::typeColumn, PatchList::typeName(type));
+		newItem->setData(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole, type);
+		newItem->setText(PatchListWidget::ColumnIndexes::schemaColumn, patchList->at(i).getSchema());
+		newItem->setText(PatchListWidget::ColumnIndexes::nameColumn, patchList->at(i).getName()
 			+ QString(type == function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""));
 		newItem->setFlags(Qt::ItemIsEnabled);
 		itemListWidget->addTopLevelItem(newItem);
 	}
 }
 
+void InstallerWidget::initDependenciesList()
+{
+	dependenciesList->importFile("C:\\Users\\mxprshn\\Desktop\\test\\DependencyList.dpn");
+
+	for (auto i = 0; i < dependenciesList->count(); ++i)
+	{
+		auto *newItem = new QTreeWidgetItem(dependenciesListWidget);
+		const auto type = dependenciesList->at(i).getType();
+
+		// Maybe make all this code as a method in widget?
+		newItem->setIcon(DependenciesListWidget::ColumnIndexes::typeColumn, QIcon(DependenciesListWidget::typeIcon(type)));
+		newItem->setText(DependenciesListWidget::ColumnIndexes::typeColumn, PatchList::typeName(type));
+		newItem->setData(DependenciesListWidget::ColumnIndexes::typeColumn, Qt::UserRole, type);
+		newItem->setText(DependenciesListWidget::ColumnIndexes::schemaColumn, dependenciesList->at(i).getSchema());
+		newItem->setText(DependenciesListWidget::ColumnIndexes::nameColumn, dependenciesList->at(i).getName()
+			+ QString(type == function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""));
+		newItem->setFlags(Qt::ItemIsEnabled);
+		newItem->setIcon(DependenciesListWidget::ColumnIndexes::statusColumn,
+			QIcon(DependenciesListWidget::statusIcon(DependenciesListWidget::CheckStatus::waitingForCheck)));
+		newItem->setCheckState(DependenciesListWidget::ColumnIndexes::statusColumn, Qt::Unchecked);
+		dependenciesListWidget->addTopLevelItem(newItem);
+	}
+}
+
+void InstallerWidget::onCheckButtonClicked()
+{
+	dependenciesListWidget->setCheckStatus(InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
+		, DatabaseProvider::server(), DatabaseProvider::port(), "C:\\Users\\mxprshn\\Desktop\\test"));
+}

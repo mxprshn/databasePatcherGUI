@@ -47,13 +47,6 @@ void UiController::disconnectFromDatabase()
 	emit disconnectedFromDatabase();
 }
 
-void UiController::testDependencies()
-{
-	dependenciesListModel->getTestResult(InstallerHandler::checkDependencies(DatabaseProvider::database()
-		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::server(), DatabaseProvider::port(), "C:\\Users\\mxprshn\\Desktop\\test"));
-	emit testPassed();
-}
-
 QString UiController::installPatch()
 {
 	InstallerHandler::installPatch(DatabaseProvider::database()
