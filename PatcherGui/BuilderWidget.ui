@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>BuilderWidget</string>
   </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
   <layout class="QGridLayout" name="mainLayout" rowstretch="0,1,0,0">
    <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="addItemGroupBox">

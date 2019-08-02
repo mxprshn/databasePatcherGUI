@@ -21,6 +21,7 @@
         <file alias="script.svg">Resources/images/labels/script.svg</file>
         <file alias="trigger.svg">Resources/images/labels/trigger.svg</file>
         <file alias="folder.svg">Resources/images/folder.svg</file>
+        <file alias="box.svg">Resources/images/box.svg</file>
     </qresource>
     <qresource prefix="/data">
         <file alias="dependencies.txt">Data/dependencies.txt</file>

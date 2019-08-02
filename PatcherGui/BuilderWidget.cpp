@@ -56,18 +56,18 @@ void BuilderWidget::onAddButtonClicked()
 {
 	const auto nameInput = ui->nameEdit->text().remove(QRegExp("\\ "));
 
-	if (ui->typeComboBox->currentData().toInt() == script)
-	{
-		addScripts(nameInput);
-		return;
-	}
-
 	if (!DatabaseProvider::isConnected())
 	{
 		// Add opening login window
 		QMessageBox::warning(this, "Database error"
 			, "Not connected to database."
 			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	if (ui->typeComboBox->currentData().toInt() == script)
+	{
+		addScripts(nameInput);
 		return;
 	}
 
