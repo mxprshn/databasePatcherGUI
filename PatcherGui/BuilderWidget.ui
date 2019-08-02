@@ -103,13 +103,13 @@
         <property name="minimumSize">
          <size>
           <width>150</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>150</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="iconSize">
@@ -134,13 +134,13 @@
         <property name="minimumSize">
          <size>
           <width>150</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>150</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="frame">
@@ -159,13 +159,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="placeholderText">
@@ -184,13 +184,13 @@
         <property name="minimumSize">
          <size>
           <width>100</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>100</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="text">
@@ -202,8 +202,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>15</width>
+          <height>15</height>
          </size>
         </property>
        </widget>
@@ -250,14 +250,14 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>40</width>
+            <height>40</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>35</width>
+            <height>35</height>
            </size>
           </property>
           <property name="baseSize">
@@ -278,8 +278,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>40</width>
-            <height>40</height>
+            <width>30</width>
+            <height>30</height>
            </size>
           </property>
           <property name="shortcut">
@@ -300,14 +300,14 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>40</width>
+            <height>40</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>35</width>
+            <height>35</height>
            </size>
           </property>
           <property name="toolTip">
@@ -322,8 +322,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>40</width>
-            <height>40</height>
+            <width>30</width>
+            <height>30</height>
            </size>
           </property>
           <property name="shortcut">
@@ -338,14 +338,14 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>40</width>
+            <height>40</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>35</width>
+            <height>35</height>
            </size>
           </property>
           <property name="toolTip">
@@ -360,8 +360,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>40</width>
-            <height>40</height>
+            <width>30</width>
+            <height>30</height>
            </size>
           </property>
           <property name="shortcut">
@@ -413,13 +413,13 @@
         <property name="minimumSize">
          <size>
           <width>100</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>100</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="text">
@@ -431,8 +431,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>15</width>
+          <height>15</height>
          </size>
         </property>
        </widget>
@@ -442,13 +442,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>25</height>
+          <height>20</height>
          </size>
         </property>
         <property name="placeholderText">
@@ -460,14 +460,14 @@
        <widget class="QToolButton" name="explorerButton">
         <property name="minimumSize">
          <size>
-          <width>25</width>
-          <height>25</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>25</width>
-          <height>25</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
         <property name="text">
@@ -476,6 +476,12 @@
         <property name="icon">
          <iconset resource="PatcherResources.qrc">
           <normaloff>:/images/folder.svg</normaloff>:/images/folder.svg</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>15</width>
+          <height>15</height>
+         </size>
         </property>
        </widget>
       </item>
