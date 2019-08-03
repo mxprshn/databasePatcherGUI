@@ -56,12 +56,12 @@
     <ClCompile Include="DependenciesListWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="patcherlib_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PatchList.h">
@@ -71,6 +71,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DatabaseProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

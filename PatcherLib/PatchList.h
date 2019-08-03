@@ -13,9 +13,7 @@ public:
 	bool exportFile(const QString &path) const;
 	bool importFile(const QString &path);
 	void clear();
-	static QString typeName(int typeIndex);
 private:
 	QList<PatchListElement*> *elements;
 	static QString getParametersString(const QStringList &parameters);
-	static const QHash<int, QString> *typeNames;
 };

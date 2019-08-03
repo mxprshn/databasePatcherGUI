@@ -1,14 +1,10 @@
 #include <QDropEvent>
 
 #include "PatchListWidget.h"
-#include "ObjectType.h"
+#include "ObjectTypes.h"
 #include "PatchList.h"
 
 // Multiple selection?
-
-const QHash<int, QString> *PatchListWidget::typeIcons = new QHash<int, QString>({ {script, ":/images/script.svg"}, {table, ":/images/table.svg"}
-	, {sequence, ":/images/sequence.svg"}, {function, ":/images/function.svg"}, {view, ":/images/view.svg"}
-	, {trigger, ":/images/trigger.svg"}, {index, ":/images/index.svg"} });
 
 PatchListWidget::PatchListWidget(QWidget *parent)
 	: QTreeWidget(parent)
@@ -52,7 +48,7 @@ bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, con
 
 	for (auto i = 0; i < foundItems.count(); ++i)
 	{
-		if (foundItems.at(i)->text(typeColumn) == PatchList::typeName(typeIndex) && foundItems.at(i)->text(schemaColumn) == schema)
+		if (foundItems.at(i)->text(typeColumn) == ObjectTypes::typeNames.value(typeIndex) && foundItems.at(i)->text(schemaColumn) == schema)
 		{
 			return true;
 		}
@@ -65,8 +61,8 @@ void PatchListWidget::add(int typeIndex, const class QString& schema, const clas
 {
 	auto *newItem = new QTreeWidgetItem(this);
 
-	newItem->setIcon(typeColumn, QIcon(typeIcon(typeIndex)));
-	newItem->setText(typeColumn, PatchList::typeName(typeIndex));
+	newItem->setIcon(typeColumn, QIcon(ObjectTypes::typeIcons.value(typeIndex)));
+	newItem->setText(typeColumn, ObjectTypes::typeNames.value(typeIndex));
 	newItem->setData(typeColumn, Qt::UserRole, typeIndex);
 	newItem->setText(schemaColumn, schema);
 	newItem->setText(nameColumn, name);
@@ -83,19 +79,8 @@ void PatchListWidget::add(int typeIndex, const class QString& schema, const clas
 	addTopLevelItem(newItem);
 }
 
-QString PatchListWidget::typeIcon(int typeIndex)
-{
-	// Add invalid index handling
-	return typeIcons->value(typeIndex);
-}
-
 void PatchListWidget::dropEvent(QDropEvent *event)
 {
 	QTreeWidget::dropEvent(event);
 	setCurrentItem(itemAt(event->pos()));
-}
-
-PatchListWidget::~PatchListWidget()
-{
-	delete typeIcons;
 }

@@ -19,7 +19,7 @@
 #include "DependenciesListWidget.h"
 #include "PatchList.h"
 #include "PatchListElement.h"
-#include "ObjectType.h"
+#include "ObjectTypes.h"
 #include "DatabaseProvider.h"
 #include "ui_InstallerWidget.h"
 
@@ -61,7 +61,7 @@ void InstallerWidget::initPatchList()
 	{
 		const auto type = patchList->at(i).getType();
 		ui->patchListWidget->add(type, patchList->at(i).getSchema(), patchList->at(i).getName()
-			+ QString(type == function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""), false);
+			+ QString(type == ObjectTypes::function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""), false);
 	}
 }
 
@@ -73,7 +73,7 @@ void InstallerWidget::initDependenciesList()
 	{
 		const auto type = dependenciesList->at(i).getType();
 		ui->dependenciesListWidget->add(type, dependenciesList->at(i).getSchema(), dependenciesList->at(i).getName()
-			+ QString(type == function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""));
+			+ QString(type == ObjectTypes::function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""));
 	}
 }
 

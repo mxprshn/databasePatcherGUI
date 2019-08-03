@@ -185,40 +185,67 @@
       <item>
        <widget class="PatchListWidget" name="patchListWidget"/>
       </item>
-      <item alignment="Qt::AlignRight">
-       <widget class="QPushButton" name="installButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item>
+       <layout class="QHBoxLayout" name="installButtonLayout">
+        <property name="topMargin">
+         <number>0</number>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>25</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Install</string>
-        </property>
-        <property name="icon">
-         <iconset resource="PatcherResources.qrc">
-          <normaloff>:/images/install.svg</normaloff>:/images/install.svg</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>17</width>
-          <height>17</height>
-         </size>
-        </property>
-       </widget>
+        <item>
+         <spacer name="installButtonSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="installInfoLabel">
+          <property name="text">
+           <string>Some dependencies not satisfied!</string>
+          </property>
+         </widget>
+        </item>
+        <item alignment="Qt::AlignRight">
+         <widget class="QPushButton" name="installButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Install</string>
+          </property>
+          <property name="icon">
+           <iconset resource="PatcherResources.qrc">
+            <normaloff>:/images/install.svg</normaloff>:/images/install.svg</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>17</width>
+            <height>17</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
