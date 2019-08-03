@@ -32,12 +32,6 @@
     <ClCompile Include="DatabaseProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DependenciesListElement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DependenciesListModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InstallerHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -59,6 +53,9 @@
     <ClCompile Include="LogOutputDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DependenciesListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="patcherlib_global.h">
@@ -78,12 +75,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="DependenciesListElement.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="DependenciesListModel.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="BuilderHandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -100,6 +91,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="LogOutputDevice.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DependenciesListWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
