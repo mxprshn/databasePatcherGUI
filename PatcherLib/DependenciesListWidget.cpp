@@ -1,5 +1,6 @@
 #include "DependenciesListWidget.h"
 #include "ObjectType.h"
+#include "PatchList.h"
 #include <QHeaderView>
 #include <QBitArray>
 
@@ -63,6 +64,20 @@ QString DependenciesListWidget::typeIcon(int typeIndex)
 QString DependenciesListWidget::statusIcon(int status)
 {
 	return statusIcons->value(status);
+}
+
+void DependenciesListWidget::add(int typeIndex, const class QString& schema, const class QString& name)
+{
+	auto *newItem = new QTreeWidgetItem(this);
+	newItem->setIcon(typeColumn, QIcon(typeIcon(typeIndex)));
+	newItem->setText(typeColumn, PatchList::typeName(typeIndex));
+	newItem->setData(typeColumn, Qt::UserRole, typeIndex);
+	newItem->setText(schemaColumn, schema);
+	newItem->setText(nameColumn, name);
+	newItem->setIcon(statusColumn, QIcon(statusIcon(waitingForCheck)));
+	newItem->setCheckState(statusColumn, Qt::Unchecked);
+	newItem->setFlags(Qt::ItemIsEnabled);
+	addTopLevelItem(newItem);
 }
 
 DependenciesListWidget::~DependenciesListWidget()

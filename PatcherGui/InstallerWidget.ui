@@ -107,7 +107,7 @@
      <property name="flat">
       <bool>true</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="dependenciesLayout">
       <property name="leftMargin">
        <number>7</number>
       </property>
@@ -121,13 +121,7 @@
        <number>3</number>
       </property>
       <item>
-       <widget class="QTreeWidget" name="treeWidget">
-        <column>
-         <property name="text">
-          <string notr="true">1</string>
-         </property>
-        </column>
-       </widget>
+       <widget class="DependenciesListWidget" name="dependenciesListWidget"/>
       </item>
       <item alignment="Qt::AlignRight">
        <widget class="QPushButton" name="checkButton">
@@ -175,7 +169,7 @@
      <property name="flat">
       <bool>true</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="patchContentLayout">
       <property name="leftMargin">
        <number>7</number>
       </property>
@@ -189,13 +183,7 @@
        <number>3</number>
       </property>
       <item>
-       <widget class="QTreeWidget" name="treeWidget_2">
-        <column>
-         <property name="text">
-          <string notr="true">1</string>
-         </property>
-        </column>
-       </widget>
+       <widget class="PatchListWidget" name="patchListWidget"/>
       </item>
       <item alignment="Qt::AlignRight">
        <widget class="QPushButton" name="installButton">
@@ -238,6 +226,18 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>DependenciesListWidget</class>
+   <extends>QListWidget</extends>
+   <header>DependenciesListWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PatchListWidget</class>
+   <extends>QListWidget</extends>
+   <header>PatchListWidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="PatcherResources.qrc"/>
  </resources>

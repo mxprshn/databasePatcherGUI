@@ -6,6 +6,7 @@
 #include "PatchListElement.h"
 #include "ObjectType.h"
 
+// IT BREAKS ALL PROGRAM, FIX
 const QHash<int, QString> *PatchList::typeNames = new QHash<int, QString>({ {script, "script"}, {table, "table"}
 	, {sequence, "sequence"}, {function, "function"}, {view, "view"}, {trigger, "trigger"}
 	, {index, "index"} });
