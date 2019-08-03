@@ -99,8 +99,6 @@
   <ItemGroup>
     <ClCompile Include="BuilderHandler.cpp" />
     <ClCompile Include="DatabaseProvider.cpp" />
-    <ClCompile Include="DependenciesListElement.cpp" />
-    <ClCompile Include="DependenciesListModel.cpp" />
     <ClCompile Include="DependenciesListWidget.cpp" />
     <ClCompile Include="InstallerHandler.cpp" />
     <ClCompile Include="InstallListModel.cpp" />
@@ -132,8 +130,6 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
     </ClInclude>
     <ClInclude Include="DatabaseProvider.h" />
-    <QtMoc Include="DependenciesListElement.h" />
-    <QtMoc Include="DependenciesListModel.h" />
     <QtMoc Include="InstallerHandler.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>

@@ -119,7 +119,7 @@ void BuilderWidget::onAddButtonClicked()
 
 	if (exists)
 	{
-		addToPatchListWidget(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput);
+		ui->buildListWidget->add(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput, true);
 		ui->nameEdit->clear();
 	}
 	else
@@ -167,7 +167,7 @@ void BuilderWidget::addScripts(const QString &input)
 
 		if (!ui->buildListWidget->itemExists(script, "", currentFileName))
 		{
-			addToPatchListWidget(script, "", currentFileName);
+			ui->buildListWidget->add(script, "", currentFileName, true);
 		}
 		else
 		{
@@ -185,18 +185,6 @@ void BuilderWidget::addScripts(const QString &input)
 	{
 		ui->nameEdit->clear();
 	}	
-}
-
-void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, const QString &itemName)
-{
-	auto *newItem = new QTreeWidgetItem(ui->buildListWidget);
-	newItem->setIcon(PatchListWidget::ColumnIndexes::typeColumn, QIcon(PatchListWidget::typeIcon(type)));
-	newItem->setText(PatchListWidget::ColumnIndexes::typeColumn, PatchList::typeName(type));
-	newItem->setData(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole, type);
-	newItem->setText(PatchListWidget::ColumnIndexes::schemaColumn, schemaName);
-	newItem->setText(PatchListWidget::ColumnIndexes::nameColumn, itemName);
-	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
-	ui->buildListWidget->addTopLevelItem(newItem);
 }
 
 void BuilderWidget::onExplorerButtonClicked()

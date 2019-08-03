@@ -128,18 +128,9 @@ void InstallerWidget::initPatchList()
 
 	for (auto i = 0; i < patchList->count(); ++i)
 	{
-		auto *newItem = new QTreeWidgetItem(itemListWidget);
 		const auto type = patchList->at(i).getType();
-
-		// Maybe make all this code as a method in widget?
-		newItem->setIcon(PatchListWidget::ColumnIndexes::typeColumn, QIcon(PatchListWidget::typeIcon(type)));
-		newItem->setText(PatchListWidget::ColumnIndexes::typeColumn, PatchList::typeName(type));
-		newItem->setData(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole, type);
-		newItem->setText(PatchListWidget::ColumnIndexes::schemaColumn, patchList->at(i).getSchema());
-		newItem->setText(PatchListWidget::ColumnIndexes::nameColumn, patchList->at(i).getName()
-			+ QString(type == function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""));
-		newItem->setFlags(Qt::ItemIsEnabled);
-		itemListWidget->addTopLevelItem(newItem);
+		itemListWidget->add(type, patchList->at(i).getSchema(), patchList->at(i).getName()
+			+ QString(type == function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""), false);
 	}
 }
 

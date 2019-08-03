@@ -61,6 +61,28 @@ bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, con
 	return false;
 }
 
+void PatchListWidget::add(int typeIndex, const class QString& schema, const class QString& name, bool isDraggable)
+{
+	auto *newItem = new QTreeWidgetItem(this);
+
+	newItem->setIcon(typeColumn, QIcon(typeIcon(typeIndex)));
+	newItem->setText(typeColumn, PatchList::typeName(typeIndex));
+	newItem->setData(typeColumn, Qt::UserRole, typeIndex);
+	newItem->setText(schemaColumn, schema);
+	newItem->setText(nameColumn, name);
+
+	if (isDraggable)
+	{
+		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
+	}
+	else
+	{
+		newItem->setFlags(Qt::ItemIsEnabled);
+	}
+
+	addTopLevelItem(newItem);
+}
+
 QString PatchListWidget::typeIcon(int typeIndex)
 {
 	// Add invalid index handling

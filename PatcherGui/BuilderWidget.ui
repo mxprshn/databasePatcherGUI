@@ -503,7 +503,6 @@
   <tabstop>schemaComboBox</tabstop>
   <tabstop>nameEdit</tabstop>
   <tabstop>addButton</tabstop>
-  <tabstop>buildListWidget</tabstop>
   <tabstop>moveUpButton</tabstop>
   <tabstop>moveDownButton</tabstop>
   <tabstop>removeButton</tabstop>
