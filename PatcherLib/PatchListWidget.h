@@ -10,19 +10,18 @@ public:
 
 	enum ColumnIndexes
 	{
-		TypeColumn,
-		SchemaColumn,
-		NameColumn
+		typeColumn,
+		schemaColumn,
+		nameColumn
 	};
 
 	PatchListWidget(QWidget *parent);
 	~PatchListWidget();
 	QStringList itemList() const;
 	static QString typeIcon(int typeIndex);
-	static QString typeName(int typeIndex);
 	bool itemExists(int typeIndex, const QString &schema, const QString &name);
+	void add(int typeIndex, const QString &schema, const QString &name, bool isDraggable);
 private:
 	void dropEvent(QDropEvent *event) override;
 	static const QHash<int, QString> *typeIcons;
-	static const QHash<int, QString> *typeNames;
 };

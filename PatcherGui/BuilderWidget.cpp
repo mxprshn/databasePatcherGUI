@@ -17,6 +17,7 @@
 
 // Some freezes in patch list?
 // Rename layouts in Ui
+// Fix headers coming to infinity
 
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
@@ -118,7 +119,7 @@ void BuilderWidget::onAddButtonClicked()
 
 	if (exists)
 	{
-		addToPatchListWidget(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput);
+		ui->buildListWidget->add(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput, true);
 		ui->nameEdit->clear();
 	}
 	else
@@ -166,7 +167,7 @@ void BuilderWidget::addScripts(const QString &input)
 
 		if (!ui->buildListWidget->itemExists(script, "", currentFileName))
 		{
-			addToPatchListWidget(script, "", currentFileName);
+			ui->buildListWidget->add(script, "", currentFileName, true);
 		}
 		else
 		{
@@ -184,18 +185,6 @@ void BuilderWidget::addScripts(const QString &input)
 	{
 		ui->nameEdit->clear();
 	}	
-}
-
-void BuilderWidget::addToPatchListWidget(int type, const QString &schemaName, const QString &itemName)
-{
-	auto *newItem = new QTreeWidgetItem(ui->buildListWidget);
-	newItem->setIcon(PatchListWidget::ColumnIndexes::TypeColumn, QIcon(PatchListWidget::typeIcon(type)));
-	newItem->setText(PatchListWidget::ColumnIndexes::TypeColumn, PatchListWidget::typeName(type));
-	newItem->setData(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole, type);
-	newItem->setText(PatchListWidget::ColumnIndexes::SchemaColumn, schemaName);
-	newItem->setText(PatchListWidget::ColumnIndexes::NameColumn, itemName);
-	newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
-	ui->buildListWidget->addTopLevelItem(newItem);
 }
 
 void BuilderWidget::onExplorerButtonClicked()
@@ -252,7 +241,7 @@ void BuilderWidget::onBuildButtonClicked()
 void BuilderWidget::onRemoveButtonClicked()
 {
 	const auto dialogResult = QMessageBox::warning(this, "Remove item", "Are you sure to remove " +
-		ui->buildListWidget->currentItem()->text(PatchListWidget::ColumnIndexes::NameColumn) +
+		ui->buildListWidget->currentItem()->text(PatchListWidget::ColumnIndexes::nameColumn) +
 		" from patch list?"
 		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
 
@@ -323,7 +312,7 @@ void BuilderWidget::onCurrentTypeChanged(int type)
 	if (type == function)
 	{
 		ui->nameEdit->setPlaceholderText("Function signature (e.g. function(arg_1,arg_2))");
-		ui->nameLabel->setText("Signature (invalid, function may not be found))");
+		ui->nameLabel->setText("Signature (Invalid, function may not be found))");
 		emit ui->nameEdit->textChanged(ui->nameEdit->text());
 	}
 }
@@ -358,13 +347,10 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 {
 	for (auto i = 0; i < ui->buildListWidget->topLevelItemCount(); ++i)
 	{
-		patchList->add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::TypeColumn, Qt::UserRole).toInt()
-			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::TypeColumn)
-			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::SchemaColumn)
-			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::NameColumn));
+		patchList->add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole).toInt()
+			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::schemaColumn)
+			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::nameColumn));
 	}
-
-	// Where exactly should it be saved? FIX IT!
 
 	QDir patchDir(path);
 	const auto patchDirName = "build_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");

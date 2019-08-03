@@ -19,22 +19,17 @@ class PATCHERLIB_EXPORT UiController : public QObject
 public:
 	explicit UiController(QObject *parent = Q_NULLPTR);
 	~UiController();
-	QAbstractItemModel* getInstallListModel() const;
-	QAbstractItemModel* getDependenciesListModel() const;
 	QAbstractItemModel* getSchemaListModel() const;
 	QString installPatch();
 private:
 	DatabaseProvider *databaseProvider;
 	BuilderHandler *builderHandler;
 	InstallerHandler *installerHandler;
-	InstallListModel *installListModel;
-	DependenciesListModel *dependenciesListModel;
 	QSqlQueryModel *schemaListModel;
 private slots:
 	void connectToDatabase(const QString &database, const QString &user, const QString &password,
 		const QString &server, const int port);
 	void disconnectFromDatabase();
-	void testDependencies();
 	void openPatchFile(const QString &filePath);
 signals:
 	void connectedToDatabase(const QString &database, const QString &user, const QString &password,

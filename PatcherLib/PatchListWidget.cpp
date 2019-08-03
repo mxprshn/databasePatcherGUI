@@ -2,12 +2,9 @@
 
 #include "PatchListWidget.h"
 #include "ObjectType.h"
+#include "PatchList.h"
 
 // Multiple selection?
-
-const QHash<int, QString> *PatchListWidget::typeNames = new QHash<int, QString>({ {script, "script"}, {table, "table"}
-	, {sequence, "sequence"}, {function, "function"}, {view, "view"}, {trigger, "trigger"}
-	, {index, "index"} });
 
 const QHash<int, QString> *PatchListWidget::typeIcons = new QHash<int, QString>({ {script, ":/images/script.svg"}, {table, ":/images/table.svg"}
 	, {sequence, ":/images/sequence.svg"}, {function, ":/images/function.svg"}, {view, ":/images/view.svg"}
@@ -18,9 +15,9 @@ PatchListWidget::PatchListWidget(QWidget *parent)
 {
 	setColumnCount(3);
 	QStringList headerLabels;
-	headerLabels.insert(TypeColumn, "Type");
-	headerLabels.insert(SchemaColumn, "Schema");
-	headerLabels.insert(NameColumn, "Name");
+	headerLabels.insert(typeColumn, "Type");
+	headerLabels.insert(schemaColumn, "Schema");
+	headerLabels.insert(nameColumn, "Name");
 	setHeaderLabels(headerLabels);
 	setRootIsDecorated(false);
 	setSelectionMode(SingleSelection);
@@ -51,11 +48,11 @@ QStringList PatchListWidget::itemList() const
 
 bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, const class QString &name)
 {
-	const auto foundItems = findItems(name, Qt::MatchFixedString, NameColumn);
+	const auto foundItems = findItems(name, Qt::MatchFixedString, nameColumn);
 
 	for (auto i = 0; i < foundItems.count(); ++i)
 	{
-		if (foundItems.at(i)->text(TypeColumn) == typeName(typeIndex) && foundItems.at(i)->text(SchemaColumn) == schema)
+		if (foundItems.at(i)->text(typeColumn) == PatchList::typeName(typeIndex) && foundItems.at(i)->text(schemaColumn) == schema)
 		{
 			return true;
 		}
@@ -64,16 +61,32 @@ bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, con
 	return false;
 }
 
+void PatchListWidget::add(int typeIndex, const class QString& schema, const class QString& name, bool isDraggable)
+{
+	auto *newItem = new QTreeWidgetItem(this);
+
+	newItem->setIcon(typeColumn, QIcon(typeIcon(typeIndex)));
+	newItem->setText(typeColumn, PatchList::typeName(typeIndex));
+	newItem->setData(typeColumn, Qt::UserRole, typeIndex);
+	newItem->setText(schemaColumn, schema);
+	newItem->setText(nameColumn, name);
+
+	if (isDraggable)
+	{
+		newItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);
+	}
+	else
+	{
+		newItem->setFlags(Qt::ItemIsEnabled);
+	}
+
+	addTopLevelItem(newItem);
+}
 
 QString PatchListWidget::typeIcon(int typeIndex)
 {
 	// Add invalid index handling
 	return typeIcons->value(typeIndex);
-}
-
-QString PatchListWidget::typeName(int typeIndex)
-{
-	return typeNames->value(typeIndex);
 }
 
 void PatchListWidget::dropEvent(QDropEvent *event)
@@ -84,6 +97,5 @@ void PatchListWidget::dropEvent(QDropEvent *event)
 
 PatchListWidget::~PatchListWidget()
 {
-	delete typeNames;
 	delete typeIcons;
 }

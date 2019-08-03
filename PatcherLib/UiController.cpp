@@ -6,23 +6,10 @@
 #include "BuilderHandler.h"
 #include "InstallerHandler.h"
 #include "InstallListModel.h"
-#include "DependenciesListModel.h"
 
 UiController::UiController(QObject* parent)
-	: installListModel(new InstallListModel(this))
-	, dependenciesListModel(new DependenciesListModel(this))
-	, schemaListModel(new QSqlQueryModel)
+	: schemaListModel(new QSqlQueryModel)
 {
-}
-
-QAbstractItemModel* UiController::getInstallListModel() const
-{
-	return installListModel;
-}
-
-QAbstractItemModel* UiController::getDependenciesListModel() const
-{
-	return dependenciesListModel;
 }
 
 void UiController::connectToDatabase(const QString &database, const QString &user, const QString &password,
@@ -45,13 +32,6 @@ void UiController::disconnectFromDatabase()
 	schemaListModel->clear();
 	databaseProvider->disconnect();
 	emit disconnectedFromDatabase();
-}
-
-void UiController::testDependencies()
-{
-	dependenciesListModel->getTestResult(InstallerHandler::checkDependencies(DatabaseProvider::database()
-		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::server(), DatabaseProvider::port(), "C:\\Users\\mxprshn\\Desktop\\test"));
-	emit testPassed();
 }
 
 QString UiController::installPatch()

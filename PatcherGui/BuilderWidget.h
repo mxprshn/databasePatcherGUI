@@ -21,7 +21,6 @@ public:
 private:
 	Ui::BuilderWidget *ui;
 	PatchList *patchList;
-	void addToPatchListWidget(int type, const QString &schemaName, const QString &itemName);
 	void addScripts(const QString &input);
 	QValidator *functionInputValidator;
 private slots:

@@ -38,8 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
 	InstallerHandler::setOutputDevice(*logOutputDevice);
 	BuilderHandler::setOutputDevice(*logOutputDevice);
 
-	installerWidget->setDependenciesListModel(mainController->getDependenciesListModel());
-
 	connect(this->loginWindow, SIGNAL(connectButtonClicked()), this, SLOT(requestConnection()));
 	connect(this, SIGNAL(connectionRequested(const QString&, const QString&, const QString&, const QString&, const int)),
 		this->mainController, SLOT(connectToDatabase(const QString&, const QString&, const QString&, const QString&, const int)));
@@ -53,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this->mainController, SIGNAL(disconnectedFromDatabase()), this, SLOT(setDefaultConnectionInfo()));
 	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(show()));
 	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
-	connect(installerWidget->getTestAction(), SIGNAL(triggered()), mainController, SLOT(testDependencies()));
 	connect(this->installerWidget, SIGNAL(installButtonClicked()), this, SLOT(install()));
 
 	setCentralWidget(modeTab);
