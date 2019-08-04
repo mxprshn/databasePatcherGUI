@@ -194,6 +194,23 @@ void BuilderWidget::onExplorerButtonClicked()
 
 void BuilderWidget::onBuildButtonClicked()
 {
+	// Separate method?
+	if (!DatabaseProvider::isConnected())
+	{
+		// Add opening login window
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	if (ui->patchPathEdit->text().isEmpty())
+	{
+		QMessageBox::information(this, "Build error", "Please, choose target directory."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
 	QDir patchDir;
 	patchDir.setPath(ui->patchPathEdit->text());
 
@@ -223,16 +240,15 @@ void BuilderWidget::onBuildButtonClicked()
 		{
 			QApplication::beep();
 			QMessageBox::information(this, "Build completed"
-				, "Build completed. Watch logs for detailed information."
+				, "Build completed. See logs for detailed information."
 				, QMessageBox::Ok, QMessageBox::Ok);
 		}
 		else
 		{
 			QApplication::beep();
 			QMessageBox::warning(this, "Build error"
-				, "Error occured. Watch logs for detailed information."
-				, QMessageBox::Ok, QMessageBox::Ok);
-			
+				, "Error occured. See logs for detailed information."
+				, QMessageBox::Ok, QMessageBox::Ok);			
 		}
 	}
 }

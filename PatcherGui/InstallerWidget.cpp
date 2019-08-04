@@ -34,6 +34,9 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	, isPatchOpened(false)
 {
 	ui->setupUi(this);
+	ui->installInfoLabel->setText("");
+	ui->checkButton->setEnabled(false);
+	ui->installButton->setEnabled(false);
 	setReadyToOpen();
 
 	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
@@ -42,6 +45,7 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	connect(ui->checkButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
 	connect(ui->installButton, SIGNAL(clicked()), this, SLOT(onInstallButtonClicked()));
 	connect(ui->openPatchButton, SIGNAL(clicked()), this, SLOT(onOpenButtonClicked()));
+	connect(ui->dependenciesListWidget, SIGNAL(itemCheckChanged()), this, SLOT(onItemCheckChanged()));
 }
 
 InstallerWidget::~InstallerWidget()
@@ -109,6 +113,9 @@ void InstallerWidget::clearCurrentPatch()
 	ui->patchListWidget->clear();
 	ui->patchPathEdit->setPlaceholderText("Patch folder path");
 	ui->patchPathEdit->setEnabled(true);
+	ui->checkButton->setEnabled(false);
+	ui->installButton->setEnabled(false);
+	ui->installInfoLabel->setText("");
 	setReadyToOpen();
 	isPatchOpened = false;
 }
@@ -192,20 +199,116 @@ void InstallerWidget::onOpenButtonClicked()
 	ui->openPatchButton->setText("Close");
 	ui->openPatchButton->setIcon(QIcon(":/images/close.svg"));
 	ui->openPatchButton->setIconSize(QSize(12, 12));
+	ui->checkButton->setEnabled(true);
 	isPatchOpened = true;
 }
 
-
 void InstallerWidget::onCheckButtonClicked()
 {
-	ui->dependenciesListWidget->setCheckStatus(InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
-		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath()));
+	if (!DatabaseProvider::isConnected())
+	{
+		// Add opening login window
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	auto isSuccessful = false;
+	const auto checkResult = InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
+		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), isSuccessful);
+
+	if (isSuccessful)
+	{
+		ui->dependenciesListWidget->setCheckStatus(checkResult);
+		ui->checkButton->setEnabled(false);
+
+		QApplication::beep();
+
+		if (!ui->dependenciesListWidget->getAreAllSatisfied())
+		{
+			QMessageBox::warning(this, "Check completed"
+				, "Check completed. Not all dependencies are satisfied. If you want to install patch anyway, "
+				"mark all not satisfied dependencies manually in the list."
+				, QMessageBox::Ok, QMessageBox::Ok);
+		}
+		else
+		{
+			QMessageBox::information(this, "Check completed"
+				, "Check completed. All dependencies are satisfied. Patch may be installed safely."
+				, QMessageBox::Ok, QMessageBox::Ok);
+		}
+	}
+	else
+	{
+		QApplication::beep();
+		QMessageBox::warning(this, "Check error"
+			, "Error occured. See logs for detailed information."
+			, QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 
 void InstallerWidget::onInstallButtonClicked()
 {
-	InstallerHandler::installPatch(DatabaseProvider::database()
+	if (!DatabaseProvider::isConnected())
+	{
+		// Add opening login window
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	if (!ui->dependenciesListWidget->getAreAllSatisfied())
+	{
+		QApplication::beep();
+		const auto dialogResult = QMessageBox::warning(this, "Unsafe installation"
+			,"WARNING: Not all dependencies are satisfied. Installation may cause database errors. "
+			"Are you sure to continue?"
+			, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+		if (dialogResult == QMessageBox::Cancel)
+		{
+			return;
+		}
+	}
+
+	if(InstallerHandler::installPatch(DatabaseProvider::database()
 		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::server()
-		, DatabaseProvider::port(), patchDir.absolutePath());
+		, DatabaseProvider::port(), patchDir.absolutePath()))
+	{
+		QApplication::beep();
+		QMessageBox::information(this, "Installation completed"
+			, "Installation completed. See logs for detailed information."
+			, QMessageBox::Ok, QMessageBox::Ok);
+	}
+	else
+	{
+		QApplication::beep();
+		QMessageBox::warning(this, "Installation error"
+			, "Error occured. See logs for detailed information."
+			, QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 
+void InstallerWidget::onItemCheckChanged()
+{
+	if (ui->dependenciesListWidget->getCheckedCount() == ui->dependenciesListWidget->topLevelItemCount())
+	{
+		if (!ui->dependenciesListWidget->getAreAllSatisfied())
+		{
+			ui->installInfoLabel->setText("Warning: Some dependencies are not satisfied!");
+		}
+		else
+		{
+			ui->installInfoLabel->setText("All dependencies are satisfied.");
+		}
+		
+		ui->installButton->setEnabled(true);
+	}
+	else
+	{
+		ui->installInfoLabel->setText("To enable installation, mark not satisfied dependencies manually.");
+		ui->installButton->setEnabled(false);
+	}
+}

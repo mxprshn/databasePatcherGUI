@@ -34,4 +34,5 @@ private slots:
 	void onOpenButtonClicked();
 	void onCheckButtonClicked();
 	void onInstallButtonClicked();
+	void onItemCheckChanged();
 };

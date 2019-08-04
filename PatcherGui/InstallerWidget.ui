@@ -16,7 +16,7 @@
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
   </property>
-  <layout class="QGridLayout" name="mainLayout" rowstretch="0,1">
+  <layout class="QGridLayout" name="mainLayout" rowstretch="0,1" columnstretch="1,1">
    <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="openPatchGroupBox">
      <property name="title">
@@ -187,26 +187,28 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="installButtonLayout">
+        <property name="spacing">
+         <number>7</number>
+        </property>
         <property name="topMargin">
          <number>0</number>
         </property>
         <item>
-         <spacer name="installButtonSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QLabel" name="installInfoLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string>Some dependencies not satisfied!</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

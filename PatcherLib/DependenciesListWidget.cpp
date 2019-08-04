@@ -3,12 +3,14 @@
 #include "PatchList.h"
 #include <QHeaderView>
 #include <QBitArray>
- 
+
 const QHash<int, QString> DependenciesListWidget::statusIcons = QHash<int, QString>({ {waitingForCheck, ":/images/unchecked.svg"}
 		, {satisfied, ":/images/checked.svg"}, {notSatisfied, ":/images/error.svg"} });
 
 DependenciesListWidget::DependenciesListWidget(QWidget *parent)
 	: QTreeWidget(parent)
+	, checkedCount(0)
+	, areAllSatisfied(false)
 {
 	setColumnCount(4);
 	QStringList headerLabels;
@@ -18,38 +20,44 @@ DependenciesListWidget::DependenciesListWidget(QWidget *parent)
 	headerLabels.insert(statusColumn, "Status");
 	setHeaderLabels(headerLabels);
 	setRootIsDecorated(false);
-	setSelectionMode(NoSelection);
+	setSelectionMode(SingleSelection);
 	header()->setStretchLastSection(false);
 	header()->setSectionResizeMode(typeColumn, QHeaderView::ResizeMode::ResizeToContents);
 	header()->setSectionResizeMode(schemaColumn, QHeaderView::ResizeMode::ResizeToContents);
 	header()->setSectionResizeMode(nameColumn, QHeaderView::ResizeMode::Stretch);
 	header()->setSectionResizeMode(statusColumn, QHeaderView::ResizeMode::ResizeToContents);
+
 	connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
 }
 
 bool DependenciesListWidget::setCheckStatus(const QBitArray& checkResult)
 {
-	if (checkResult.count() - 1 != topLevelItemCount())
+	if (checkResult.count() != topLevelItemCount())
 	{
 		return false;
 	}
-	
-	for (auto i = 0; i < checkResult.count() - 1; ++i)
+
+	areAllSatisfied = true;
+
+	for (auto i = 0; i < checkResult.count(); ++i)
 	{
-		if (checkResult[i + 1])
+		if (checkResult[i])
 		{
 			// Save top level item as variable?
+			++checkedCount;
 			topLevelItem(i)->setCheckState(statusColumn, Qt::Checked);
 			topLevelItem(i)->setIcon(statusColumn, QIcon(statusIcons.value(satisfied)));
 			topLevelItem(i)->setData(statusColumn, Qt::UserRole, satisfied);
 		}
 		else
 		{
+			areAllSatisfied = false;
 			topLevelItem(i)->setIcon(statusColumn, QIcon(statusIcons.value(notSatisfied)));
 			topLevelItem(i)->setData(statusColumn, Qt::UserRole, notSatisfied);
 		}
 	}
 
+	emit itemCheckChanged();
 	return true;
 }
 
@@ -68,10 +76,30 @@ void DependenciesListWidget::add(int typeIndex, const class QString& schema, con
 	addTopLevelItem(newItem);
 }
 
+void DependenciesListWidget::clear()
+{
+	QTreeWidget::clear();
+	checkedCount = 0;
+	areAllSatisfied = false;
+}
+
+
+int DependenciesListWidget::getCheckedCount() const
+{
+	return checkedCount;
+}
+
+bool DependenciesListWidget::getAreAllSatisfied() const
+{
+	return areAllSatisfied;
+}
+
 void DependenciesListWidget::onItemClicked(QTreeWidgetItem *item, int column)
 {
 	if (item->checkState(statusColumn) != Qt::Checked && item->data(statusColumn, Qt::UserRole).toInt() != waitingForCheck)
 	{
+		++checkedCount;
 		item->setCheckState(statusColumn, Qt::Checked);
+		emit itemCheckChanged();
 	}
 }
