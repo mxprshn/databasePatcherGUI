@@ -98,8 +98,8 @@ bool PatchList::importFile(const QString &path)
 	{
 		int type = ObjectTypes::typeCount;
 		QString schemaName = "";
-		QString name = "";
-		QStringList parameters;
+		QString name;
+		QStringList parameters = QStringList("");
 
 		const auto readString = input.readLine();
 
@@ -116,7 +116,7 @@ bool PatchList::importFile(const QString &path)
 			name = splitResult.at(1);
 			type = ObjectTypes::script;
 		}
-		else if (QRegExp("([^ ])+ ([^ ])+ function \\( (([^,() ])+ )+\\)").exactMatch(readString))
+		else if (QRegExp("([^ ])+ ([^ ])+ function \\( (([^,() ])+ )*\\)").exactMatch(readString))
 		{
 			auto splitResult = readString.split(QRegExp("(\\ |\\(|\\))"), QString::SkipEmptyParts);
 			schemaName = splitResult.first();
@@ -125,7 +125,11 @@ bool PatchList::importFile(const QString &path)
 			splitResult.pop_front();
 			type = ObjectTypes::function;
 			splitResult.pop_front();
-			parameters = splitResult;
+
+			if (!splitResult.isEmpty())
+			{
+				parameters = splitResult;
+			}			
 		}
 		else
 		{

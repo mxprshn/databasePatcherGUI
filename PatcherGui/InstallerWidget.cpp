@@ -13,6 +13,9 @@
 #include <QBitArray>
 #include <QStringList>
 #include <QFile>
+#include <QDir>
+#include <QFileDialog>
+#include <QMessageBox>
 #include "InstallerWidget.h"
 #include "InstallerHandler.h"
 #include "PatchListWidget.h"
@@ -26,19 +29,20 @@
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::InstallerWidget)
+	, patchDir(QDir(QString()))
 	, patchList(new PatchList)
 	, dependenciesList(new PatchList)
+	, isPatchOpened(false)
 {
 	ui->setupUi(this);
-
-	initPatchList();
-	initDependenciesList();
+	initOpenButton();
 
 	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
 	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
 		SLOT(onCheckButtonClicked()));
 	connect(ui->checkButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
 	connect(ui->installButton, SIGNAL(clicked()), this, SLOT(onInstallButtonClicked()));
+	connect(ui->openPatchButton, SIGNAL(clicked()), this, SLOT(onOpenButtonClicked()));
 }
 
 InstallerWidget::~InstallerWidget()
@@ -48,14 +52,25 @@ InstallerWidget::~InstallerWidget()
 	delete ui;
 }
 
+void InstallerWidget::initOpenButton()
+{
+	ui->openPatchButton->setText("Open");
+	ui->openPatchButton->setIcon(QIcon(":/images/box.svg"));
+	ui->openPatchButton->setIconSize(QSize(20, 20));
+}
+
 QAction* InstallerWidget::getTestAction() const
 {
 	return testDependenciesAction;
 }
 
-void InstallerWidget::initPatchList()
+bool InstallerWidget::initPatchList(const QString &filePath)
 {
-	patchList->importFile("PatchList.txt");
+	if (!patchList->importFile(filePath))
+	{
+		patchList->clear();
+		return false;		
+	}
 
 	for (auto i = 0; i < patchList->count(); ++i)
 	{
@@ -63,19 +78,115 @@ void InstallerWidget::initPatchList()
 		ui->patchListWidget->add(type, patchList->at(i).getSchema(), patchList->at(i).getName()
 			+ QString(type == ObjectTypes::function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""), false);
 	}
+
+	return true;
 }
 
-void InstallerWidget::initDependenciesList()
+bool InstallerWidget::initDependenciesList(const QString &filePath)
 {
-	dependenciesList->importFile("C:\\Users\\mxprshn\\Desktop\\test\\DependencyList.dpn");
+	if(!dependenciesList->importFile(filePath))
+	{
+		dependenciesList->clear();
+		return false;
+	}
 
 	for (auto i = 0; i < dependenciesList->count(); ++i)
 	{
 		const auto type = dependenciesList->at(i).getType();
 		ui->dependenciesListWidget->add(type, dependenciesList->at(i).getSchema(), dependenciesList->at(i).getName()
-			+ QString(type == ObjectTypes::function ? "(" + patchList->at(i).getParameters().join(",") + ")" : ""));
+			+ QString(type == ObjectTypes::function ? "(" + dependenciesList->at(i).getParameters().join(",") + ")" : ""));
 	}
+
+	return true;
 }
+
+void InstallerWidget::clearCurrentPatch()
+{
+	dependenciesList->clear();
+	patchList->clear();
+	patchDir = QDir(QString());
+	ui->dependenciesListWidget->clear();
+	ui->patchListWidget->clear();
+	ui->patchPathEdit->setPlaceholderText("Patch folder path");
+	ui->patchPathEdit->setEnabled(true);
+	initOpenButton();
+	isPatchOpened = false;
+}
+
+void InstallerWidget::onOpenButtonClicked()
+{
+	if (isPatchOpened)
+	{
+		const auto dialogResult = QMessageBox::warning(this, "Close", "Are you sure to close current patch?"
+			, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+		if (dialogResult == QMessageBox::Ok)
+		{
+			clearCurrentPatch();
+		}
+		
+		return;
+	}
+
+	if (ui->patchPathEdit->text().isEmpty())
+	{
+		patchDir.setPath(QFileDialog::getExistingDirectory(this, "Choose patch directory"));
+	}
+	else
+	{
+		patchDir.setPath(ui->patchPathEdit->text());
+
+		if (!patchDir.exists())
+		{
+			QMessageBox::warning(this, "Open error", "Patch directory does not exist."
+				, QMessageBox::Ok, QMessageBox::Ok);
+			clearCurrentPatch();
+			return;
+		}
+	}
+
+	const QString patchListFileName = "PatchList.txt";
+	const QString dependenciesListFileName = "DependencyList.dpn";
+
+	if (!patchDir.exists(patchListFileName))
+	{
+		QMessageBox::warning(this, "Open error", patchListFileName + " does not exist in patch directory."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		clearCurrentPatch();
+		return;
+	}
+
+	if (!patchDir.exists(dependenciesListFileName))
+	{
+		QMessageBox::warning(this, "Open error", dependenciesListFileName + " does not exist in patch directory."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		clearCurrentPatch();
+		return;
+	}
+
+	if (!initPatchList(patchDir.filePath(patchListFileName)))
+	{
+		QMessageBox::warning(this, "Open error", "Incorrect file " + patchListFileName + " ."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		clearCurrentPatch();
+		return;
+	}
+
+	if (!initDependenciesList(patchDir.filePath(dependenciesListFileName)))
+	{
+		QMessageBox::warning(this, "Open error", "Incorrect file " + dependenciesListFileName + " ."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		clearCurrentPatch();
+		return;
+	}
+
+	ui->patchPathEdit->clear();
+	ui->patchPathEdit->setPlaceholderText("Opened patch: " + patchDir.absolutePath());
+	ui->patchPathEdit->setEnabled(false);
+	ui->openPatchButton->setText("Close");
+	isPatchOpened = true;
+}
+
 
 void InstallerWidget::onCheckButtonClicked()
 {

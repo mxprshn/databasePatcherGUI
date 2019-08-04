@@ -199,8 +199,7 @@ void BuilderWidget::onBuildButtonClicked()
 
 	if (!patchDir.exists())
 	{
-		QMessageBox::warning(this, "Build error"
-			, "Target directory does not exist."
+		QMessageBox::warning(this, "Build error", "Target directory does not exist."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
