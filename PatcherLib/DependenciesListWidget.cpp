@@ -24,6 +24,7 @@ DependenciesListWidget::DependenciesListWidget(QWidget *parent)
 	header()->setSectionResizeMode(schemaColumn, QHeaderView::ResizeMode::ResizeToContents);
 	header()->setSectionResizeMode(nameColumn, QHeaderView::ResizeMode::Stretch);
 	header()->setSectionResizeMode(statusColumn, QHeaderView::ResizeMode::ResizeToContents);
+	connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
 }
 
 bool DependenciesListWidget::setCheckStatus(const QBitArray& checkResult)
@@ -37,12 +38,15 @@ bool DependenciesListWidget::setCheckStatus(const QBitArray& checkResult)
 	{
 		if (checkResult[i + 1])
 		{
+			// Save top level item as variable?
 			topLevelItem(i)->setCheckState(statusColumn, Qt::Checked);
 			topLevelItem(i)->setIcon(statusColumn, QIcon(statusIcons.value(satisfied)));
+			topLevelItem(i)->setData(statusColumn, Qt::UserRole, satisfied);
 		}
 		else
 		{
 			topLevelItem(i)->setIcon(statusColumn, QIcon(statusIcons.value(notSatisfied)));
+			topLevelItem(i)->setData(statusColumn, Qt::UserRole, notSatisfied);
 		}
 	}
 
@@ -59,6 +63,15 @@ void DependenciesListWidget::add(int typeIndex, const class QString& schema, con
 	newItem->setText(nameColumn, name);
 	newItem->setIcon(statusColumn, QIcon(statusIcons.value(waitingForCheck)));
 	newItem->setCheckState(statusColumn, Qt::Unchecked);
+	newItem->setData(statusColumn, Qt::UserRole, waitingForCheck);
 	newItem->setFlags(Qt::ItemIsEnabled);
 	addTopLevelItem(newItem);
+}
+
+void DependenciesListWidget::onItemClicked(QTreeWidgetItem *item, int column)
+{
+	if (item->checkState(statusColumn) != Qt::Checked && item->data(statusColumn, Qt::UserRole).toInt() != waitingForCheck)
+	{
+		item->setCheckState(statusColumn, Qt::Checked);
+	}
 }

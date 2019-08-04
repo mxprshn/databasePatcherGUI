@@ -38,9 +38,6 @@
     <ClCompile Include="BuilderHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InstallListModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PatchListElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,9 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="BuilderHandler.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="InstallListModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="UiController.h">

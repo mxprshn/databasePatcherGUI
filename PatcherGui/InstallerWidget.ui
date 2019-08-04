@@ -265,6 +265,14 @@
    <header>PatchListWidget.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>patchPathEdit</tabstop>
+  <tabstop>openPatchButton</tabstop>
+  <tabstop>dependenciesListWidget</tabstop>
+  <tabstop>patchListWidget</tabstop>
+  <tabstop>checkButton</tabstop>
+  <tabstop>installButton</tabstop>
+ </tabstops>
  <resources>
   <include location="PatcherResources.qrc"/>
  </resources>

@@ -199,6 +199,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>hostLineEdit</tabstop>
+  <tabstop>portLineEdit</tabstop>
+  <tabstop>databaseLineEdit</tabstop>
+  <tabstop>usernameLineEdit</tabstop>
+  <tabstop>passwordLineEdit</tabstop>
+ </tabstops>
  <resources>
   <include location="PatcherResources.qrc"/>
  </resources>

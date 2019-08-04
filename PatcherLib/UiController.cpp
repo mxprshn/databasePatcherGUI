@@ -5,7 +5,6 @@
 #include "DatabaseProvider.h"
 #include "BuilderHandler.h"
 #include "InstallerHandler.h"
-#include "InstallListModel.h"
 
 UiController::UiController(QObject* parent)
 	: schemaListModel(new QSqlQueryModel)

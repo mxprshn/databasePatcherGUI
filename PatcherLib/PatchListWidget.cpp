@@ -77,6 +77,7 @@ void PatchListWidget::add(int typeIndex, const class QString& schema, const clas
 	}
 
 	addTopLevelItem(newItem);
+	scrollToItem(newItem);
 }
 
 void PatchListWidget::dropEvent(QDropEvent *event)

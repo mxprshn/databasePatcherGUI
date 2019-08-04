@@ -27,7 +27,7 @@ private:
 	bool initPatchList(const QString &filePath);
 	bool initDependenciesList(const QString &filePath);
 	void clearCurrentPatch();
-	void initOpenButton();
+	void setReadyToOpen();
 	bool isPatchOpened;
 	QAction *testDependenciesAction;
 private slots:

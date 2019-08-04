@@ -29,13 +29,12 @@
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::InstallerWidget)
-	, patchDir(QDir(QString()))
 	, patchList(new PatchList)
 	, dependenciesList(new PatchList)
 	, isPatchOpened(false)
 {
 	ui->setupUi(this);
-	initOpenButton();
+	setReadyToOpen();
 
 	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
 	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
@@ -52,8 +51,9 @@ InstallerWidget::~InstallerWidget()
 	delete ui;
 }
 
-void InstallerWidget::initOpenButton()
+void InstallerWidget::setReadyToOpen()
 {
+	ui->patchPathEdit->setPlaceholderText("Patch folder path (leave empty to open in explorer)");
 	ui->openPatchButton->setText("Open");
 	ui->openPatchButton->setIcon(QIcon(":/images/box.svg"));
 	ui->openPatchButton->setIconSize(QSize(20, 20));
@@ -104,12 +104,12 @@ void InstallerWidget::clearCurrentPatch()
 {
 	dependenciesList->clear();
 	patchList->clear();
-	patchDir = QDir(QString());
+	patchDir = QDir();
 	ui->dependenciesListWidget->clear();
 	ui->patchListWidget->clear();
 	ui->patchPathEdit->setPlaceholderText("Patch folder path");
 	ui->patchPathEdit->setEnabled(true);
-	initOpenButton();
+	setReadyToOpen();
 	isPatchOpened = false;
 }
 
@@ -131,6 +131,12 @@ void InstallerWidget::onOpenButtonClicked()
 	if (ui->patchPathEdit->text().isEmpty())
 	{
 		patchDir.setPath(QFileDialog::getExistingDirectory(this, "Choose patch directory"));
+
+		if (patchDir.path().isEmpty())
+		{
+			clearCurrentPatch();
+			return;
+		}
 	}
 	else
 	{
@@ -184,6 +190,8 @@ void InstallerWidget::onOpenButtonClicked()
 	ui->patchPathEdit->setPlaceholderText("Opened patch: " + patchDir.absolutePath());
 	ui->patchPathEdit->setEnabled(false);
 	ui->openPatchButton->setText("Close");
+	ui->openPatchButton->setIcon(QIcon(":/images/close.svg"));
+	ui->openPatchButton->setIconSize(QSize(12, 12));
 	isPatchOpened = true;
 }
 
@@ -191,13 +199,13 @@ void InstallerWidget::onOpenButtonClicked()
 void InstallerWidget::onCheckButtonClicked()
 {
 	ui->dependenciesListWidget->setCheckStatus(InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
-		, DatabaseProvider::server(), DatabaseProvider::port(), "C:\\Users\\mxprshn\\Desktop\\test"));
+		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath()));
 }
 
 void InstallerWidget::onInstallButtonClicked()
 {
 	InstallerHandler::installPatch(DatabaseProvider::database()
 		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::server()
-		, DatabaseProvider::port(), "C:\\Users\\mxprshn\\Desktop\\test");
+		, DatabaseProvider::port(), patchDir.absolutePath());
 }
 

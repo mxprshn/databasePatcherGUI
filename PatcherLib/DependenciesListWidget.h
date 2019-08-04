@@ -28,4 +28,6 @@ public:
 	void add(int typeIndex, const QString &schema, const QString &name);
 private:
 	static const QHash<int, QString> statusIcons;
+private slots:
+	void onItemClicked(QTreeWidgetItem *item, int column);
 };
