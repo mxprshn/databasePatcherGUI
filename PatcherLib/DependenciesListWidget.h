@@ -24,11 +24,17 @@ public:
 	};
 
 	DependenciesListWidget(QWidget *parent);
-	~DependenciesListWidget();
 	bool setCheckStatus(const QBitArray &checkResult);
-	static QString typeIcon(int typeIndex);
-	static QString statusIcon(int status);
+	void add(int typeIndex, const QString &schema, const QString &name);
+	void clear();
+	int getCheckedCount() const;
+	bool getAreAllSatisfied() const;
 private:
-	static const QHash<int, QString> *typeIcons;
-	static const QHash<int, QString> *statusIcons;
+	int checkedCount;
+	bool areAllSatisfied;
+	static const QHash<int, QString> statusIcons;
+signals:
+	void itemCheckChanged();
+private slots:
+	void onItemClicked(QTreeWidgetItem *item, int column);
 };

@@ -49,9 +49,9 @@ bool InstallerHandler::installPatch(const QString &database, const QString &user
 }
 
 QBitArray InstallerHandler::checkDependencies(const QString &database, const QString &user, const QString &password,
-	const QString &server, int port, const QString &path)
+	const QString &server, int port, const QString &path, bool &isSuccessful)
 {
-	QBitArray checkResult(1, true);
+	QBitArray checkResult;
 
 	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(database).arg(user).arg(password).arg(server)
 		.arg(port);
@@ -71,23 +71,25 @@ QBitArray InstallerHandler::checkDependencies(const QString &database, const QSt
 
 	if (!installerProcess.waitForStarted())
 	{
-		checkResult[0] = false;
+		isSuccessful = false;
 		return checkResult;
 	}
 
-	if (!installerProcess.waitForFinished() || installerProcess.exitCode() != 0)
+	// Add processing of the return value!
+
+	if (!installerProcess.waitForFinished())
 	{
-		checkResult[0] = false;
+		isSuccessful = false;
 		return checkResult;
 	}
 
 	installerProcess.setReadChannel(QProcess::ProcessChannel::StandardOutput);
 	QByteArray readData = installerProcess.readAll();
-	checkResult.resize(readData.count() + 1);
+	checkResult.resize(readData.count());
 
-	for (auto i = 1; i <= checkResult.count(); ++i)
+	for (auto i = 0; i < checkResult.count(); ++i)
 	{
-		switch (readData[i - 1])
+		switch (readData[i])
 		{
 			case '0':
 			{
@@ -101,11 +103,13 @@ QBitArray InstallerHandler::checkDependencies(const QString &database, const QSt
 			}
 			default:
 			{
-				checkResult[0] = false;
+				isSuccessful = false;
+				checkResult.clear();
 				return checkResult;
 			}
 		}
 	}
 
+	isSuccessful = true;
 	return checkResult;
 }

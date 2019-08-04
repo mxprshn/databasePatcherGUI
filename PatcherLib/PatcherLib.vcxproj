@@ -101,8 +101,8 @@
     <ClCompile Include="DatabaseProvider.cpp" />
     <ClCompile Include="DependenciesListWidget.cpp" />
     <ClCompile Include="InstallerHandler.cpp" />
-    <ClCompile Include="InstallListModel.cpp" />
     <ClCompile Include="LogOutputDevice.cpp" />
+    <ClCompile Include="ObjectTypes.cpp" />
     <ClCompile Include="PatchList.cpp" />
     <ClCompile Include="PatchListElement.cpp" />
     <ClCompile Include="PatchListWidget.cpp" />
@@ -138,15 +138,11 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
     </QtMoc>
-    <QtMoc Include="InstallListModel.h">
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
-    </QtMoc>
     <QtMoc Include="UiController.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
     </QtMoc>
-    <ClInclude Include="ObjectType.h" />
+    <ClInclude Include="ObjectTypes.h" />
     <ClInclude Include="patcherlib_global.h" />
   </ItemGroup>
   <ItemGroup>

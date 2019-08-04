@@ -51,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this->mainController, SIGNAL(disconnectedFromDatabase()), this, SLOT(setDefaultConnectionInfo()));
 	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(show()));
 	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
-	connect(this->installerWidget, SIGNAL(installButtonClicked()), this, SLOT(install()));
 
 	setCentralWidget(modeTab);
 	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
@@ -125,9 +124,4 @@ void MainWindow::setDefaultConnectionInfo()
 	databaseInformation->setText("Connect to database!");
 	loginAction->setEnabled(true);
 	logoutAction->setDisabled(true);
-}
-
-void MainWindow::install()
-{
-	mainController->installPatch();
 }

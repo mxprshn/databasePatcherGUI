@@ -20,7 +20,7 @@ public:
 	static bool installPatch(const QString &database, const QString &user, const QString &password,
 		const QString &server, int port, const QString &path);
 	static QBitArray checkDependencies(const QString &database, const QString &user, const QString &password,
-		const QString &server, int port, const QString &path);
+		const QString &server, int port, const QString &path, bool &isSuccessful);
 private:
 	static QString program;
 	static QIODevice *outputDevice;

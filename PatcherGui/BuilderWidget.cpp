@@ -11,7 +11,7 @@
 #include "PatchListWidget.h"
 #include "PatchList.h"
 #include "DatabaseProvider.h"
-#include "ObjectType.h"
+#include "ObjectTypes.h"
 #include "BuilderHandler.h"
 #include "ui_BuilderWidget.h"
 
@@ -27,13 +27,13 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 {
 	ui->setupUi(this);
 
-	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", script);
-	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", table);
-	ui->typeComboBox->addItem(QIcon(":/images/sequence.svg"), "sequence", sequence);
-	ui->typeComboBox->addItem(QIcon(":/images/function.svg"), "function", function);
-	ui->typeComboBox->addItem(QIcon(":/images/view.svg"), "view", view);
-	ui->typeComboBox->addItem(QIcon(":/images/trigger.svg"), "trigger", trigger);
-	ui->typeComboBox->addItem(QIcon(":/images/index.svg"), "index", index);
+	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", ObjectTypes::script);
+	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", ObjectTypes::table);
+	ui->typeComboBox->addItem(QIcon(":/images/sequence.svg"), "sequence", ObjectTypes::sequence);
+	ui->typeComboBox->addItem(QIcon(":/images/function.svg"), "function", ObjectTypes::function);
+	ui->typeComboBox->addItem(QIcon(":/images/view.svg"), "view", ObjectTypes::view);
+	ui->typeComboBox->addItem(QIcon(":/images/trigger.svg"), "trigger", ObjectTypes::trigger);
+	ui->typeComboBox->addItem(QIcon(":/images/index.svg"), "index", ObjectTypes::index);
 
 	connect(ui->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
 	connect(ui->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
@@ -57,18 +57,18 @@ void BuilderWidget::onAddButtonClicked()
 {
 	const auto nameInput = ui->nameEdit->text().remove(QRegExp("\\ "));
 
-	if (ui->typeComboBox->currentData().toInt() == script)
-	{
-		addScripts(nameInput);
-		return;
-	}
-
 	if (!DatabaseProvider::isConnected())
 	{
 		// Add opening login window
 		QMessageBox::warning(this, "Database error"
 			, "Not connected to database."
 			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	if (ui->typeComboBox->currentData().toInt() == ObjectTypes::script)
+	{
+		addScripts(nameInput);
 		return;
 	}
 
@@ -85,32 +85,32 @@ void BuilderWidget::onAddButtonClicked()
 
 	switch (ui->typeComboBox->currentData().toInt())
 	{
-		case table:
+		case ObjectTypes::table:
 		{
 			exists = DatabaseProvider::tableExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
-		case sequence:
+		case ObjectTypes::sequence:
 		{
 			exists = DatabaseProvider::sequenceExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
-		case view:
+		case ObjectTypes::view:
 		{
 			exists = DatabaseProvider::viewExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
-		case trigger:
+		case ObjectTypes::trigger:
 		{
 			exists = DatabaseProvider::triggerExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
-		case function:
+		case ObjectTypes::function:
 		{
 			exists = DatabaseProvider::functionExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
 		}
-		case index:
+		case ObjectTypes::index:
 		{
 			exists = DatabaseProvider::indexExists(ui->schemaComboBox->currentText(), nameInput);
 			break;
@@ -165,9 +165,9 @@ void BuilderWidget::addScripts(const QString &input)
 	{
 		const auto currentFileName = fileList[i];
 
-		if (!ui->buildListWidget->itemExists(script, "", currentFileName))
+		if (!ui->buildListWidget->itemExists(ObjectTypes::script, "", currentFileName))
 		{
-			ui->buildListWidget->add(script, "", currentFileName, true);
+			ui->buildListWidget->add(ObjectTypes::script, "", currentFileName, true);
 		}
 		else
 		{
@@ -194,13 +194,29 @@ void BuilderWidget::onExplorerButtonClicked()
 
 void BuilderWidget::onBuildButtonClicked()
 {
+	// Separate method?
+	if (!DatabaseProvider::isConnected())
+	{
+		// Add opening login window
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
+	if (ui->patchPathEdit->text().isEmpty())
+	{
+		QMessageBox::information(this, "Build error", "Please, choose target directory."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		return;
+	}
+
 	QDir patchDir;
 	patchDir.setPath(ui->patchPathEdit->text());
 
 	if (!patchDir.exists())
 	{
-		QMessageBox::warning(this, "Build error"
-			, "Target directory does not exist."
+		QMessageBox::warning(this, "Build error", "Target directory does not exist."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
@@ -224,16 +240,15 @@ void BuilderWidget::onBuildButtonClicked()
 		{
 			QApplication::beep();
 			QMessageBox::information(this, "Build completed"
-				, "Build completed. Watch logs for detailed information."
+				, "Build completed. See logs for detailed information."
 				, QMessageBox::Ok, QMessageBox::Ok);
 		}
 		else
 		{
 			QApplication::beep();
 			QMessageBox::warning(this, "Build error"
-				, "Error occured. Watch logs for detailed information."
-				, QMessageBox::Ok, QMessageBox::Ok);
-			
+				, "Error occured. See logs for detailed information."
+				, QMessageBox::Ok, QMessageBox::Ok);			
 		}
 	}
 }
@@ -291,7 +306,7 @@ void BuilderWidget::onItemSelectionChanged()
 
 void BuilderWidget::onCurrentTypeChanged(int type)
 {
-	if (type == script)
+	if (type == ObjectTypes::script)
 	{
 		ui->schemaComboBox->setDisabled(true);
 		ui->nameEdit->setPlaceholderText("SQL script file paths (leave empty to open in explorer)");
@@ -302,14 +317,14 @@ void BuilderWidget::onCurrentTypeChanged(int type)
 		ui->schemaComboBox->setEnabled(true);
 	}
 
-	if (type != function && type != script)
+	if (type != ObjectTypes::function && type != ObjectTypes::script)
 	{
 		ui->nameEdit->setPlaceholderText(ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
 			+ " name");
 		ui->nameLabel->setText("Name");
 	}
 
-	if (type == function)
+	if (type == ObjectTypes::function)
 	{
 		ui->nameEdit->setPlaceholderText("Function signature (e.g. function(arg_1,arg_2))");
 		ui->nameLabel->setText("Signature (Invalid, function may not be found))");
@@ -319,7 +334,7 @@ void BuilderWidget::onCurrentTypeChanged(int type)
 
 void BuilderWidget::onNameTextChanged(const QString &input)
 {
-	if (ui->typeComboBox->currentData().toInt() != function)
+	if (ui->typeComboBox->currentData().toInt() != ObjectTypes::function)
 	{
 		return;
 	}

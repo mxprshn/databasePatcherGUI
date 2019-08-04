@@ -4,11 +4,7 @@
 
 #include "PatchList.h"
 #include "PatchListElement.h"
-#include "ObjectType.h"
-
-const QHash<int, QString> *PatchList::typeNames = new QHash<int, QString>({ {script, "script"}, {table, "table"}
-	, {sequence, "sequence"}, {function, "function"}, {view, "view"}, {trigger, "trigger"}
-	, {index, "index"} });
+#include "ObjectTypes.h"
 
 PatchList::PatchList()
 	: elements(new QList<PatchListElement*>)
@@ -60,10 +56,10 @@ bool PatchList::exportFile(const QString &path) const
 		const auto schema = elements->at(i)->getSchema();
 		const auto name = elements->at(i)->getName();
 		const auto type = elements->at(i)->getType();
-		const auto typeName = typeNames->value(type);
+		const auto typeName = ObjectTypes::typeNames.value(type);
 		const auto parameters = elements->at(i)->getParameters();
 
-		if (type == script)
+		if (type ==ObjectTypes::script)
 		{
 			patchFileStream << typeName << " " << name;
 		}
@@ -71,7 +67,7 @@ bool PatchList::exportFile(const QString &path) const
 		{
 			patchFileStream << schema << " " << name << " " << typeName;
 
-			if (type == function)
+			if (type == ObjectTypes::function)
 			{
 				patchFileStream << " " << getParametersString(parameters);
 			}
@@ -100,10 +96,10 @@ bool PatchList::importFile(const QString &path)
 
 	while (!input.atEnd())
 	{
-		int type = typeCount;
+		int type = ObjectTypes::typeCount;
 		QString schemaName = "";
-		QString name = "";
-		QStringList parameters;
+		QString name;
+		QStringList parameters = QStringList("");
 
 		const auto readString = input.readLine();
 
@@ -112,24 +108,28 @@ bool PatchList::importFile(const QString &path)
 			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
 			schemaName = splitResult.at(0);
 			name = splitResult.at(1);
-			type = typeNames->key(splitResult.at(2));
+			type = ObjectTypes::typeNames.key(splitResult.at(2));
 		}
 		else if (QRegExp("script ([^ ])+").exactMatch(readString))
 		{
 			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
 			name = splitResult.at(1);
-			type = script;
+			type = ObjectTypes::script;
 		}
-		else if (QRegExp("([^ ])+ ([^ ])+ function \\( (([^,() ])+ )+\\)").exactMatch(readString))
+		else if (QRegExp("([^ ])+ ([^ ])+ function \\( (([^,() ])+ )*\\)").exactMatch(readString))
 		{
 			auto splitResult = readString.split(QRegExp("(\\ |\\(|\\))"), QString::SkipEmptyParts);
 			schemaName = splitResult.first();
 			splitResult.pop_front();
 			name = splitResult.first();
 			splitResult.pop_front();
-			type = function;
+			type = ObjectTypes::function;
 			splitResult.pop_front();
-			parameters = splitResult;
+
+			if (!splitResult.isEmpty())
+			{
+				parameters = splitResult;
+			}			
 		}
 		else
 		{
@@ -155,11 +155,6 @@ QString PatchList::getParametersString(const QStringList &parameters)
 	}
 
 	return result + ")";
-}
-
-QString PatchList::typeName(int typeIndex)
-{
-	return typeNames->value(typeIndex);
 }
 
 PatchList::~PatchList()

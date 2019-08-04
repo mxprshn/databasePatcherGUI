@@ -8,7 +8,6 @@ class QAbstractItemModel;
 class DatabaseProvider;
 class BuilderHandler;
 class InstallerHandler;
-class InstallListModel;
 class DependenciesListModel;
 class QSqlQueryModel;
 

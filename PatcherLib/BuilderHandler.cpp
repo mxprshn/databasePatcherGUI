@@ -42,9 +42,9 @@ bool BuilderHandler::buildPatch(const QString& database, const QString& user, co
 		return false;
 	}
 
-	// Add exit code processing
+	// Add exit code processing!!!
 
-	if (!builderProcess.waitForFinished() || builderProcess.exitCode() != 0)
+	if (!builderProcess.waitForFinished())
 	{
 		return false;
 	}

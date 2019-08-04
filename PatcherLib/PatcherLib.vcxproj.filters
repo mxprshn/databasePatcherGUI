@@ -38,9 +38,6 @@
     <ClCompile Include="BuilderHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InstallListModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PatchListElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -56,12 +53,12 @@
     <ClCompile Include="DependenciesListWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="patcherlib_global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PatchList.h">
@@ -73,12 +70,12 @@
     <ClInclude Include="DatabaseProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="BuilderHandler.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="InstallListModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="UiController.h">
