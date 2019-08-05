@@ -19,8 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
 	, loginWindow(new LoginWindow(this))
 {
 	ui->setupUi(this);
-	setWindowTitle("Database patcher");
-
 	logOutputDevice->setTextEdit(ui->logTextEdit);
 	logOutputDevice->open(QIODevice::WriteOnly);
 	InstallerHandler::setOutputDevice(*logOutputDevice);

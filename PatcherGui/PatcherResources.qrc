@@ -24,6 +24,7 @@
         <file alias="box.svg">Resources/images/box.svg</file>
         <file alias="close.svg">Resources/images/close.svg</file>
         <file alias="clearList.svg">Resources/images/clearList.svg</file>
+        <file alias="mainIcon.svg">Resources/images/mainIcon.svg</file>
     </qresource>
     <qresource prefix="/data">
         <file alias="dependencies.txt">Data/dependencies.txt</file>
