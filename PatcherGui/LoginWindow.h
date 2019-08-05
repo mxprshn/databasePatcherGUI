@@ -19,13 +19,10 @@ public:
 	QString getDatabaseInput() const;
 	QString getUsernameInput() const;
 	QString getPasswordInput() const;
+	void clear();
 
 private:
 	Ui::LoginWindow *ui;
-
-private slots:
-	void clear() const;
-
 signals:
 	void connectButtonClicked();
 };

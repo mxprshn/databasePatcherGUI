@@ -4,6 +4,7 @@
 #include "ui_BuilderWidget.h"
 
 class PatchList;
+class QSqlQueryModel;
 
 namespace Ui
 {
@@ -17,12 +18,19 @@ class BuilderWidget : public QWidget
 public:
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
-	void setSchemaComboBoxModel(QAbstractItemModel *model);
+	void initSchemaComboBox();
+	void clearSchemaComboBox();
 private:
 	Ui::BuilderWidget *ui;
 	PatchList *patchList;
+	QSqlQueryModel *schemaListModel;
 	void addScripts(const QString &input);
 	QValidator *functionInputValidator;
+	bool checkConnection();
+	bool startPatchBuild(const QString &path);
+signals:
+	void connectionRequested();
+	void itemCountChanged();
 private slots:
 	void onAddButtonClicked();
 	void onBuildButtonClicked();
@@ -30,8 +38,9 @@ private slots:
 	void onMoveUpButtonClicked();
 	void onMoveDownButtonClicked();
 	void onRemoveButtonClicked();
+	void onClearButtonClicked();
 	void onItemSelectionChanged();
 	void onCurrentTypeChanged(int type);
 	void onNameTextChanged(const QString &input);
-	bool startPatchBuild(const QString &path);
+	void onItemCountChanged();
 };

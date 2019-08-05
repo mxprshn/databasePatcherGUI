@@ -1,6 +1,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QSqlQueryModel>
 
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
@@ -18,9 +19,11 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::BuilderWidget)
 	, patchList(new PatchList)
+	, schemaListModel(new QSqlQueryModel(this))
 	, functionInputValidator(new QRegExpValidator(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"), this))
 {
 	ui->setupUi(this);
+	ui->schemaComboBox->setModel(schemaListModel);
 
 	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", ObjectTypes::script);
 	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", ObjectTypes::table);
@@ -38,8 +41,10 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	connect(ui->typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentTypeChanged(int)));
 	connect(ui->moveUpButton, SIGNAL(clicked()), this, SLOT(onMoveUpButtonClicked()));
 	connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(onMoveDownButtonClicked()));
+	connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(onClearButtonClicked()));
 	connect(ui->explorerButton, SIGNAL(clicked()), this, SLOT(onExplorerButtonClicked()));
 	connect(ui->nameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onNameTextChanged(const QString&)));
+	connect(this, SIGNAL(itemCountChanged()), SLOT(onItemCountChanged()));
 }
 
 BuilderWidget::~BuilderWidget()
@@ -48,23 +53,42 @@ BuilderWidget::~BuilderWidget()
 	delete ui;
 }
 
+bool BuilderWidget::checkConnection()
+{
+	if (!DatabaseProvider::isConnected())
+	{
+		QApplication::beep();
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		emit connectionRequested();
+		return false;
+	}
+
+	return true;
+}
+
+
 void BuilderWidget::onAddButtonClicked()
 {
 	const auto nameInput = ui->nameEdit->text().remove(QRegExp("\\ "));
 
-	if (!DatabaseProvider::isConnected())
+	if (!checkConnection())
 	{
-		QApplication::beep();
-		// Add opening login window
-		QMessageBox::warning(this, "Database error"
-			, "Not connected to database."
-			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 
 	if (ui->typeComboBox->currentData().toInt() == ObjectTypes::script)
 	{
 		addScripts(nameInput);
+		return;
+	}
+
+	if (ui->nameEdit->text().isEmpty())
+	{
+		QMessageBox::information(this, "Item not added", "Please, enter "
+			+ ui->nameEdit->placeholderText().toLower() + "."
+			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 
@@ -118,6 +142,7 @@ void BuilderWidget::onAddButtonClicked()
 	{
 		ui->buildListWidget->add(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput, true);
 		ui->nameEdit->clear();
+		emit itemCountChanged();
 	}
 	else
 	{
@@ -183,7 +208,9 @@ void BuilderWidget::addScripts(const QString &input)
 	else
 	{
 		ui->nameEdit->clear();
-	}	
+	}
+
+	emit itemCountChanged();
 }
 
 void BuilderWidget::onExplorerButtonClicked()
@@ -193,14 +220,8 @@ void BuilderWidget::onExplorerButtonClicked()
 
 void BuilderWidget::onBuildButtonClicked()
 {
-	// Separate method?
-	if (!DatabaseProvider::isConnected())
+	if (!checkConnection())
 	{
-		QApplication::beep();
-		// Add opening login window
-		QMessageBox::warning(this, "Database error"
-			, "Not connected to database."
-			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 
@@ -264,6 +285,7 @@ void BuilderWidget::onRemoveButtonClicked()
 	if (dialogResult == QMessageBox::Ok && ui->buildListWidget->topLevelItemCount() != 0)
 	{
 		ui->buildListWidget->takeTopLevelItem(ui->buildListWidget->currentIndex().row());
+		emit itemCountChanged();
 	}
 }
 
@@ -287,6 +309,18 @@ void BuilderWidget::onMoveDownButtonClicked()
 		ui->buildListWidget->insertTopLevelItem(selectedRow + 1, selectedItem);
 		ui->buildListWidget->setCurrentItem(selectedItem);
 	}	
+}
+
+void BuilderWidget::onClearButtonClicked()
+{
+	const auto dialogResult = QMessageBox::question(this, "Clear list", "Are you sure to clear patch list?"
+		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+	if (dialogResult == QMessageBox::Ok && ui->buildListWidget->topLevelItemCount() != 0)
+	{
+		ui->buildListWidget->clear();
+		emit itemCountChanged();
+	}
 }
 
 void BuilderWidget::onItemSelectionChanged()
@@ -354,9 +388,27 @@ void BuilderWidget::onNameTextChanged(const QString &input)
 	}
 }
 
-void BuilderWidget::setSchemaComboBoxModel(QAbstractItemModel* model)
+void BuilderWidget::onItemCountChanged()
 {
-	ui->schemaComboBox->setModel(model);
+	if (ui->buildListWidget->topLevelItemCount() == 0)
+	{
+		ui->clearButton->setDisabled(true);
+	}
+	else if (!ui->clearButton->isEnabled())
+	{
+		ui->clearButton->setEnabled(true);
+	}
+}
+
+
+void BuilderWidget::initSchemaComboBox()
+{
+	DatabaseProvider::initSchemaListModel(*schemaListModel);
+}
+
+void BuilderWidget::clearSchemaComboBox()
+{
+	schemaListModel->clear();
 }
 
 bool BuilderWidget::startPatchBuild(const QString &path)

@@ -8,6 +8,7 @@ LoginWindow::LoginWindow(QWidget *parent)
 {
 	ui->setupUi(this);
 
+	// Clear edits when canceled
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginWindow::connectButtonClicked);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginWindow::close);
 }
@@ -37,7 +38,7 @@ QString LoginWindow::getPasswordInput() const
 	return ui->passwordLineEdit->text();
 }
 
-void LoginWindow::clear() const
+void LoginWindow::clear()
 {
 	foreach(QLineEdit* lineEdit, findChildren<QLineEdit*>())
 	{

@@ -73,10 +73,7 @@ bool PatchList::exportFile(const QString &path) const
 			}
 		}
 
-		if (i != elements->count() - 1)
-		{
-			patchFileStream << endl;
-		}
+		patchFileStream << endl;
 	}
 
 	file.close();
@@ -96,12 +93,17 @@ bool PatchList::importFile(const QString &path)
 
 	while (!input.atEnd())
 	{
+		const QString readString = input.readLine();
+
+		if (readString.isEmpty())
+		{
+			continue;
+		}
+
 		int type = ObjectTypes::typeCount;
 		QString schemaName = "";
 		QString name;
 		QStringList parameters = QStringList("");
-
-		const auto readString = input.readLine();
 
 		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index)").exactMatch(readString))
 		{

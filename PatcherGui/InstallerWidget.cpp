@@ -26,10 +26,7 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	ui->installButton->setEnabled(false);
 	setReadyToOpen();
 
-	testDependenciesAction = new QAction(QIcon(":/images/test.svg"), "Connect to database...", this);
-	connect(this->testDependenciesAction, SIGNAL(triggered()), this,
-		SLOT(onCheckButtonClicked()));
-	connect(ui->checkButton, SIGNAL(clicked()), this->testDependenciesAction, SLOT(trigger()));
+	connect(ui->checkButton, SIGNAL(clicked()), this, SLOT(onCheckButtonClicked()));
 	connect(ui->installButton, SIGNAL(clicked()), this, SLOT(onInstallButtonClicked()));
 	connect(ui->openPatchButton, SIGNAL(clicked()), this, SLOT(onOpenButtonClicked()));
 	connect(ui->dependenciesListWidget, SIGNAL(itemCheckChanged()), this, SLOT(onItemCheckChanged()));
@@ -42,17 +39,28 @@ InstallerWidget::~InstallerWidget()
 	delete ui;
 }
 
+bool InstallerWidget::checkConnection()
+{
+	if (!DatabaseProvider::isConnected())
+	{
+		QApplication::beep();
+		QMessageBox::warning(this, "Database error"
+			, "Not connected to database."
+			, QMessageBox::Ok, QMessageBox::Ok);
+		emit connectionRequested();
+		return false;
+	}
+
+	return true;
+}
+
+
 void InstallerWidget::setReadyToOpen()
 {
 	ui->patchPathEdit->setPlaceholderText("Patch folder path (leave empty to open in explorer)");
 	ui->openPatchButton->setText("Open");
 	ui->openPatchButton->setIcon(QIcon(":/images/box.svg"));
 	ui->openPatchButton->setIconSize(QSize(20, 20));
-}
-
-QAction* InstallerWidget::getTestAction() const
-{
-	return testDependenciesAction;
 }
 
 bool InstallerWidget::initPatchList(const QString &filePath)
@@ -197,13 +205,8 @@ void InstallerWidget::onOpenButtonClicked()
 
 void InstallerWidget::onCheckButtonClicked()
 {
-	if (!DatabaseProvider::isConnected())
+	if (!checkConnection())
 	{
-		QApplication::beep();
-		// Add opening login window
-		QMessageBox::warning(this, "Database error"
-			, "Not connected to database."
-			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 
@@ -211,9 +214,8 @@ void InstallerWidget::onCheckButtonClicked()
 	const auto checkResult = InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
 		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), isSuccessful);
 
-	if (isSuccessful)
+	if (isSuccessful && ui->dependenciesListWidget->setCheckStatus(checkResult))
 	{
-		ui->dependenciesListWidget->setCheckStatus(checkResult);
 		ui->checkButton->setEnabled(false);
 
 		QApplication::beep();
@@ -243,13 +245,8 @@ void InstallerWidget::onCheckButtonClicked()
 
 void InstallerWidget::onInstallButtonClicked()
 {
-	if (!DatabaseProvider::isConnected())
+	if (!checkConnection())
 	{
-		QApplication::beep();
-		// Add opening login window
-		QMessageBox::warning(this, "Database error"
-			, "Not connected to database."
-			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
 	}
 
