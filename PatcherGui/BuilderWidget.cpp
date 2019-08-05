@@ -1,8 +1,3 @@
-#include <QListWidget>
-#include <QLayout>
-#include <QAction>
-#include <QRegExp>
-#include <QValidator>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDateTime>
@@ -59,6 +54,7 @@ void BuilderWidget::onAddButtonClicked()
 
 	if (!DatabaseProvider::isConnected())
 	{
+		QApplication::beep();
 		// Add opening login window
 		QMessageBox::warning(this, "Database error"
 			, "Not connected to database."
@@ -74,6 +70,7 @@ void BuilderWidget::onAddButtonClicked()
 
 	if (ui->buildListWidget->itemExists(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput))
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Item not added"
 			, ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
 			+ " " + ui->nameEdit->text() + " already exists in patch list."
@@ -124,6 +121,7 @@ void BuilderWidget::onAddButtonClicked()
 	}
 	else
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Item not added"
 			, ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
 				+ " " + ui->nameEdit->text() + " does not exist in current database."
@@ -177,6 +175,7 @@ void BuilderWidget::addScripts(const QString &input)
 
 	if (!allScriptsExist)
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Some scripts not added"
 			, "Some script files already exist in patch list, not found or are not SQL script files (*.sql) and were not added."
 			, QMessageBox::Ok, QMessageBox::Ok);
@@ -197,6 +196,7 @@ void BuilderWidget::onBuildButtonClicked()
 	// Separate method?
 	if (!DatabaseProvider::isConnected())
 	{
+		QApplication::beep();
 		// Add opening login window
 		QMessageBox::warning(this, "Database error"
 			, "Not connected to database."
@@ -216,6 +216,7 @@ void BuilderWidget::onBuildButtonClicked()
 
 	if (!patchDir.exists())
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Build error", "Target directory does not exist."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		return;
@@ -255,7 +256,7 @@ void BuilderWidget::onBuildButtonClicked()
 
 void BuilderWidget::onRemoveButtonClicked()
 {
-	const auto dialogResult = QMessageBox::warning(this, "Remove item", "Are you sure to remove " +
+	const auto dialogResult = QMessageBox::question(this, "Remove item", "Are you sure to remove " +
 		ui->buildListWidget->currentItem()->text(PatchListWidget::ColumnIndexes::nameColumn) +
 		" from patch list?"
 		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
@@ -368,7 +369,8 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 	}
 
 	QDir patchDir(path);
-	const auto patchDirName = "build_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");
+	// Can database have a name with dots?
+	const auto patchDirName = DatabaseProvider::database() + "_build_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");
 
 	if (!patchDir.mkdir(patchDirName))
 	{

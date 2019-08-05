@@ -1,21 +1,8 @@
-#include <QLayout>
-#include <QGridLayout>
-#include <QGroupBox>
-#include <QListWidget>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QToolButton>
-#include <QTreeView>
-#include <QStandardItemModel>
 #include <QAction>
-#include <QHeaderView>
-#include <QProcess>
 #include <QBitArray>
-#include <QStringList>
-#include <QFile>
-#include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
+
 #include "InstallerWidget.h"
 #include "InstallerHandler.h"
 #include "PatchListWidget.h"
@@ -124,7 +111,7 @@ void InstallerWidget::onOpenButtonClicked()
 {
 	if (isPatchOpened)
 	{
-		const auto dialogResult = QMessageBox::warning(this, "Close", "Are you sure to close current patch?"
+		const auto dialogResult = QMessageBox::question(this, "Close", "Are you sure to close current patch?"
 			, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
 
 		if (dialogResult == QMessageBox::Ok)
@@ -151,6 +138,7 @@ void InstallerWidget::onOpenButtonClicked()
 
 		if (!patchDir.exists())
 		{
+			QApplication::beep();
 			QMessageBox::warning(this, "Open error", "Patch directory does not exist."
 				, QMessageBox::Ok, QMessageBox::Ok);
 			clearCurrentPatch();
@@ -163,6 +151,7 @@ void InstallerWidget::onOpenButtonClicked()
 
 	if (!patchDir.exists(patchListFileName))
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Open error", patchListFileName + " does not exist in patch directory."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		clearCurrentPatch();
@@ -171,6 +160,7 @@ void InstallerWidget::onOpenButtonClicked()
 
 	if (!patchDir.exists(dependenciesListFileName))
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Open error", dependenciesListFileName + " does not exist in patch directory."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		clearCurrentPatch();
@@ -179,6 +169,7 @@ void InstallerWidget::onOpenButtonClicked()
 
 	if (!initPatchList(patchDir.filePath(patchListFileName)))
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Open error", "Incorrect file " + patchListFileName + " ."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		clearCurrentPatch();
@@ -187,6 +178,7 @@ void InstallerWidget::onOpenButtonClicked()
 
 	if (!initDependenciesList(patchDir.filePath(dependenciesListFileName)))
 	{
+		QApplication::beep();
 		QMessageBox::warning(this, "Open error", "Incorrect file " + dependenciesListFileName + " ."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		clearCurrentPatch();
@@ -207,6 +199,7 @@ void InstallerWidget::onCheckButtonClicked()
 {
 	if (!DatabaseProvider::isConnected())
 	{
+		QApplication::beep();
 		// Add opening login window
 		QMessageBox::warning(this, "Database error"
 			, "Not connected to database."
@@ -252,6 +245,7 @@ void InstallerWidget::onInstallButtonClicked()
 {
 	if (!DatabaseProvider::isConnected())
 	{
+		QApplication::beep();
 		// Add opening login window
 		QMessageBox::warning(this, "Database error"
 			, "Not connected to database."
