@@ -2,6 +2,7 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include <QSqlQueryModel>
+#include <stdexcept>
 
 #include "BuilderWidget.h"
 #include "PatchListWidget.h"
@@ -20,10 +21,14 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	, ui(new Ui::BuilderWidget)
 	, patchList(new PatchList)
 	, schemaListModel(new QSqlQueryModel(this))
-	, functionInputValidator(new QRegExpValidator(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"), this))
+	, functionInputRegExp(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"))
 {
 	ui->setupUi(this);
 	ui->schemaComboBox->setModel(schemaListModel);
+	ui->moveUpButton->setDisabled(true);
+	ui->moveDownButton->setDisabled(true);
+	ui->removeButton->setDisabled(true);
+	ui->clearButton->setDisabled(true);
 
 	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", ObjectTypes::script);
 	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", ObjectTypes::table);
@@ -32,6 +37,8 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	ui->typeComboBox->addItem(QIcon(":/images/view.svg"), "view", ObjectTypes::view);
 	ui->typeComboBox->addItem(QIcon(":/images/trigger.svg"), "trigger", ObjectTypes::trigger);
 	ui->typeComboBox->addItem(QIcon(":/images/index.svg"), "index", ObjectTypes::index);
+
+	initScriptInput();
 
 	connect(ui->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
 	connect(ui->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
@@ -68,17 +75,18 @@ bool BuilderWidget::checkConnection()
 	return true;
 }
 
-
 void BuilderWidget::onAddButtonClicked()
 {
-	const auto nameInput = ui->nameEdit->text().remove(QRegExp("\\ "));
-
 	if (!checkConnection())
 	{
 		return;
 	}
+	
+	const auto typeIndex = ui->typeComboBox->currentData().toInt();
+	const auto schema = ui->schemaComboBox->currentText();
+	const auto nameInput = ui->nameEdit->text().remove(QRegExp("\\ "));
 
-	if (ui->typeComboBox->currentData().toInt() == ObjectTypes::script)
+	if (typeIndex == ObjectTypes::script)
 	{
 		addScripts(nameInput);
 		return;
@@ -92,7 +100,7 @@ void BuilderWidget::onAddButtonClicked()
 		return;
 	}
 
-	if (ui->buildListWidget->itemExists(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput))
+	if (ui->buildListWidget->itemExists(typeIndex, schema, nameInput))
 	{
 		QApplication::beep();
 		QMessageBox::warning(this, "Item not added"
@@ -108,39 +116,43 @@ void BuilderWidget::onAddButtonClicked()
 	{
 		case ObjectTypes::table:
 		{
-			exists = DatabaseProvider::tableExists(ui->schemaComboBox->currentText(), nameInput);
+			exists = DatabaseProvider::tableExists(schema, nameInput);
 			break;
 		}
 		case ObjectTypes::sequence:
 		{
-			exists = DatabaseProvider::sequenceExists(ui->schemaComboBox->currentText(), nameInput);
+			exists = DatabaseProvider::sequenceExists(schema, nameInput);
 			break;
 		}
 		case ObjectTypes::view:
 		{
-			exists = DatabaseProvider::viewExists(ui->schemaComboBox->currentText(), nameInput);
+			exists = DatabaseProvider::viewExists(schema, nameInput);
 			break;
 		}
 		case ObjectTypes::trigger:
 		{
-			exists = DatabaseProvider::triggerExists(ui->schemaComboBox->currentText(), nameInput);
+			exists = DatabaseProvider::triggerExists(schema, nameInput);
 			break;
 		}
 		case ObjectTypes::function:
 		{
-			exists = DatabaseProvider::functionExists(ui->schemaComboBox->currentText(), nameInput);
+			exists = DatabaseProvider::functionExists(schema, nameInput);
 			break;
 		}
 		case ObjectTypes::index:
 		{
-			exists = DatabaseProvider::indexExists(ui->schemaComboBox->currentText(), nameInput);
+			exists = DatabaseProvider::indexExists(schema, nameInput);
 			break;
+		}
+		default:
+		{
+			throw std::runtime_error("Type QComboBox index error.");
 		}
 	}
 
 	if (exists)
 	{
-		ui->buildListWidget->add(ui->typeComboBox->currentData().toInt(), ui->schemaComboBox->currentText(), nameInput, true);
+		ui->buildListWidget->add(typeIndex, schema, nameInput, true);
 		ui->nameEdit->clear();
 		emit itemCountChanged();
 	}
@@ -149,7 +161,7 @@ void BuilderWidget::onAddButtonClicked()
 		QApplication::beep();
 		QMessageBox::warning(this, "Item not added"
 			, ui->typeComboBox->currentText().replace(0, 1, ui->typeComboBox->currentText()[0].toUpper())
-				+ " " + ui->nameEdit->text() + " does not exist in current database."
+				+ " " + nameInput + " does not exist in current schema."
 			, QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
@@ -162,40 +174,36 @@ void BuilderWidget::addScripts(const QString &input)
 
 	if (input.isEmpty())
 	{
-		// Anyway, it opens aligned to top left corner, they say it's because qt uses Windows settings
 		fileList = QFileDialog::getOpenFileNames(this, "Open script files", "", "SQL Script Files (*.sql)");
+		return;
 	}
-	else
+
+	const auto scriptPaths = input.split(QRegExp("\\,"), QString::SkipEmptyParts);
+
+	for (const auto &current : scriptPaths)
 	{
-		const auto scriptPaths = input.split(QRegExp("\\,"), QString::SkipEmptyParts);
+		const QFileInfo fileInfo(current);
 
-		for (auto i = 0; i < scriptPaths.count(); ++i)
+		if (fileInfo.exists() && fileInfo.suffix() == "sql")
 		{
-			const QFileInfo fileInfo(scriptPaths.at(i));
-
-			if (fileInfo.exists() && fileInfo.suffix() == "sql")
-			{
-				fileList.append(fileInfo.filePath());
-			}
-			else
-			{
-				allScriptsExist = false;
-			}
-		}
-	}	
-
-	for (auto i = 0; i < fileList.count(); ++i)
-	{
-		const auto currentFileName = fileList[i];
-
-		if (!ui->buildListWidget->itemExists(ObjectTypes::script, "", currentFileName))
-		{
-			ui->buildListWidget->add(ObjectTypes::script, "", currentFileName, true);
+			fileList.append(fileInfo.filePath());
 		}
 		else
 		{
 			allScriptsExist = false;
-		}		
+		}
+	}
+
+	for (const auto &current : fileList)
+	{
+		if (!ui->buildListWidget->itemExists(ObjectTypes::script, "", current))
+		{
+			ui->buildListWidget->add(ObjectTypes::script, "", current, true);
+		}
+		else
+		{
+			allScriptsExist = false;
+		}
 	}
 
 	if (!allScriptsExist)
@@ -213,6 +221,14 @@ void BuilderWidget::addScripts(const QString &input)
 	emit itemCountChanged();
 }
 
+void BuilderWidget::initScriptInput()
+{
+	ui->schemaComboBox->setDisabled(true);
+	ui->nameEdit->setPlaceholderText("SQL script file paths (leave empty to open in explorer)");
+	ui->nameLabel->setText("Path");
+}
+
+
 void BuilderWidget::onExplorerButtonClicked()
 {
 	ui->patchPathEdit->setText(QFileDialog::getExistingDirectory(this, "Choose build directory"));
@@ -229,6 +245,7 @@ void BuilderWidget::onBuildButtonClicked()
 	{
 		QMessageBox::information(this, "Build error", "Please, choose target directory."
 			, QMessageBox::Ok, QMessageBox::Ok);
+		onExplorerButtonClicked();
 		return;
 	}
 
@@ -343,9 +360,7 @@ void BuilderWidget::onCurrentTypeChanged(int type)
 {
 	if (type == ObjectTypes::script)
 	{
-		ui->schemaComboBox->setDisabled(true);
-		ui->nameEdit->setPlaceholderText("SQL script file paths (leave empty to open in explorer)");
-		ui->nameLabel->setText("Path");
+		initScriptInput();
 	}
 	else if (!ui->schemaComboBox->isEnabled())
 	{
@@ -374,18 +389,7 @@ void BuilderWidget::onNameTextChanged(const QString &input)
 		return;
 	}
 
-	// Validate method wants lvalues
-	auto position = 0;
-	auto text = input;
-
-	if (functionInputValidator->validate(text, position) == QValidator::Acceptable)
-	{
-		ui->nameLabel->setText("Signature (Valid)");
-	}
-	else
-	{
-		ui->nameLabel->setText("Signature (Invalid, function may not be found)");
-	}
+	ui->nameLabel->setText(functionInputRegExp.exactMatch(input) ? "Signature (Valid)" : "Signature (Invalid, function may not be found)");
 }
 
 void BuilderWidget::onItemCountChanged()

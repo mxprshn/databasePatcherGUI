@@ -5,7 +5,6 @@
 
 class QAction;
 class QLabel;
-class QTextStream;
 class LoginWindow;
 class LogOutputDevice;
 
@@ -25,8 +24,8 @@ private:
 	Ui::MainWindow *ui;
 	LogOutputDevice *logOutputDevice;
 	LoginWindow *loginWindow;
-	QAction *loginAction;
-	QAction *logoutAction;
+	QAction *connectAction;
+	QAction *disconnectAction;
 	QLabel *databaseInformation;
 private slots:
 	void onDialogConnectButtonClicked();

@@ -32,9 +32,9 @@ PatchListElement PatchList::at(int position) const
 
 void PatchList::clear()
 {
-	for (auto i = 0; i < elements->count(); ++i)
+	for (const auto current : *elements)
 	{
-		delete elements->at(i);
+		delete current;
 	}
 
 	elements->clear();
@@ -51,13 +51,13 @@ bool PatchList::exportFile(const QString &path) const
 
 	QTextStream patchFileStream(&file);
 
-	for (auto i = 0; i < elements->count(); ++i)
+	for (const auto current : *elements)
 	{
-		const auto schema = elements->at(i)->getSchema();
-		const auto name = elements->at(i)->getName();
-		const auto type = elements->at(i)->getType();
+		const auto schema = current->getSchema();
+		const auto name = current->getName();
+		const auto type = current->getType();
 		const auto typeName = ObjectTypes::typeNames.value(type);
-		const auto parameters = elements->at(i)->getParameters();
+		const auto parameters = current->getParameters();
 
 		if (type ==ObjectTypes::script)
 		{
@@ -80,7 +80,7 @@ bool PatchList::exportFile(const QString &path) const
 	return true;
 }
 
-bool PatchList::importFile(const QString &path)
+bool PatchList::importPatchListFile(const QString &path)
 {
 	QFile file(path);
 
@@ -146,14 +146,58 @@ bool PatchList::importFile(const QString &path)
 	return true;
 }
 
+bool PatchList::importDependenciesListFile(const class QString &path)
+{
+	QFile file(path);
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		return false;
+	}
+
+	QTextStream input(&file);
+
+	while (!input.atEnd())
+	{
+		const QString readString = input.readLine();
+
+		if (readString.isEmpty())
+		{
+			continue;
+		}
+
+		int type = ObjectTypes::typeCount;
+		QString schemaName = "";
+		QString name;
+
+		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index|function)").exactMatch(readString))
+		{
+			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
+			schemaName = splitResult.at(0);
+			name = splitResult.at(1);
+			type = ObjectTypes::typeNames.key(splitResult.at(2));
+		}
+		else
+		{
+			file.close();
+			return false;
+		}
+
+		elements->append(new PatchListElement(type, name, schemaName, QStringList()));
+	}
+
+	file.close();
+	return true;
+}
+
 
 QString PatchList::getParametersString(const QStringList &parameters)
 {
 	QString result = "( ";
 
-	for (auto i = 0; i < parameters.count(); ++i)
+	for (const auto &current : parameters)
 	{
-		result += parameters[i] + " ";
+		result += current + " ";
 	}
 
 	return result + ")";

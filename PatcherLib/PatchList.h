@@ -11,7 +11,8 @@ public:
 	int count() const;
 	PatchListElement at(int position) const;
 	bool exportFile(const QString &path) const;
-	bool importFile(const QString &path);
+	bool importPatchListFile(const QString &path);
+	bool importDependenciesListFile(const QString &path);
 	void clear();
 private:
 	QList<PatchListElement*> *elements;

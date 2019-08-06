@@ -25,8 +25,9 @@ private:
 	PatchList *patchList;
 	QSqlQueryModel *schemaListModel;
 	void addScripts(const QString &input);
-	QValidator *functionInputValidator;
+	QRegExp functionInputRegExp;
 	bool checkConnection();
+	void initScriptInput();
 	bool startPatchBuild(const QString &path);
 signals:
 	void connectionRequested();

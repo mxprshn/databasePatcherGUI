@@ -7,10 +7,11 @@ LoginWindow::LoginWindow(QWidget *parent)
 	, ui(new Ui::LoginWindow)
 {
 	ui->setupUi(this);
+	clear();
 
-	// Clear edits when canceled
-	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginWindow::connectButtonClicked);
-	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginWindow::close);
+	connect(ui->buttonBox, SIGNAL(accepted()), this, SIGNAL(connectButtonClicked()));
+	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(clear()));
 }
 
 QString LoginWindow::getHostInput() const
@@ -40,10 +41,11 @@ QString LoginWindow::getPasswordInput() const
 
 void LoginWindow::clear()
 {
-	foreach(QLineEdit* lineEdit, findChildren<QLineEdit*>())
-	{
-		lineEdit->clear();
-	}
+	ui->hostLineEdit->clear();
+	ui->portLineEdit->setText("5432");
+	ui->databaseLineEdit->clear();
+	ui->usernameLineEdit->clear();
+	ui->passwordLineEdit->clear();
 }
 
 LoginWindow::~LoginWindow()
