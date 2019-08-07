@@ -214,6 +214,8 @@ void InstallerWidget::onCheckButtonClicked()
 	const auto checkResult = InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
 		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), isSuccessful);
 
+	// Maybe add here information when amount of objects differ (+output device here?)
+
 	if (isSuccessful && ui->dependenciesListWidget->setCheckStatus(checkResult))
 	{
 		ui->checkButton->setEnabled(false);

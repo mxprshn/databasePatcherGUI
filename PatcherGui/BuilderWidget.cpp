@@ -175,22 +175,23 @@ void BuilderWidget::addScripts(const QString &input)
 	if (input.isEmpty())
 	{
 		fileList = QFileDialog::getOpenFileNames(this, "Open script files", "", "SQL Script Files (*.sql)");
-		return;
 	}
-
-	const auto scriptPaths = input.split(QRegExp("\\,"), QString::SkipEmptyParts);
-
-	for (const auto &current : scriptPaths)
+	else
 	{
-		const QFileInfo fileInfo(current);
+		const auto scriptPaths = input.split(QRegExp("\\,"), QString::SkipEmptyParts);
 
-		if (fileInfo.exists() && fileInfo.suffix() == "sql")
+		for (const auto &current : scriptPaths)
 		{
-			fileList.append(fileInfo.filePath());
-		}
-		else
-		{
-			allScriptsExist = false;
+			const QFileInfo fileInfo(current);
+
+			if (fileInfo.exists() && fileInfo.suffix() == "sql")
+			{
+				fileList.append(fileInfo.filePath());
+			}
+			else
+			{
+				allScriptsExist = false;
+			}
 		}
 	}
 

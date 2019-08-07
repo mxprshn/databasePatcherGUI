@@ -2,7 +2,6 @@
 
 #include "PatchListWidget.h"
 #include "ObjectTypes.h"
-#include "PatchList.h"
 
 // Multiple selection?
 
