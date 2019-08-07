@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(disconnectAction, SIGNAL(triggered()), this, SLOT(onDisconnectButtonClicked()));
 	connect(ui->builderTab, SIGNAL(connectionRequested()), this, SLOT(onConnectionRequested()));
 	connect(ui->installerTab, SIGNAL(connectionRequested()), this, SLOT(onConnectionRequested()));
+	connect(this, SIGNAL(connected()), ui->builderTab, SLOT(onConnected()));
+	connect(this, SIGNAL(disconnected()), ui->builderTab, SLOT(onDisconnected()));
 }
 
 MainWindow::~MainWindow()
@@ -58,9 +60,9 @@ void MainWindow::onDialogConnectButtonClicked()
 			+ DatabaseProvider::user() + "\"");
 		connectAction->setDisabled(true);
 		disconnectAction->setEnabled(true);
-		ui->builderTab->initSchemaComboBox();
 		loginWindow->clear();
 		loginWindow->close();
+		emit connected();
 	}
 	else
 	{
@@ -78,7 +80,7 @@ void MainWindow::onConnectionRequested()
 
 void MainWindow::onDisconnectButtonClicked()
 {
-	ui->builderTab->clearSchemaComboBox();
+	emit disconnectionStarted();
 	DatabaseProvider::disconnect();
 	databaseInformation->setText("Connect to database!");
 	connectAction->setEnabled(true);

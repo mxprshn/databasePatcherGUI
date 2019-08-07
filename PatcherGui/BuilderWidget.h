@@ -5,6 +5,7 @@
 
 class PatchList;
 class QSqlQueryModel;
+class ObjectNameCompleter;
 
 namespace Ui
 {
@@ -18,16 +19,16 @@ class BuilderWidget : public QWidget
 public:
 	BuilderWidget(QWidget *parent = Q_NULLPTR);
 	~BuilderWidget();
-	void initSchemaComboBox();
-	void clearSchemaComboBox();
 private:
 	Ui::BuilderWidget *ui;
 	PatchList *patchList;
 	QSqlQueryModel *schemaListModel;
+	ObjectNameCompleter *nameCompleter;
 	void addScripts(const QString &input);
 	QRegExp functionInputRegExp;
 	bool checkConnection();
 	void initScriptInput();
+	void initCompleter();
 	bool startPatchBuild(const QString &path);
 signals:
 	void connectionRequested();
@@ -42,6 +43,9 @@ private slots:
 	void onClearButtonClicked();
 	void onItemSelectionChanged();
 	void onCurrentTypeChanged(int type);
+	void onCurrentSchemaChanged(const QString &schema);
 	void onNameTextChanged(const QString &input);
 	void onItemCountChanged();
+	void onConnected();
+	void onDisconnectionStarted();
 };
