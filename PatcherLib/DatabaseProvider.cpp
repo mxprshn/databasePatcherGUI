@@ -147,6 +147,8 @@ bool DatabaseProvider::indexExists(const QString &schema, const QString &name)
 	return check.value("exists").toBool();
 }
 
+
+//Maybe remove it from here?
 void DatabaseProvider::initSchemaListModel(QSqlQueryModel &model)
 {
 	// Also remove pg_toast_temp etc.

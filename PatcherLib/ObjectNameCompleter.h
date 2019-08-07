@@ -11,9 +11,14 @@ class ObjectNameCompleter : public QCompleter
 public:
 	ObjectNameCompleter(QObject *parent);
 	~ObjectNameCompleter();
-	void setSchema(const QString &schema);
+	void initialize(int typeIndex, const QString &schema);
 	void clear();
 private:
 	QSqlQueryModel *model;
-	void setQuery(const QString &schema);
+	static const QString tableQuery;
+	static const QString sequenceQuery;
+	static const QString functionQuery;
+	static const QString viewQuery;
+	static const QString triggerQuery;
+	static const QString indexQuery;
 };

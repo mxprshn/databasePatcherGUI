@@ -234,14 +234,19 @@ void BuilderWidget::initScriptInput()
 
 void BuilderWidget::initCompleter()
 {
-	if (!DatabaseProvider::isConnected() || ui->typeComboBox->currentIndex() != ObjectTypes::function)
+	if (!DatabaseProvider::isConnected())
+	{
+		return;
+	}
+
+	if (ui->typeComboBox->currentIndex() == ObjectTypes::script)
 	{
 		nameCompleter->clear();
 		ui->nameEdit->setCompleter(nullptr);
 		return;
 	}
 
-	nameCompleter->setSchema(ui->schemaComboBox->currentText());
+	nameCompleter->initialize(ui->typeComboBox->currentIndex(), ui->schemaComboBox->currentText());
 	ui->nameEdit->setCompleter(nameCompleter);
 }
 
@@ -434,10 +439,11 @@ void BuilderWidget::onConnected()
 	initCompleter();
 }
 
-void BuilderWidget::onDisconnected()
+void BuilderWidget::onDisconnectionStarted()
 {
 	schemaListModel->clear();
-	initCompleter();
+	nameCompleter->clear();
+	ui->nameEdit->setCompleter(nullptr);
 }
 
 bool BuilderWidget::startPatchBuild(const QString &path)

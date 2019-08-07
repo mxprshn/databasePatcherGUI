@@ -30,7 +30,7 @@ private:
 	QLabel *databaseInformation;
 signals:
 	void connected();
-	void disconnected();
+	void disconnectionStarted();
 private slots:
 	void onDialogConnectButtonClicked();
 	void onConnectionRequested();

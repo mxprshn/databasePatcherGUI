@@ -80,9 +80,9 @@ void MainWindow::onConnectionRequested()
 
 void MainWindow::onDisconnectButtonClicked()
 {
+	emit disconnectionStarted();
 	DatabaseProvider::disconnect();
 	databaseInformation->setText("Connect to database!");
 	connectAction->setEnabled(true);
 	disconnectAction->setDisabled(true);
-	emit disconnected();
 }

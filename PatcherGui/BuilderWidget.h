@@ -47,5 +47,5 @@ private slots:
 	void onNameTextChanged(const QString &input);
 	void onItemCountChanged();
 	void onConnected();
-	void onDisconnected();
+	void onDisconnectionStarted();
 };
