@@ -26,6 +26,8 @@ private:
 	LoginWindow *loginWindow;
 	QAction *connectAction;
 	QAction *disconnectAction;
+	QAction *buildAction;
+
 	QLabel *databaseInformation;
 private slots:
 	void onDialogConnectButtonClicked();

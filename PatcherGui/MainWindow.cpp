@@ -28,8 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	ui->databaseMenu->addAction(connectAction);
 	ui->databaseMenu->addAction(disconnectAction);
-	ui->viewMenu->addAction("Build", [=]() {ui->tabWidget->setCurrentWidget(ui->builderTab); });
-	ui->viewMenu->addAction("Install", [=]() {ui->tabWidget->setCurrentWidget(ui->installerTab); });
+
+	ui->viewMenu->addAction(QIcon(":/images/hammer.svg"),"Build", [=]() {ui->tabWidget->setCurrentWidget(ui->builderTab); });
+	ui->viewMenu->addAction(QIcon(":/images/install.svg"), "Install", [=]() {ui->tabWidget->setCurrentWidget(ui->installerTab); });
 
 	ui->mainToolBar->addAction(connectAction);
 	ui->mainToolBar->addWidget(databaseInformation);

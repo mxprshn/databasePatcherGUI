@@ -111,24 +111,12 @@
      <string>Database</string>
     </property>
    </widget>
-   <widget class="QMenu" name="buildMenu">
-    <property name="title">
-     <string>Build</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="installMenu">
-    <property name="title">
-     <string>Install</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="viewMenu">
     <property name="title">
      <string>View</string>
     </property>
    </widget>
    <addaction name="databaseMenu"/>
-   <addaction name="buildMenu"/>
-   <addaction name="installMenu"/>
    <addaction name="viewMenu"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
