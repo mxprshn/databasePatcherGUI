@@ -25,6 +25,5 @@ public:
 	static bool viewExists(const QString &schema, const QString &name);
 	static bool triggerExists(const QString &schema, const QString &name);
 	static bool indexExists(const QString &schema, const QString &name);
-
 	static void initSchemaListModel(QSqlQueryModel &model);
 };

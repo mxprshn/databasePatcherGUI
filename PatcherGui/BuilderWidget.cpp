@@ -10,6 +10,7 @@
 #include "DatabaseProvider.h"
 #include "ObjectTypes.h"
 #include "BuilderHandler.h"
+#include "ObjectNameCompleter.h"
 #include "ui_BuilderWidget.h"
 
 // Some freezes in patch list?
@@ -21,6 +22,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	, ui(new Ui::BuilderWidget)
 	, patchList(new PatchList)
 	, schemaListModel(new QSqlQueryModel(this))
+	, nameCompleter(new ObjectNameCompleter(this))
 	, functionInputRegExp(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"))
 {
 	ui->setupUi(this);
@@ -52,6 +54,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	connect(ui->explorerButton, SIGNAL(clicked()), this, SLOT(onExplorerButtonClicked()));
 	connect(ui->nameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onNameTextChanged(const QString&)));
 	connect(this, SIGNAL(itemCountChanged()), SLOT(onItemCountChanged()));
+	connect(ui->schemaComboBox, SIGNAL(currentTextChanged(const QString&)), this, SLOT(onCurrentSchemaChanged(const QString&)));
 }
 
 BuilderWidget::~BuilderWidget()
@@ -229,6 +232,18 @@ void BuilderWidget::initScriptInput()
 	ui->nameLabel->setText("Path");
 }
 
+void BuilderWidget::initCompleter()
+{
+	if (!DatabaseProvider::isConnected() || ui->typeComboBox->currentIndex() != ObjectTypes::function)
+	{
+		nameCompleter->clear();
+		ui->nameEdit->setCompleter(nullptr);
+		return;
+	}
+
+	nameCompleter->setSchema(ui->schemaComboBox->currentText());
+	ui->nameEdit->setCompleter(nameCompleter);
+}
 
 void BuilderWidget::onExplorerButtonClicked()
 {
@@ -359,6 +374,15 @@ void BuilderWidget::onItemSelectionChanged()
 
 void BuilderWidget::onCurrentTypeChanged(int type)
 {
+	initCompleter();
+
+	if (type == ObjectTypes::function)
+	{
+		ui->nameEdit->setPlaceholderText("Function signature (e.g. function(arg_1,arg_2))");
+		ui->nameLabel->setText("Signature (Invalid, function may not be found))");
+		emit ui->nameEdit->textChanged(ui->nameEdit->text());
+	}
+
 	if (type == ObjectTypes::script)
 	{
 		initScriptInput();
@@ -374,14 +398,13 @@ void BuilderWidget::onCurrentTypeChanged(int type)
 			+ " name");
 		ui->nameLabel->setText("Name");
 	}
-
-	if (type == ObjectTypes::function)
-	{
-		ui->nameEdit->setPlaceholderText("Function signature (e.g. function(arg_1,arg_2))");
-		ui->nameLabel->setText("Signature (Invalid, function may not be found))");
-		emit ui->nameEdit->textChanged(ui->nameEdit->text());
-	}
 }
+
+void BuilderWidget::onCurrentSchemaChanged(const QString& schema)
+{
+	initCompleter();
+}
+
 
 void BuilderWidget::onNameTextChanged(const QString &input)
 {
@@ -405,15 +428,16 @@ void BuilderWidget::onItemCountChanged()
 	}
 }
 
-
-void BuilderWidget::initSchemaComboBox()
+void BuilderWidget::onConnected()
 {
 	DatabaseProvider::initSchemaListModel(*schemaListModel);
+	initCompleter();
 }
 
-void BuilderWidget::clearSchemaComboBox()
+void BuilderWidget::onDisconnected()
 {
 	schemaListModel->clear();
+	initCompleter();
 }
 
 bool BuilderWidget::startPatchBuild(const QString &path)

@@ -27,8 +27,10 @@ private:
 	QAction *connectAction;
 	QAction *disconnectAction;
 	QAction *buildAction;
-
 	QLabel *databaseInformation;
+signals:
+	void connected();
+	void disconnected();
 private slots:
 	void onDialogConnectButtonClicked();
 	void onConnectionRequested();
