@@ -76,6 +76,7 @@ QBitArray InstallerHandler::checkDependencies(const QString &database, const QSt
 	}
 
 	// Add processing of the return value!
+	// And also it is smth strange with returning.
 
 	if (!installerProcess.waitForFinished())
 	{

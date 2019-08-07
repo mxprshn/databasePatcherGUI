@@ -83,7 +83,6 @@ void DependenciesListWidget::clear()
 	areAllSatisfied = false;
 }
 
-
 int DependenciesListWidget::getCheckedCount() const
 {
 	return checkedCount;

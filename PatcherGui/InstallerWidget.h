@@ -18,7 +18,7 @@ class InstallerWidget : public QWidget
 public:
 	InstallerWidget(QWidget *parent = Q_NULLPTR);
 	~InstallerWidget();
-	QAction* getTestAction() const;
+
 private:
 	Ui::InstallerWidget *ui;
 	QDir patchDir;
@@ -29,7 +29,9 @@ private:
 	void clearCurrentPatch();
 	void setReadyToOpen();
 	bool isPatchOpened;
-	QAction *testDependenciesAction;
+	bool checkConnection();
+signals:
+	void connectionRequested();
 private slots:
 	void onOpenButtonClicked();
 	void onCheckButtonClicked();

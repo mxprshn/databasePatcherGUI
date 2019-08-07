@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QDialog>
 
 namespace Ui
@@ -19,13 +20,10 @@ public:
 	QString getDatabaseInput() const;
 	QString getUsernameInput() const;
 	QString getPasswordInput() const;
-
 private:
 	Ui::LoginWindow *ui;
-
-private slots:
-	void clear() const;
-
 signals:
 	void connectButtonClicked();
+public slots:
+	void clear();
 };

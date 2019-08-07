@@ -26,9 +26,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UiController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DatabaseProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,19 +75,16 @@
     <QtMoc Include="BuilderHandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="UiController.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="PatchListWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="InstallerHandler.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="LogOutputDevice.h">
+    <QtMoc Include="DependenciesListWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="DependenciesListWidget.h">
+    <QtMoc Include="LogOutputDevice.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

@@ -1,5 +1,6 @@
 #include "LogOutputDevice.h"
 #include <QTextEdit>
+#include <QScrollBar>
 
 LogOutputDevice::LogOutputDevice(QObject *parent)
 	: QIODevice(parent)
@@ -19,5 +20,6 @@ qint64 LogOutputDevice::readData(char *data, qint64 maxlen)
 qint64 LogOutputDevice::writeData(const char *data, qint64 len)
 {
 	textEdit->append(data);
+	textEdit->verticalScrollBar()->setValue(textEdit->verticalScrollBar()->maximum());
 	return len;
 }

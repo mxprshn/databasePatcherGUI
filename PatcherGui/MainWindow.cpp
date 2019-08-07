@@ -1,127 +1,86 @@
-#include <QPlainTextEdit>
-#include <QDockWidget>
-#include <QLabel>
 #include <QMessageBox>
-#include <QTextStream>
-#include <QDialogButtonBox>
-#include <QAbstractItemModel>
+
 #include "MainWindow.h"
 #include "BuilderWidget.h"
 #include "InstallerWidget.h"
 #include "LoginWindow.h"
-#include "UiController.h"
 #include "LogOutputDevice.h"
 #include "InstallerHandler.h"
 #include "BuilderHandler.h"
-
-// Fix disconnection
+#include "DatabaseProvider.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
+	, ui(new Ui::MainWindow)
 	, logOutputDevice(new LogOutputDevice(this))
-	, mainController(new UiController(this))
 	, loginWindow(new LoginWindow(this))
-	, builderWidget(new BuilderWidget)
-	, installerWidget(new InstallerWidget)
 {
-	setupUi(this);
-	setWindowTitle("Database patcher");
-
-	initializeActions();
-	initializeMainMenu();
-	initializeTabs();
-	initializeDocks();
-	initializeToolBars();
-
-	logOutputDevice->setTextEdit(logOutput);
+	ui->setupUi(this);
+	logOutputDevice->setTextEdit(ui->logTextEdit);
 	logOutputDevice->open(QIODevice::WriteOnly);
 	InstallerHandler::setOutputDevice(*logOutputDevice);
 	BuilderHandler::setOutputDevice(*logOutputDevice);
 
-	connect(this->loginWindow, SIGNAL(connectButtonClicked()), this, SLOT(requestConnection()));
-	connect(this, SIGNAL(connectionRequested(const QString&, const QString&, const QString&, const QString&, const int)),
-		this->mainController, SLOT(connectToDatabase(const QString&, const QString&, const QString&, const QString&, const int)));
-	connect(this->mainController, SIGNAL(connectedToDatabase(const QString&, const QString&, const QString&, const QString&, const int)),
-		this, SLOT(setConnectionInfo(const QString&, const QString&, const QString&, const QString&, const int)));
-	connect(this->mainController, SIGNAL(connectedToDatabase(const QString&, const QString&, const QString&, const QString&, const int)),
-		this->loginWindow, SLOT(clear()));
-	connect(this->mainController, SIGNAL(connectedToDatabase(const QString&, const QString&, const QString&, const QString&, const int)),
-		this->loginWindow, SLOT(close()));
-	connect(this->mainController, SIGNAL(notConnectedToDatabase(const QString&)), this, SLOT(showConnectionError(const QString&)));
-	connect(this->mainController, SIGNAL(disconnectedFromDatabase()), this, SLOT(setDefaultConnectionInfo()));
-	connect(loginAction, SIGNAL(triggered()), loginWindow, SLOT(show()));
-	connect(logoutAction, SIGNAL(triggered()), this->mainController, SLOT(disconnectFromDatabase()));
-
-	setCentralWidget(modeTab);
-	addDockWidget(Qt::BottomDockWidgetArea, logOutputDock);
-	addToolBar(Qt::TopToolBarArea, mainToolBar);
-	setMinimumSize(800, 600);
-}
-
-void MainWindow::initializeActions()
-{
-	loginAction = new QAction(QIcon(":/images/addDatabase.svg"),"Connect to database...", this);
-	logoutAction = new QAction(QIcon(":/images/removeDatabase.svg"), "Disconnect", this);
-	logoutAction->setDisabled(true);
-}
-
-void MainWindow::initializeTabs()
-{
-	modeTab = new QTabWidget;
-	modeTab->addTab(builderWidget, "Build");
-	modeTab->addTab(installerWidget, "Install");
-	modeTab->setMinimumHeight(400);
-}
-
-void MainWindow::initializeDocks()
-{
-	logOutputDock = new QDockWidget("Log output", this);
-	logOutput = new QTextEdit;
-	logOutputDock->setWidget(logOutput);
-	logOutputDock->setAllowedAreas(Qt::BottomDockWidgetArea);	
-}
-
-void MainWindow::initializeMainMenu()
-{
-	databaseMenu = new QMenu("Database");
-	databaseMenu->addAction(loginAction);
-	databaseMenu->addAction(logoutAction);
-
-	QMainWindow::menuBar()->addMenu(databaseMenu);
-}
-
-void MainWindow::initializeToolBars()
-{
+	connectAction = new QAction(QIcon(":/images/addDatabase.svg"), "Connect to database...", this);
+	disconnectAction = new QAction(QIcon(":/images/removeDatabase.svg"), "Disconnect", this);
+	disconnectAction->setDisabled(true);
 	databaseInformation = new QLabel("Connect to database!");
-	mainToolBar->addAction(loginAction);
-	mainToolBar->addWidget(databaseInformation);
-	mainToolBar->setMovable(false);
+
+	ui->databaseMenu->addAction(connectAction);
+	ui->databaseMenu->addAction(disconnectAction);
+
+	ui->viewMenu->addAction(QIcon(":/images/hammer.svg"),"Build", [=]() {ui->tabWidget->setCurrentWidget(ui->builderTab); });
+	ui->viewMenu->addAction(QIcon(":/images/install.svg"), "Install", [=]() {ui->tabWidget->setCurrentWidget(ui->installerTab); });
+
+	ui->mainToolBar->addAction(connectAction);
+	ui->mainToolBar->addWidget(databaseInformation);
+
+	connect(loginWindow, SIGNAL(connectButtonClicked()), this, SLOT(onDialogConnectButtonClicked()));
+	connect(connectAction, SIGNAL(triggered()), this, SLOT(onConnectionRequested()));
+	connect(disconnectAction, SIGNAL(triggered()), this, SLOT(onDisconnectButtonClicked()));
+	connect(ui->builderTab, SIGNAL(connectionRequested()), this, SLOT(onConnectionRequested()));
+	connect(ui->installerTab, SIGNAL(connectionRequested()), this, SLOT(onConnectionRequested()));
 }
 
-void MainWindow::requestConnection()
+MainWindow::~MainWindow()
 {
-	emit connectionRequested(loginWindow->getDatabaseInput(), loginWindow->getUsernameInput(),
-		loginWindow->getPasswordInput(), loginWindow->getHostInput(), loginWindow->getPortInput());
+	delete ui;
 }
 
-
-void MainWindow::setConnectionInfo(const QString& database, const QString& user, const QString& password, const QString& server, const int port)
+void MainWindow::onDialogConnectButtonClicked()
 {
-	databaseInformation->setText("Connected to \"" + database + "\" as \"" + user + "\"");
-	loginAction->setDisabled(true);
-	logoutAction->setEnabled(true);
-	builderWidget->setSchemaComboBoxModel(mainController->getSchemaListModel());
+	QString errorMessage = "";
+
+	if (DatabaseProvider::connect(loginWindow->getDatabaseInput(), loginWindow->getUsernameInput()
+		, loginWindow->getPasswordInput(), loginWindow->getHostInput(), loginWindow->getPortInput(), errorMessage))
+	{
+		databaseInformation->setText("Connected to \"" + DatabaseProvider::database() + "\" as \""
+			+ DatabaseProvider::user() + "\"");
+		connectAction->setDisabled(true);
+		disconnectAction->setEnabled(true);
+		ui->builderTab->initSchemaComboBox();
+		loginWindow->clear();
+		loginWindow->close();
+	}
+	else
+	{
+		ui->logTextEdit->append(errorMessage);
+		QApplication::beep();
+		QMessageBox::warning(this, "Connection error"
+				, "Connection error. See logs for detailed information.", QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 
-void MainWindow::showConnectionError(const QString &errorMessage)
+void MainWindow::onConnectionRequested()
 {
-	QMessageBox::warning(loginWindow, "Connection error", errorMessage,
-		QMessageBox::Ok,	QMessageBox::Ok);
+	loginWindow->show();
 }
 
-void MainWindow::setDefaultConnectionInfo()
+void MainWindow::onDisconnectButtonClicked()
 {
+	ui->builderTab->clearSchemaComboBox();
+	DatabaseProvider::disconnect();
 	databaseInformation->setText("Connect to database!");
-	loginAction->setEnabled(true);
-	logoutAction->setDisabled(true);
+	connectAction->setEnabled(true);
+	disconnectAction->setDisabled(true);
 }

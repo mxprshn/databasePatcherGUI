@@ -106,7 +106,6 @@
     <ClCompile Include="PatchList.cpp" />
     <ClCompile Include="PatchListElement.cpp" />
     <ClCompile Include="PatchListWidget.cpp" />
-    <ClCompile Include="UiController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="LogOutputDevice.h">
@@ -135,10 +134,6 @@
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>
     </QtMoc>
     <QtMoc Include="BuilderHandler.h">
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
-      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
-    </QtMoc>
-    <QtMoc Include="UiController.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE</IncludePath>
     </QtMoc>

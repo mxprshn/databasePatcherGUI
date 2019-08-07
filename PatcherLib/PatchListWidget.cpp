@@ -2,7 +2,6 @@
 
 #include "PatchListWidget.h"
 #include "ObjectTypes.h"
-#include "PatchList.h"
 
 // Multiple selection?
 
@@ -46,9 +45,9 @@ bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, con
 {
 	const auto foundItems = findItems(name, Qt::MatchFixedString, nameColumn);
 
-	for (auto i = 0; i < foundItems.count(); ++i)
+	for (const auto current : foundItems)
 	{
-		if (foundItems.at(i)->text(typeColumn) == ObjectTypes::typeNames.value(typeIndex) && foundItems.at(i)->text(schemaColumn) == schema)
+		if (current->text(typeColumn) == ObjectTypes::typeNames.value(typeIndex) && current->text(schemaColumn) == schema)
 		{
 			return true;
 		}
