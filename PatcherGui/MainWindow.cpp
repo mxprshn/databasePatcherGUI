@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->builderTab, SIGNAL(connectionRequested()), this, SLOT(onConnectionRequested()));
 	connect(ui->installerTab, SIGNAL(connectionRequested()), this, SLOT(onConnectionRequested()));
 	connect(this, SIGNAL(connected()), ui->builderTab, SLOT(onConnected()));
-	connect(this, SIGNAL(disconnected()), ui->builderTab, SLOT(onDisconnected()));
+	connect(this, SIGNAL(disconnectionStarted()), ui->builderTab, SLOT(onDisconnectionStarted()));
 }
 
 MainWindow::~MainWindow()
