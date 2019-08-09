@@ -455,6 +455,8 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::nameColumn));
 	}
 
+	auto isSuccessful = false;
+
 	QDir patchDir(path);
 	// Can database have a name with dots?
 	const auto patchDirName = DatabaseProvider::database() + "_build_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");

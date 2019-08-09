@@ -11,18 +11,40 @@ PatchList::PatchList()
 {
 }
 
-void PatchList::add(int type, const QString &schemaName, const QString &fullName)
+//void PatchList::add(int type, const QString &schemaName, const QString &fullName)
+//{
+//	auto splitResult = fullName.split(QRegExp("(\\ |\\,|\\(|\\))"), QString::SkipEmptyParts);
+//	const auto itemName = splitResult.first();
+//	splitResult.pop_front();
+//	elements->append(new PatchListElement(type, itemName, schemaName, splitResult));
+//}
+
+PatchList::PatchList(const PatchList &other)
 {
-	auto splitResult = fullName.split(QRegExp("(\\ |\\,|\\(|\\))"), QString::SkipEmptyParts);
-	const auto itemName = splitResult.first();
-	splitResult.pop_front();
-	elements->append(new PatchListElement(type, itemName, schemaName, splitResult));
+	elements 
+}
+
+
+void PatchList::add(int typeIndex, const QString &schemaName, const QString &name, const QStringList &parameters)
+{	
+	elements->append(new PatchListElement(typeIndex, name, schemaName, parameters));
 }
 
 int PatchList::count() const
 {
 	return elements->count();
 }
+
+QList<class PatchListElement*>::const_iterator PatchList::begin() const
+{
+	return elements->constBegin();
+}
+
+QList<class PatchListElement*>::const_iterator PatchList::end() const
+{
+	return elements->constEnd();
+}
+
 
 PatchListElement PatchList::at(int position) const
 {
@@ -38,46 +60,6 @@ void PatchList::clear()
 	}
 
 	elements->clear();
-}
-
-bool PatchList::exportFile(const QString &path) const
-{
-	QFile file(path);
-
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::NewOnly))
-	{
-		return false;
-	}
-
-	QTextStream patchFileStream(&file);
-
-	for (const auto current : *elements)
-	{
-		const auto schema = current->getSchema();
-		const auto name = current->getName();
-		const auto type = current->getType();
-		const auto typeName = ObjectTypes::typeNames.value(type);
-		const auto parameters = current->getParameters();
-
-		if (type ==ObjectTypes::script)
-		{
-			patchFileStream << typeName << " " << name;
-		}
-		else
-		{
-			patchFileStream << schema << " " << name << " " << typeName;
-
-			if (type == ObjectTypes::function)
-			{
-				patchFileStream << " " << getParametersString(parameters);
-			}
-		}
-
-		patchFileStream << endl;
-	}
-
-	file.close();
-	return true;
 }
 
 bool PatchList::importPatchListFile(const QString &path)
@@ -190,18 +172,6 @@ bool PatchList::importDependenciesListFile(const class QString &path)
 	return true;
 }
 
-
-QString PatchList::getParametersString(const QStringList &parameters)
-{
-	QString result = "( ";
-
-	for (const auto &current : parameters)
-	{
-		result += current + " ";
-	}
-
-	return result + ")";
-}
 
 PatchList::~PatchList()
 {
