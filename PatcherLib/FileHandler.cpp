@@ -8,7 +8,7 @@
 
 const QString FileHandler::patchListName = "PatchList.txt";
 const QString FileHandler::dependencyListName = "DependencyList.dpn";
-const QString FileHandler::objectListName = "PatchList.txt";
+const QString FileHandler::objectListName = "ObjectList.txt";
 
 QDir FileHandler::makePatchDir(const QString &path, bool &isSuccessful)
 {
@@ -95,20 +95,20 @@ PatchList FileHandler::parseObjectList(const QString &path, bool &isSuccessful)
 		QString name;
 		QStringList parameters = QStringList("");
 
-		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index)").exactMatch(readString))
+		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index)( )*").exactMatch(readString))
 		{
 			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
 			schemaName = splitResult.at(0);
 			name = splitResult.at(1);
 			type = ObjectTypes::typeNames.key(splitResult.at(2));
 		}
-		else if (QRegExp("script ([^ ])+").exactMatch(readString))
+		else if (QRegExp("script ([^ ])+( )*").exactMatch(readString))
 		{
 			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
 			name = splitResult.at(1);
 			type = ObjectTypes::script;
 		}
-		else if (QRegExp("([^ ])+ ([^ ])+ function \\( (([^,() ])+ )*\\)").exactMatch(readString))
+		else if (QRegExp("([^ ])+ ([^ ])+ function \\( (([^,() ])+ )*\\)( )*").exactMatch(readString))
 		{
 			auto splitResult = readString.split(QRegExp("(\\ |\\(|\\))"), QString::SkipEmptyParts);
 			schemaName = splitResult.first();
@@ -130,7 +130,7 @@ PatchList FileHandler::parseObjectList(const QString &path, bool &isSuccessful)
 			return PatchList();
 		}
 
-		objectList.add(type, name, schemaName, parameters);
+		objectList.add(type, schemaName, name, parameters);
 	}
 
 	file.close();
@@ -165,7 +165,7 @@ PatchList FileHandler::parseDependencyList(const QString &path, bool &isSuccessf
 		QString schemaName = "";
 		QString name;
 
-		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index|function)").exactMatch(readString))
+		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index|function)( )*").exactMatch(readString))
 		{
 			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
 			schemaName = splitResult.at(0);
@@ -179,7 +179,7 @@ PatchList FileHandler::parseDependencyList(const QString &path, bool &isSuccessf
 			return PatchList();
 		}
 
-		dependencyList.add(type, name, schemaName, QStringList());
+		dependencyList.add(type, schemaName, name, QStringList());
 	}
 
 	file.close();
