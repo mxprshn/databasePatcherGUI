@@ -121,7 +121,7 @@
        <number>3</number>
       </property>
       <item>
-       <widget class="DependenciesListWidget" name="dependenciesListWidget"/>
+       <widget class="DependencyListWidget" name="dependencyListWidget"/>
       </item>
       <item alignment="Qt::AlignRight">
        <widget class="QPushButton" name="checkButton">
@@ -257,20 +257,20 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>DependenciesListWidget</class>
-   <extends>QListWidget</extends>
-   <header>DependenciesListWidget.h</header>
-  </customwidget>
-  <customwidget>
    <class>PatchListWidget</class>
    <extends>QListWidget</extends>
    <header>PatchListWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DependencyListWidget</class>
+   <extends>QListWidget</extends>
+   <header>DependencyListWidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>patchPathEdit</tabstop>
   <tabstop>openPatchButton</tabstop>
-  <tabstop>dependenciesListWidget</tabstop>
+  <tabstop>dependencyListWidget</tabstop>
   <tabstop>patchListWidget</tabstop>
   <tabstop>checkButton</tabstop>
   <tabstop>installButton</tabstop>

@@ -6,11 +6,11 @@
 #include "PatchListElement.h"
 #include "ObjectTypes.h"
 
-const QString FileHandler::patchListName = "DependencyList.dpn";
+const QString FileHandler::patchListName = "PatchList.txt";
 const QString FileHandler::dependencyListName = "DependencyList.dpn";
-const QString FileHandler::objectListName = "DependencyList.dpn";
+const QString FileHandler::objectListName = "ObjectList.txt";
 
-QString FileHandler::makePatchDir(const QString &path, bool &isSuccessful)
+QDir FileHandler::makePatchDir(const QString &path, bool &isSuccessful)
 {
 	QDir patchDir(path);
 	// Can database have a name with dots?
@@ -23,12 +23,13 @@ QString FileHandler::makePatchDir(const QString &path, bool &isSuccessful)
 	}
 
 	isSuccessful = true;
-	return patchDir.absolutePath();
+	return patchDir;
 }
 
 bool FileHandler::makePatchList(const QString &path, const PatchList &patchList)
 {
-	QFile file(path);
+	const QDir patchDir(path);
+	QFile file(patchDir.absoluteFilePath(patchListName));
 
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::NewOnly))
 	{
@@ -68,11 +69,13 @@ bool FileHandler::makePatchList(const QString &path, const PatchList &patchList)
 
 PatchList FileHandler::parseObjectList(const QString &path, bool &isSuccessful)
 {
-	QFile file(path);
+	const QDir patchDir(path);
+	QFile file(patchDir.absoluteFilePath(objectListName));
 
 	if (!file.open(QIODevice::ReadOnly))
 	{
 		isSuccessful = false;
+		return PatchList();
 	}
 
 	QTextStream input(&file);
@@ -124,18 +127,79 @@ PatchList FileHandler::parseObjectList(const QString &path, bool &isSuccessful)
 		{
 			file.close();
 			isSuccessful = false;
+			return PatchList();
 		}
 
-		objectList.add(new PatchListElement(type, name, schemaName, parameters));
+		objectList.add(type, name, schemaName, parameters);
 	}
 
 	file.close();
 	isSuccessful = true;
+	return objectList;
 }
 
 PatchList FileHandler::parseDependencyList(const QString &path, bool &isSuccessful)
 {
-	
+	const QDir patchDir(path);
+	QFile file(patchDir.absoluteFilePath(dependencyListName));
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		isSuccessful = false;
+		return PatchList();
+	}
+
+	QTextStream input(&file);
+	PatchList dependencyList;
+
+	while (!input.atEnd())
+	{
+		const QString readString = input.readLine();
+
+		if (readString.isEmpty())
+		{
+			continue;
+		}
+
+		int type = ObjectTypes::typeCount;
+		QString schemaName = "";
+		QString name;
+
+		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index|function)").exactMatch(readString))
+		{
+			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
+			schemaName = splitResult.at(0);
+			name = splitResult.at(1);
+			type = ObjectTypes::typeNames.key(splitResult.at(2));
+		}
+		else
+		{
+			file.close();
+			isSuccessful = false;
+			return PatchList();
+		}
+
+		dependencyList.add(type, name, schemaName, QStringList());
+	}
+
+	file.close();
+	isSuccessful = true;
+	return dependencyList;
+}
+
+QString FileHandler::getPatchListName()
+{
+	return patchListName;
+}
+
+QString FileHandler::getDependencyListName()
+{
+	return dependencyListName;
+}
+
+QString FileHandler::getObjectListName()
+{
+	return objectListName;
 }
 
 QString FileHandler::getParametersString(const QStringList &parameters)

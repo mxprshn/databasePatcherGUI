@@ -4,8 +4,6 @@
 #include <QDir>
 #include "ui_InstallerWidget.h"
 
-class PatchList;
-
 namespace Ui
 {
 	class InstallerWidget;
@@ -22,10 +20,9 @@ public:
 private:
 	Ui::InstallerWidget *ui;
 	QDir patchDir;
-	PatchList *patchList;
-	PatchList *dependenciesList;
-	bool initPatchList(const QString &filePath);
-	bool initDependenciesList(const QString &filePath);
+
+	bool initPatchList(const QString &path);
+	bool initDependencyList(const QString &path);
 	void clearCurrentPatch();
 	void setReadyToOpen();
 	bool isPatchOpened;
