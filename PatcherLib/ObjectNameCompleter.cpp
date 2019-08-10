@@ -79,6 +79,5 @@ void ObjectNameCompleter::clear()
 
 ObjectNameCompleter::~ObjectNameCompleter()
 {
-	clear();
 	delete model;
 }

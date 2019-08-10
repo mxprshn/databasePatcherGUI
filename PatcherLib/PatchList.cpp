@@ -51,7 +51,6 @@ QList<class PatchListElement*>::const_iterator PatchList::end() const
 	return elements->constEnd();
 }
 
-
 PatchListElement PatchList::at(int position) const
 {
 	// Add invalid index processing

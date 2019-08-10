@@ -8,7 +8,7 @@
 
 const QString FileHandler::patchListName = "PatchList.txt";
 const QString FileHandler::dependencyListName = "DependencyList.dpn";
-const QString FileHandler::objectListName = "ObjectList.txt";
+const QString FileHandler::objectListName = "PatchList.txt";
 
 QDir FileHandler::makePatchDir(const QString &path, bool &isSuccessful)
 {
