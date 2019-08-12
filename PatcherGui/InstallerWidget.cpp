@@ -51,7 +51,6 @@ bool InstallerWidget::checkConnection()
 	return true;
 }
 
-
 void InstallerWidget::setReadyToOpen()
 {
 	ui->patchPathEdit->setPlaceholderText("Patch folder path (leave empty to open in explorer)");
