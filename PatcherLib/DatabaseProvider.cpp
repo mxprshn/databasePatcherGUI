@@ -70,8 +70,8 @@ void DatabaseProvider::disconnect()
 bool DatabaseProvider::tableExists(const QString &schema, const QString &name)
 {
 	QSqlQuery check;
-	check.prepare("SELECT EXISTS (SELECT * FROM information_schema.tables WHERE table_schema = ?"
-		"AND table_name = ?)");
+	check.prepare("SELECT EXISTS (SELECT * FROM information_schema.tables WHERE table_schema = ? AND table_type != 'VIEW'"
+		" AND table_name = ?)");
 	check.addBindValue(schema);
 	check.addBindValue(name);
 	// Add check maybe and remove smth?
@@ -146,7 +146,6 @@ bool DatabaseProvider::indexExists(const QString &schema, const QString &name)
 	check.next();
 	return check.value("exists").toBool();
 }
-
 
 //Maybe remove it from here?
 void DatabaseProvider::initSchemaListModel(QSqlQueryModel &model)

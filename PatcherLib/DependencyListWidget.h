@@ -2,7 +2,7 @@
 
 #include <QTreeWidget>
 
-class DependenciesListWidget : public QTreeWidget
+class DependencyListWidget : public QTreeWidget
 {
 	Q_OBJECT
 
@@ -23,7 +23,7 @@ public:
 		notSatisfied
 	};
 
-	DependenciesListWidget(QWidget *parent);
+	DependencyListWidget(QWidget *parent);
 	bool setCheckStatus(const QBitArray &checkResult);
 	void add(int typeIndex, const QString &schema, const QString &name);
 	void clear();

@@ -1,6 +1,7 @@
 #include <QList>
 #include <QFile>
 #include <QTextStream>
+#include <algorithm>
 
 #include "PatchList.h"
 #include "PatchListElement.h"
@@ -11,12 +12,32 @@ PatchList::PatchList()
 {
 }
 
-void PatchList::add(int type, const QString &schemaName, const QString &fullName)
+PatchList::PatchList(const PatchList &other)
+	: elements(new QList<PatchListElement*>)
 {
-	auto splitResult = fullName.split(QRegExp("(\\ |\\,|\\(|\\))"), QString::SkipEmptyParts);
-	const auto itemName = splitResult.first();
-	splitResult.pop_front();
-	elements->append(new PatchListElement(type, itemName, schemaName, splitResult));
+	for (const auto current : *other.elements)
+	{
+		elements->append(new PatchListElement(*current));
+	}
+}
+
+PatchList& PatchList::operator=(const PatchList &other)
+{
+	if (this != &other)
+	{
+		PatchList(other).swap(*this);
+	}
+	return *this;
+}
+
+void PatchList::swap(PatchList &other)
+{
+	std::swap(elements, other.elements);
+}
+
+void PatchList::add(int typeIndex, const QString &schemaName, const QString &name, const QStringList &parameters)
+{	
+	elements->append(new PatchListElement(typeIndex, name, schemaName, parameters));
 }
 
 int PatchList::count() const
@@ -24,10 +45,14 @@ int PatchList::count() const
 	return elements->count();
 }
 
-PatchListElement PatchList::at(int position) const
+QList<class PatchListElement*>::const_iterator PatchList::begin() const
 {
-	// Add invalid index processing
-	return *elements->at(position);
+	return elements->constBegin();
+}
+
+QList<class PatchListElement*>::const_iterator PatchList::end() const
+{
+	return elements->constEnd();
 }
 
 void PatchList::clear()
@@ -38,169 +63,6 @@ void PatchList::clear()
 	}
 
 	elements->clear();
-}
-
-bool PatchList::exportFile(const QString &path) const
-{
-	QFile file(path);
-
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::NewOnly))
-	{
-		return false;
-	}
-
-	QTextStream patchFileStream(&file);
-
-	for (const auto current : *elements)
-	{
-		const auto schema = current->getSchema();
-		const auto name = current->getName();
-		const auto type = current->getType();
-		const auto typeName = ObjectTypes::typeNames.value(type);
-		const auto parameters = current->getParameters();
-
-		if (type ==ObjectTypes::script)
-		{
-			patchFileStream << typeName << " " << name;
-		}
-		else
-		{
-			patchFileStream << schema << " " << name << " " << typeName;
-
-			if (type == ObjectTypes::function)
-			{
-				patchFileStream << " " << getParametersString(parameters);
-			}
-		}
-
-		patchFileStream << endl;
-	}
-
-	file.close();
-	return true;
-}
-
-bool PatchList::importPatchListFile(const QString &path)
-{
-	QFile file(path);
-
-	if (!file.open(QIODevice::ReadOnly))
-	{
-		return false;
-	}
-
-	QTextStream input(&file);
-
-	while (!input.atEnd())
-	{
-		const QString readString = input.readLine();
-
-		if (readString.isEmpty())
-		{
-			continue;
-		}
-
-		int type = ObjectTypes::typeCount;
-		QString schemaName = "";
-		QString name;
-		QStringList parameters = QStringList("");
-
-		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index)").exactMatch(readString))
-		{
-			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
-			schemaName = splitResult.at(0);
-			name = splitResult.at(1);
-			type = ObjectTypes::typeNames.key(splitResult.at(2));
-		}
-		else if (QRegExp("script ([^ ])+").exactMatch(readString))
-		{
-			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
-			name = splitResult.at(1);
-			type = ObjectTypes::script;
-		}
-		else if (QRegExp("([^ ])+ ([^ ])+ function \\( (([^,() ])+ )*\\)").exactMatch(readString))
-		{
-			auto splitResult = readString.split(QRegExp("(\\ |\\(|\\))"), QString::SkipEmptyParts);
-			schemaName = splitResult.first();
-			splitResult.pop_front();
-			name = splitResult.first();
-			splitResult.pop_front();
-			type = ObjectTypes::function;
-			splitResult.pop_front();
-
-			if (!splitResult.isEmpty())
-			{
-				parameters = splitResult;
-			}			
-		}
-		else
-		{
-			file.close();
-			return false;
-		}
-
-		elements->append(new PatchListElement(type, name, schemaName, parameters));
-	}
-
-	file.close();
-	return true;
-}
-
-bool PatchList::importDependenciesListFile(const class QString &path)
-{
-	QFile file(path);
-
-	if (!file.open(QIODevice::ReadOnly))
-	{
-		return false;
-	}
-
-	QTextStream input(&file);
-
-	while (!input.atEnd())
-	{
-		const QString readString = input.readLine();
-
-		if (readString.isEmpty())
-		{
-			continue;
-		}
-
-		int type = ObjectTypes::typeCount;
-		QString schemaName = "";
-		QString name;
-
-		if (QRegExp("([^ ])+ ([^ ])+ (table|sequence|view|trigger|index|function)").exactMatch(readString))
-		{
-			const auto splitResult = readString.split(" ", QString::SkipEmptyParts);
-			schemaName = splitResult.at(0);
-			name = splitResult.at(1);
-			type = ObjectTypes::typeNames.key(splitResult.at(2));
-		}
-		else
-		{
-			file.close();
-			return false;
-		}
-
-		elements->append(new PatchListElement(type, name, schemaName, QStringList()));
-	}
-
-	file.close();
-	return true;
-}
-
-
-QString PatchList::getParametersString(const QStringList &parameters)
-{
-	QString result = "( ";
-
-	for (const auto &current : parameters)
-	{
-		result += current + " ";
-	}
-
-	return result + ")";
 }
 
 PatchList::~PatchList()

@@ -11,6 +11,7 @@
 #include "ObjectTypes.h"
 #include "BuilderHandler.h"
 #include "ObjectNameCompleter.h"
+#include "FileHandler.h"
 #include "ui_BuilderWidget.h"
 
 // Some freezes in patch list?
@@ -20,7 +21,6 @@
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::BuilderWidget)
-	, patchList(new PatchList)
 	, schemaListModel(new QSqlQueryModel(this))
 	, nameCompleter(new ObjectNameCompleter(this))
 	, functionInputRegExp(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"))
@@ -59,7 +59,6 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 
 BuilderWidget::~BuilderWidget()
 {
-	delete patchList;
 	delete ui;
 }
 
@@ -448,33 +447,32 @@ void BuilderWidget::onDisconnectionStarted()
 
 bool BuilderWidget::startPatchBuild(const QString &path)
 {
+	auto isSuccessful = false;
+	const auto patchDir = FileHandler::makePatchDir(path, isSuccessful);
+
+	if (!isSuccessful)
+	{
+		return false;
+	}
+
+	PatchList buildList;
+
 	for (auto i = 0; i < ui->buildListWidget->topLevelItemCount(); ++i)
 	{
-		patchList->add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole).toInt()
+		auto nameSplitResult = ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::nameColumn).split(QRegExp("(\\ |\\,|\\(|\\))")
+			, QString::SkipEmptyParts);
+		const auto itemName = nameSplitResult.first();
+		nameSplitResult.pop_front();
+		buildList.add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole).toInt()
 			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::schemaColumn)
-			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::nameColumn));
+			, itemName, nameSplitResult);
 	}
 
-	QDir patchDir(path);
-	// Can database have a name with dots?
-	const auto patchDirName = DatabaseProvider::database() + "_build_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_HH-mm-ss");
-
-	if (!patchDir.mkdir(patchDirName))
+	if (!FileHandler::makePatchList(patchDir.absolutePath(), buildList))
 	{
-		patchList->clear();
 		return false;
 	}
-
-	patchDir.cd(patchDirName);
-
-	if (!patchList->exportFile(patchDir.absoluteFilePath("PatchList.txt")))
-	{
-		patchList->clear();
-		return false;
-	}
-
-	patchList->clear();
 
 	return BuilderHandler::buildPatch(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
-		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), patchDir.absoluteFilePath("PatchList.txt"));
+		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), patchDir.absoluteFilePath(FileHandler::getPatchListName()));
 }

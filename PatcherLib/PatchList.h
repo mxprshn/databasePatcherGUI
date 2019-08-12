@@ -7,14 +7,14 @@ class PatchList
 public:
 	PatchList();
 	~PatchList();
-	void add(int type, const QString &schemaName, const QString &fullName);
+	PatchList(const PatchList &other);
+	PatchList& operator=(const PatchList &other);
+	void add(int typeIndex, const QString &schemaName, const QString &name, const QStringList &parameters = {});
 	int count() const;
-	PatchListElement at(int position) const;
-	bool exportFile(const QString &path) const;
-	bool importPatchListFile(const QString &path);
-	bool importDependenciesListFile(const QString &path);
+	QList<PatchListElement*>::const_iterator begin() const;
+	QList<PatchListElement*>::const_iterator end() const;
 	void clear();
 private:
+	void swap(PatchList &other);
 	QList<PatchListElement*> *elements;
-	static QString getParametersString(const QStringList &parameters);
 };

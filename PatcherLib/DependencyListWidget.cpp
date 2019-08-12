@@ -1,13 +1,13 @@
-#include "DependenciesListWidget.h"
+#include "DependencyListWidget.h"
 #include "ObjectTypes.h"
 #include "PatchList.h"
 #include <QHeaderView>
 #include <QBitArray>
 
-const QHash<int, QString> DependenciesListWidget::statusIcons = QHash<int, QString>({ {waitingForCheck, ":/images/unchecked.svg"}
+const QHash<int, QString> DependencyListWidget::statusIcons = QHash<int, QString>({ {waitingForCheck, ":/images/unchecked.svg"}
 		, {satisfied, ":/images/checked.svg"}, {notSatisfied, ":/images/error.svg"} });
 
-DependenciesListWidget::DependenciesListWidget(QWidget *parent)
+DependencyListWidget::DependencyListWidget(QWidget *parent)
 	: QTreeWidget(parent)
 	, checkedCount(0)
 	, areAllSatisfied(false)
@@ -30,7 +30,7 @@ DependenciesListWidget::DependenciesListWidget(QWidget *parent)
 	connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
 }
 
-bool DependenciesListWidget::setCheckStatus(const QBitArray& checkResult)
+bool DependencyListWidget::setCheckStatus(const QBitArray& checkResult)
 {
 	if (checkResult.count() != topLevelItemCount())
 	{
@@ -61,7 +61,7 @@ bool DependenciesListWidget::setCheckStatus(const QBitArray& checkResult)
 	return true;
 }
 
-void DependenciesListWidget::add(int typeIndex, const class QString& schema, const class QString& name)
+void DependencyListWidget::add(int typeIndex, const class QString& schema, const class QString& name)
 {
 	auto *newItem = new QTreeWidgetItem(this);
 	newItem->setIcon(typeColumn, QIcon(ObjectTypes::typeIcons.value(typeIndex)));
@@ -76,24 +76,24 @@ void DependenciesListWidget::add(int typeIndex, const class QString& schema, con
 	addTopLevelItem(newItem);
 }
 
-void DependenciesListWidget::clear()
+void DependencyListWidget::clear()
 {
 	QTreeWidget::clear();
 	checkedCount = 0;
 	areAllSatisfied = false;
 }
 
-int DependenciesListWidget::getCheckedCount() const
+int DependencyListWidget::getCheckedCount() const
 {
 	return checkedCount;
 }
 
-bool DependenciesListWidget::getAreAllSatisfied() const
+bool DependencyListWidget::getAreAllSatisfied() const
 {
 	return areAllSatisfied;
 }
 
-void DependenciesListWidget::onItemClicked(QTreeWidgetItem *item, int column)
+void DependencyListWidget::onItemClicked(QTreeWidgetItem *item, int column)
 {
 	if (item->checkState(statusColumn) != Qt::Checked && item->data(statusColumn, Qt::UserRole).toInt() != waitingForCheck)
 	{

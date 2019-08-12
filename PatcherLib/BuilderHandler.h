@@ -3,7 +3,6 @@
 #include <QObject>
 
 class QString;
-class QStringList;
 class QIODevice;
 class QProcess;
 
@@ -18,8 +17,7 @@ public:
 	static bool buildPatch(const QString &database, const QString &user, const QString &password,
 		const QString &server, int port, const QString &patchDir, const QString &buildListDir);
 private:
-	static QString program;
-	static QString templatesPath;
+	const static QString program;
+	const static QString templatesPath;
 	static QIODevice *outputDevice;
-	static QProcess builderProcess;
 };

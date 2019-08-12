@@ -3,15 +3,8 @@
 #include <QProcess>
 #include <QIODevice>
 
-QString InstallerHandler::program = "PatchInstaller_exe.exe";
-QProcess InstallerHandler::installerProcess;
-QIODevice *InstallerHandler::outputDevice;
-// Init device???
-
-void InstallerHandler::setProgram(const QString &newProgram)
-{
-	program = newProgram;
-}
+const QString InstallerHandler::program = "PatchInstaller_exe.exe";
+QIODevice *InstallerHandler::outputDevice = nullptr;
 
 void InstallerHandler::setOutputDevice(QIODevice &newDevice)
 {
@@ -25,7 +18,10 @@ bool InstallerHandler::installPatch(const QString &database, const QString &user
 		.arg(port);
 	const QStringList arguments = { connectionInfo, "install", path };
 	// Add connection to output stream!
-	connect(&installerProcess, &QProcess::readyReadStandardError, [] ()
+
+	QProcess installerProcess;
+
+	connect(&installerProcess, &QProcess::readyReadStandardError, [&installerProcess] ()
 	{
 		if (outputDevice)
 		{
@@ -51,21 +47,24 @@ bool InstallerHandler::installPatch(const QString &database, const QString &user
 QBitArray InstallerHandler::checkDependencies(const QString &database, const QString &user, const QString &password,
 	const QString &server, int port, const QString &path, bool &isSuccessful)
 {
-	QBitArray checkResult;
-
 	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(database).arg(user).arg(password).arg(server)
 		.arg(port);
 	const QStringList arguments = { connectionInfo, "check", path };
 
 	// Not sure if it is ok when process destructed.
 	// Fix code table for output
-	connect(&installerProcess, &QProcess::readyReadStandardError, [] ()
+
+	QProcess installerProcess;
+
+	connect(&installerProcess, &QProcess::readyReadStandardError, [&installerProcess] ()
 	{
 		if (outputDevice)
 		{
 			outputDevice->write(installerProcess.readAllStandardError());
 		}
 	});
+
+	QBitArray checkResult;
 
 	installerProcess.start(program, arguments);
 

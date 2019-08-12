@@ -46,6 +46,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+	if (DatabaseProvider::isConnected())
+	{
+		emit disconnectionStarted();
+		DatabaseProvider::disconnect();
+	}
+
 	delete ui;
 }
 
