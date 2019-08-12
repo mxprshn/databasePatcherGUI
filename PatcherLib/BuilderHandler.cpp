@@ -45,7 +45,7 @@ bool BuilderHandler::buildPatch(const QString& database, const QString& user, co
 
 	// Add exit code processing!!!
 
-	if (!builderProcess.waitForFinished())
+	if (!builderProcess.waitForFinished() || builderProcess.exitCode() != 0)
 	{
 		return false;
 	}

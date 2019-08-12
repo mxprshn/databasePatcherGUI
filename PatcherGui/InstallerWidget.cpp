@@ -187,13 +187,22 @@ void InstallerWidget::onOpenButtonClicked()
 		return;
 	}
 
+	if (ui->dependencyListWidget->topLevelItemCount() == 0)
+	{
+		ui->installInfoLabel->setText("Patch has not any dependencies.");
+		ui->installButton->setEnabled(true);
+	}
+	else
+	{
+		ui->checkButton->setEnabled(true);
+	}
+
 	ui->patchPathEdit->clear();
 	ui->patchPathEdit->setPlaceholderText("Opened patch: " + patchDir.absolutePath());
 	ui->patchPathEdit->setDisabled(true);
 	ui->openPatchButton->setText("Close");
 	ui->openPatchButton->setIcon(QIcon(":/images/close.svg"));
 	ui->openPatchButton->setIconSize(QSize(12, 12));
-	ui->checkButton->setEnabled(true);
 	isPatchOpened = true;
 }
 
@@ -207,8 +216,6 @@ void InstallerWidget::onCheckButtonClicked()
 	auto isSuccessful = false;
 	const auto checkResult = InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
 		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), isSuccessful);
-
-	// Maybe add here information when amount of objects differ (+output device here?)
 
 	if (isSuccessful && ui->dependencyListWidget->setCheckStatus(checkResult))
 	{
@@ -226,7 +233,7 @@ void InstallerWidget::onCheckButtonClicked()
 		else
 		{
 			QMessageBox::information(this, "Check completed"
-				, "Check completed. All dependencies are satisfied. Patch may be installed safely."
+				, "Check completed. All dependencies are satisfied. Patch may be installed safely (or almost safely)."
 				, QMessageBox::Ok, QMessageBox::Ok);
 		}
 	}
@@ -234,7 +241,7 @@ void InstallerWidget::onCheckButtonClicked()
 	{
 		QApplication::beep();
 		QMessageBox::warning(this, "Check error"
-			, "Error occured. See logs for detailed information."
+			, "Error occured. See log for detailed information."
 			, QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
@@ -266,14 +273,14 @@ void InstallerWidget::onInstallButtonClicked()
 	{
 		QApplication::beep();
 		QMessageBox::information(this, "Installation completed"
-			, "Installation completed. See logs for detailed information."
+			, "Installation completed. See log for detailed information."
 			, QMessageBox::Ok, QMessageBox::Ok);
 	}
 	else
 	{
 		QApplication::beep();
 		QMessageBox::warning(this, "Installation error"
-			, "Error occured. See logs for detailed information."
+			, "Error occured. See log for detailed information."
 			, QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
@@ -284,7 +291,7 @@ void InstallerWidget::onItemCheckChanged()
 	{
 		if (!ui->dependencyListWidget->getAreAllSatisfied())
 		{
-			ui->installInfoLabel->setText("Warning: Some dependencies are not satisfied!");
+			ui->installInfoLabel->setText("WARNING: Some dependencies are not satisfied!");
 		}
 		else
 		{
@@ -295,7 +302,7 @@ void InstallerWidget::onItemCheckChanged()
 	}
 	else
 	{
-		ui->installInfoLabel->setText("To enable installation, mark not satisfied dependencies manually.");
+		ui->installInfoLabel->setText("To enable installation, mark all dependencies manually.");
 		ui->installButton->setEnabled(false);
 	}
 }
