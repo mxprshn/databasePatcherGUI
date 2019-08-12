@@ -20,12 +20,11 @@ public:
 private:
 	Ui::InstallerWidget *ui;
 	QDir patchDir;
-
+	bool isPatchOpened;
 	bool initPatchList(const QString &path);
 	bool initDependencyList(const QString &path);
 	void clearCurrentPatch();
 	void setReadyToOpen();
-	bool isPatchOpened;
 	bool checkConnection();
 signals:
 	void connectionRequested();

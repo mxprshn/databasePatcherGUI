@@ -2,10 +2,9 @@
 #include <QProcess>
 #include <QIODevice>
 
-QString BuilderHandler::program = "PatchBuilder_exe.exe";
-QString BuilderHandler::templatesPath = "Templates.ini";
-QProcess BuilderHandler::builderProcess;
-QIODevice *BuilderHandler::outputDevice;
+const QString BuilderHandler::program = "PatchBuilder_exe.exe";
+const QString BuilderHandler::templatesPath = "Templates.ini";
+QIODevice *BuilderHandler::outputDevice = nullptr;
 
 void BuilderHandler::setOutputDevice(QIODevice &newDevice)
 {
@@ -19,7 +18,9 @@ bool BuilderHandler::buildPatch(const QString& database, const QString& user, co
 		.arg(port);
 	const QStringList arguments = { "-d", patchDir, "-p", buildListDir, "-c", connectionInfo, "-t", templatesPath };
 
-	connect(&builderProcess, &QProcess::readyReadStandardOutput, []()
+	QProcess builderProcess;
+
+	connect(&builderProcess, &QProcess::readyReadStandardOutput, [&builderProcess]()
 	{
 		if (outputDevice)
 		{
@@ -27,7 +28,7 @@ bool BuilderHandler::buildPatch(const QString& database, const QString& user, co
 		}
 	});
 
-	connect(&builderProcess, &QProcess::readyReadStandardError, []()
+	connect(&builderProcess, &QProcess::readyReadStandardError, [&builderProcess]()
 	{
 		if (outputDevice)
 		{

@@ -1,6 +1,7 @@
 #include <QList>
 #include <QFile>
 #include <QTextStream>
+#include <algorithm>
 
 #include "PatchList.h"
 #include "PatchListElement.h"
@@ -20,16 +21,19 @@ PatchList::PatchList(const PatchList &other)
 	}
 }
 
-//PatchList& PatchList::operator=(const PatchList &other)
-//{
-//	if (this != &other)
-//	{
-//		PatchList temp(other);
-//		for ()
-//	}
-//
-//	return *this;
-//}
+PatchList& PatchList::operator=(const PatchList &other)
+{
+	if (this != &other)
+	{
+		PatchList(other).swap(*this);
+	}
+	return *this;
+}
+
+void PatchList::swap(PatchList &other)
+{
+	std::swap(elements, other.elements);
+}
 
 void PatchList::add(int typeIndex, const QString &schemaName, const QString &name, const QStringList &parameters)
 {	
@@ -49,12 +53,6 @@ QList<class PatchListElement*>::const_iterator PatchList::begin() const
 QList<class PatchListElement*>::const_iterator PatchList::end() const
 {
 	return elements->constEnd();
-}
-
-PatchListElement PatchList::at(int position) const
-{
-	// Add invalid index processing
-	return *elements->at(position);
 }
 
 void PatchList::clear()

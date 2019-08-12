@@ -21,7 +21,6 @@
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::BuilderWidget)
-	, patchList(new PatchList)
 	, schemaListModel(new QSqlQueryModel(this))
 	, nameCompleter(new ObjectNameCompleter(this))
 	, functionInputRegExp(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"))
@@ -60,7 +59,6 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 
 BuilderWidget::~BuilderWidget()
 {
-	delete patchList;
 	delete ui;
 }
 
@@ -449,33 +447,31 @@ void BuilderWidget::onDisconnectionStarted()
 
 bool BuilderWidget::startPatchBuild(const QString &path)
 {
+	auto isSuccessful = false;
+	const auto patchDir = FileHandler::makePatchDir(path, isSuccessful);
+
+	if (!isSuccessful)
+	{
+		return false;
+	}
+
+	PatchList buildList;
+
 	for (auto i = 0; i < ui->buildListWidget->topLevelItemCount(); ++i)
 	{
 		auto nameSplitResult = ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::nameColumn).split(QRegExp("(\\ |\\,|\\(|\\))")
 			, QString::SkipEmptyParts);
 		const auto itemName = nameSplitResult.first();
 		nameSplitResult.pop_front();
-		patchList->add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole).toInt()
+		buildList.add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole).toInt()
 			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::schemaColumn)
 			, itemName, nameSplitResult);
 	}
 
-	auto isSuccessful = false;
-	const auto patchDir = FileHandler::makePatchDir(path, isSuccessful);
-
-	if (!isSuccessful)
+	if (!FileHandler::makePatchList(patchDir.absolutePath(), buildList))
 	{
-		patchList->clear();
 		return false;
 	}
-
-	if (!FileHandler::makePatchList(patchDir.absolutePath(), *patchList))
-	{
-		patchList->clear();
-		return false;
-	}
-
-	patchList->clear();
 
 	return BuilderHandler::buildPatch(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
 		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), patchDir.absoluteFilePath(FileHandler::getPatchListName()));

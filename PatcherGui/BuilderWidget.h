@@ -3,7 +3,6 @@
 #include <QWidget>
 #include "ui_BuilderWidget.h"
 
-class PatchList;
 class QSqlQueryModel;
 class ObjectNameCompleter;
 
@@ -21,7 +20,6 @@ public:
 	~BuilderWidget();
 private:
 	Ui::BuilderWidget *ui;
-	PatchList *patchList;
 	QSqlQueryModel *schemaListModel;
 	ObjectNameCompleter *nameCompleter;
 	void addScripts(const QString &input);
