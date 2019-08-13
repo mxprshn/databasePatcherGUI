@@ -31,6 +31,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 	ui->viewMenu->addAction(QIcon(":/images/hammer.svg"),"Build", [=]() {ui->tabWidget->setCurrentWidget(ui->builderTab); });
 	ui->viewMenu->addAction(QIcon(":/images/install.svg"), "Install", [=]() {ui->tabWidget->setCurrentWidget(ui->installerTab); });
+	ui->viewMenu->addAction("About...", [=]()
+	{
+		QMessageBox::about(this, "PostgreSQL database patcher",
+			"PostgreSQL database patcher. "
+			"Developed by: Ekaterina Vinnik, Victor Khovanov, Timur Sirkin, Maxim Parshin, Daria Larionova, Nikolay Bazhulin. "
+			"Graphics by: Vitaly Gorbachev, Smashicons, Pixelmeetup");
+	});
 
 	ui->mainToolBar->addAction(connectAction);
 	ui->mainToolBar->addWidget(databaseInformation);
