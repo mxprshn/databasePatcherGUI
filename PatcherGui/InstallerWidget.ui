@@ -270,10 +270,10 @@
  <tabstops>
   <tabstop>patchPathEdit</tabstop>
   <tabstop>openPatchButton</tabstop>
-  <tabstop>dependencyListWidget</tabstop>
-  <tabstop>patchListWidget</tabstop>
   <tabstop>checkButton</tabstop>
   <tabstop>installButton</tabstop>
+  <tabstop>dependencyListWidget</tabstop>
+  <tabstop>patchListWidget</tabstop>
  </tabstops>
  <resources>
   <include location="PatcherResources.qrc"/>

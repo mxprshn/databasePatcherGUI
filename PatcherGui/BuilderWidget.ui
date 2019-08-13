@@ -556,9 +556,11 @@
   <tabstop>moveUpButton</tabstop>
   <tabstop>moveDownButton</tabstop>
   <tabstop>removeButton</tabstop>
+  <tabstop>clearButton</tabstop>
   <tabstop>patchPathEdit</tabstop>
   <tabstop>explorerButton</tabstop>
   <tabstop>buildButton</tabstop>
+  <tabstop>buildListWidget</tabstop>
  </tabstops>
  <resources>
   <include location="PatcherResources.qrc"/>

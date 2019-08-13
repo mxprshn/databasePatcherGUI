@@ -1,10 +1,5 @@
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDateTime>
-#include <QSqlQueryModel>
-#include <stdexcept>
-
 #include "BuilderWidget.h"
+#include "ui_BuilderWidget.h"
 #include "PatchListWidget.h"
 #include "PatchList.h"
 #include "DatabaseProvider.h"
@@ -12,20 +7,22 @@
 #include "BuilderHandler.h"
 #include "ObjectNameCompleter.h"
 #include "FileHandler.h"
-#include "ui_BuilderWidget.h"
 
-// Some freezes in patch list?
-// Rename layouts in Ui
-// Fix headers coming to infinity
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSqlQueryModel>
 
+// Widget constructor, taking pointer to parent widget
+// When parent widget is being deleted, all its children are deleted automatically
 BuilderWidget::BuilderWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::BuilderWidget)
 	, schemaListModel(new QSqlQueryModel(this))
 	, nameCompleter(new ObjectNameCompleter(this))
-	, functionInputRegExp(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)"))
 {
 	ui->setupUi(this);
+
+	// Initialization of ui elements
 	ui->schemaComboBox->setModel(schemaListModel);
 	ui->moveUpButton->setDisabled(true);
 	ui->moveDownButton->setDisabled(true);
@@ -33,6 +30,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	ui->clearButton->setDisabled(true);
 	ui->buildButton->setDisabled(true);
 
+	// Filling type box with elements
 	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", ObjectTypes::script);
 	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", ObjectTypes::table);
 	ui->typeComboBox->addItem(QIcon(":/images/sequence.svg"), "sequence", ObjectTypes::sequence);
@@ -42,7 +40,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	ui->typeComboBox->addItem(QIcon(":/images/index.svg"), "index", ObjectTypes::index);
 
 	initScriptInput();
-
+ 
 	connect(ui->nameEdit, &QLineEdit::returnPressed, [=]()
 	{
 		if (!nameCompleter->popup()->isVisible())
@@ -65,18 +63,19 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	connect(ui->schemaComboBox, SIGNAL(currentTextChanged(const QString&)), this, SLOT(onCurrentSchemaChanged(const QString&)));
 }
 
+// Destructor with ui object deleting
 BuilderWidget::~BuilderWidget()
 {
 	delete ui;
 }
 
+// Checks database connection, shows error message and requests connection
 bool BuilderWidget::checkConnection()
 {
 	if (!DatabaseProvider::isConnected())
 	{
 		QApplication::beep();
-		QMessageBox::warning(this, "Database error"
-			, "Not connected to database."
+		QMessageBox::warning(this, "Database error", "Not connected to database."
 			, QMessageBox::Ok, QMessageBox::Ok);
 		emit connectionRequested();
 		return false;
@@ -85,6 +84,8 @@ bool BuilderWidget::checkConnection()
 	return true;
 }
 
+// Handles add button click
+// Checks the availability of new element addition and calls add methods
 void BuilderWidget::onAddButtonClicked()
 {
 	if (!checkConnection())
@@ -102,7 +103,7 @@ void BuilderWidget::onAddButtonClicked()
 		return;
 	}
 
-	if (ui->nameEdit->text().isEmpty())
+	if (nameInput.isEmpty())
 	{
 		QMessageBox::information(this, "Item not added", "Please, enter "
 			+ ui->nameEdit->placeholderText().toLower() + "."
@@ -154,10 +155,6 @@ void BuilderWidget::onAddButtonClicked()
 			exists = DatabaseProvider::indexExists(schema, nameInput);
 			break;
 		}
-		default:
-		{
-			throw std::runtime_error("Type QComboBox index error.");
-		}
 	}
 
 	if (exists)
@@ -176,6 +173,8 @@ void BuilderWidget::onAddButtonClicked()
 	}
 }
 
+// Parses script names string if it is not empty, or opens file dialog otherwise
+// Adds parsed script objects to the list widget
 void BuilderWidget::addScripts(const QString &input)
 {
 	QStringList fileList;
@@ -232,6 +231,7 @@ void BuilderWidget::addScripts(const QString &input)
 	emit itemCountChanged();
 }
 
+// Initializes ui elements for script path input
 void BuilderWidget::initScriptInput()
 {
 	ui->schemaComboBox->setDisabled(true);
@@ -239,6 +239,7 @@ void BuilderWidget::initScriptInput()
 	ui->nameLabel->setText("Path");
 }
 
+// Updates name completer from database by schema name and type index 
 void BuilderWidget::initCompleter()
 {
 	if (!DatabaseProvider::isConnected())
@@ -257,11 +258,13 @@ void BuilderWidget::initCompleter()
 	ui->nameEdit->setCompleter(nameCompleter);
 }
 
+// Handles open explorer button click
 void BuilderWidget::onExplorerButtonClicked()
 {
 	ui->patchPathEdit->setText(QFileDialog::getExistingDirectory(this, "Choose build directory"));
 }
 
+// Handles build button click, calls build method
 void BuilderWidget::onBuildButtonClicked()
 {
 	if (!checkConnection())
@@ -320,6 +323,7 @@ void BuilderWidget::onBuildButtonClicked()
 	}
 }
 
+// Handles remove item button click
 void BuilderWidget::onRemoveButtonClicked()
 {
 	const auto dialogResult = QMessageBox::question(this, "Remove item", "Are you sure to remove " +
@@ -334,6 +338,7 @@ void BuilderWidget::onRemoveButtonClicked()
 	}
 }
 
+// Handles move item up button click
 void BuilderWidget::onMoveUpButtonClicked()
 {
 	if (ui->buildListWidget->topLevelItemCount() > 1 && ui->buildListWidget->currentIndex().row() > 0)
@@ -345,6 +350,7 @@ void BuilderWidget::onMoveUpButtonClicked()
 	}	
 }
 
+// Handles move item down button click
 void BuilderWidget::onMoveDownButtonClicked()
 {
 	if (ui->buildListWidget->topLevelItemCount() > 1 && ui->buildListWidget->currentIndex().row() != ui->buildListWidget->topLevelItemCount() - 1)
@@ -356,6 +362,7 @@ void BuilderWidget::onMoveDownButtonClicked()
 	}	
 }
 
+// Handles clear build list button click
 void BuilderWidget::onClearButtonClicked()
 {
 	const auto dialogResult = QMessageBox::question(this, "Clear list", "Are you sure to clear patch list?"
@@ -368,6 +375,8 @@ void BuilderWidget::onClearButtonClicked()
 	}
 }
 
+// Handles list elements selection state change
+// Enables operations with list elements if one of them is selected
 void BuilderWidget::onItemSelectionChanged()
 {
 	if (ui->buildListWidget->selectedItems().isEmpty())
@@ -384,6 +393,8 @@ void BuilderWidget::onItemSelectionChanged()
 	}
 }
 
+// Handles current type change
+// Sets ui elements for object name input by selected type
 void BuilderWidget::onCurrentTypeChanged(int type)
 {
 	initCompleter();
@@ -412,11 +423,14 @@ void BuilderWidget::onCurrentTypeChanged(int type)
 	}
 }
 
+// Handles current schema change
 void BuilderWidget::onCurrentSchemaChanged(const QString& schema)
 {
 	initCompleter();
 }
 
+// Handles current name input change
+// If it is a function, checks its signature with regular expression
 void BuilderWidget::onNameTextChanged(const QString &input)
 {
 	if (ui->typeComboBox->currentData(Qt::UserRole).toInt() != ObjectTypes::function)
@@ -424,9 +438,11 @@ void BuilderWidget::onNameTextChanged(const QString &input)
 		return;
 	}
 
-	ui->nameLabel->setText(functionInputRegExp.exactMatch(input) ? "Signature (Valid)" : "Signature (Invalid, function may not be found)");
+	ui->nameLabel->setText(QRegExp("[^,\\(\\) ]+\\((([^,\\(\\) ]+,)*([^, \\(\\)]+)+)?\\)").exactMatch(input) ? "Signature (Valid)" : "Signature (Invalid, function may not be found)");
 }
 
+// Handles amount of build list elements change
+// Enables build and clear options if the list is not empty
 void BuilderWidget::onItemCountChanged()
 {
 	if (ui->buildListWidget->topLevelItemCount() == 0)
@@ -441,12 +457,16 @@ void BuilderWidget::onItemCountChanged()
 	}
 }
 
+// Handles connection to database
+// Initializes elements which depend on database
 void BuilderWidget::onConnected()
 {
 	DatabaseProvider::initSchemaListModel(*schemaListModel);
 	initCompleter();
 }
 
+// Handles start of disconnection from database
+// Clears elements which depend on database
 void BuilderWidget::onDisconnectionStarted()
 {
 	schemaListModel->clear();
@@ -454,6 +474,7 @@ void BuilderWidget::onDisconnectionStarted()
 	ui->nameEdit->setCompleter(nullptr);
 }
 
+// Launches patch build
 bool BuilderWidget::startPatchBuild(const QString &path)
 {
 	auto isSuccessful = false;
