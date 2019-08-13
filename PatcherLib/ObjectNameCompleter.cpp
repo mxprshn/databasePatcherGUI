@@ -1,8 +1,8 @@
+#include "ObjectNameCompleter.h"
+#include "ObjectTypes.h"
+
 #include <QSqlQueryModel>
 #include <QSqlQuery>
-
-#include "ObjectTypes.h"
-#include "ObjectNameCompleter.h"
 
 const QString ObjectNameCompleter::tableQuery = "SELECT DISTINCT table_name FROM information_schema.tables WHERE table_schema = ? AND table_type != 'VIEW';";
 const QString ObjectNameCompleter::sequenceQuery = "SELECT DISTINCT sequence_name FROM information_schema.sequences WHERE sequence_schema = ?;";
@@ -13,6 +13,7 @@ const QString ObjectNameCompleter::viewQuery = "SELECT DISTINCT table_name FROM 
 const QString ObjectNameCompleter::triggerQuery = "SELECT DISTINCT trigger_name FROM information_schema.triggers WHERE trigger_schema = ?;";
 const QString ObjectNameCompleter::indexQuery = "SELECT DISTINCT indexname FROM pg_indexes WHERE schemaname = ?;";
 
+// Constructor
 ObjectNameCompleter::ObjectNameCompleter(QObject *parent)
 	: QCompleter(parent)
 	, model(new QSqlQueryModel)
@@ -22,6 +23,7 @@ ObjectNameCompleter::ObjectNameCompleter(QObject *parent)
 	setCompletionMode(PopupCompletion);
 }
 
+// Fills model with object name data got from database by type and schema
 void ObjectNameCompleter::initialize(int typeIndex, const QString &schema)
 {
 	clear();
@@ -72,11 +74,13 @@ void ObjectNameCompleter::initialize(int typeIndex, const QString &schema)
 	model->setQuery(fetch);
 }
 
+// Clears model
 void ObjectNameCompleter::clear()
 {
 	model->clear();
 }
 
+// Destructor
 ObjectNameCompleter::~ObjectNameCompleter()
 {
 	delete model;

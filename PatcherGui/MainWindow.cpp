@@ -1,5 +1,4 @@
-#include <QMessageBox>
-
+#include "ui_MainWindow.h"
 #include "MainWindow.h"
 #include "BuilderWidget.h"
 #include "InstallerWidget.h"
@@ -9,6 +8,11 @@
 #include "BuilderHandler.h"
 #include "DatabaseProvider.h"
 
+#include <QMessageBox>
+#include <QLabel>
+
+// Widget constructor, taking pointer to parent widget
+// When parent widget is being deleted, all its children are deleted automatically
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -24,13 +28,13 @@ MainWindow::MainWindow(QWidget *parent)
 	connectAction = new QAction(QIcon(":/images/addDatabase.svg"), "Connect to database...", this);
 	disconnectAction = new QAction(QIcon(":/images/removeDatabase.svg"), "Disconnect", this);
 	disconnectAction->setDisabled(true);
-	databaseInformation = new QLabel("Connect to database!");
+	databaseInformation = new QLabel("Connect to database!", this);
 
 	ui->databaseMenu->addAction(connectAction);
 	ui->databaseMenu->addAction(disconnectAction);
 
-	ui->viewMenu->addAction(QIcon(":/images/hammer.svg"),"Build", [=]() {ui->tabWidget->setCurrentWidget(ui->builderTab); });
-	ui->viewMenu->addAction(QIcon(":/images/install.svg"), "Install", [=]() {ui->tabWidget->setCurrentWidget(ui->installerTab); });
+	ui->viewMenu->addAction(QIcon(":/images/hammer.svg"),"Build", [=]() { ui->tabWidget->setCurrentWidget(ui->builderTab); });
+	ui->viewMenu->addAction(QIcon(":/images/install.svg"), "Install", [=]() { ui->tabWidget->setCurrentWidget(ui->installerTab); });
 
 	ui->mainToolBar->addAction(connectAction);
 	ui->mainToolBar->addWidget(databaseInformation);
@@ -44,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this, SIGNAL(disconnectionStarted()), ui->builderTab, SLOT(onDisconnectionStarted()));
 }
 
+// Destructor with ui object deleting and database disconnection
 MainWindow::~MainWindow()
 {
 	if (DatabaseProvider::isConnected())
@@ -55,6 +60,8 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+// Handles click of OK button on input dialog
+// Launches database connection and sets appropriate interface elements
 void MainWindow::onDialogConnectButtonClicked()
 {
 	QString errorMessage = "";
@@ -79,11 +86,14 @@ void MainWindow::onDialogConnectButtonClicked()
 	}
 }
 
+// Handles connection requests from other widgets
 void MainWindow::onConnectionRequested()
 {
 	loginWindow->show();
 }
 
+// Handles disconnect button click
+// Launches database disconnection and sets appropriate interface elements
 void MainWindow::onDisconnectButtonClicked()
 {
 	emit disconnectionStarted();

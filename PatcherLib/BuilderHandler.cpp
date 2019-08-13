@@ -1,4 +1,5 @@
 #include "BuilderHandler.h"
+
 #include <QProcess>
 #include <QIODevice>
 
@@ -6,11 +7,14 @@ const QString BuilderHandler::program = "PatchBuilder_exe.exe";
 const QString BuilderHandler::templatesPath = "Templates.ini";
 QIODevice *BuilderHandler::outputDevice = nullptr;
 
+// Sets new log output device
 void BuilderHandler::setOutputDevice(QIODevice &newDevice)
 {
 	outputDevice = &newDevice;
 }
 
+// Launches and manages Builder process
+// Returns result of patch build
 bool BuilderHandler::buildPatch(const QString& database, const QString& user, const QString& password
 	, const QString& server, int port, const QString &patchDir, const QString &buildListDir)
 {
@@ -42,8 +46,6 @@ bool BuilderHandler::buildPatch(const QString& database, const QString& user, co
 	{
 		return false;
 	}
-
-	// Add exit code processing!!!
 
 	if (!builderProcess.waitForFinished() || builderProcess.exitCode() != 0)
 	{

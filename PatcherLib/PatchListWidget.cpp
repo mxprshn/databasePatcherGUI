@@ -1,10 +1,9 @@
-#include <QDropEvent>
-
 #include "PatchListWidget.h"
 #include "ObjectTypes.h"
 
-// Multiple selection?
+#include <QDropEvent>
 
+// Constructor
 PatchListWidget::PatchListWidget(QWidget *parent)
 	: QTreeWidget(parent)
 {
@@ -22,25 +21,7 @@ PatchListWidget::PatchListWidget(QWidget *parent)
 	setDragDropMode(InternalMove);
 }
 
-QStringList PatchListWidget::itemList() const
-{
-	QStringList result;
-
-	for (auto i = 0; i < topLevelItemCount(); ++i)
-	{
-		QString currentString = "";
-
-		for (auto j = 0; j < columnCount(); ++j)
-		{
-			currentString += topLevelItem(i)->text(j);
-		}
-
-		result.append(currentString);
-	}
-
-	return result;
-}
-
+// Checks object for existence in the list
 bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, const class QString &name)
 {
 	const auto foundItems = findItems(name, Qt::MatchFixedString, nameColumn);
@@ -56,6 +37,7 @@ bool PatchListWidget::itemExists(int typeIndex, const class QString &schema, con
 	return false;
 }
 
+// Adds a new object to list
 void PatchListWidget::add(int typeIndex, const class QString& schema, const class QString& name, bool isDraggable)
 {
 	auto *newItem = new QTreeWidgetItem(this);
@@ -79,6 +61,7 @@ void PatchListWidget::add(int typeIndex, const class QString& schema, const clas
 	scrollToItem(newItem);
 }
 
+// Handles drop of dragged object
 void PatchListWidget::dropEvent(QDropEvent *event)
 {
 	QTreeWidget::dropEvent(event);

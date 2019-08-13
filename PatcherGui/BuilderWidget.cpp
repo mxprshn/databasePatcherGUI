@@ -505,5 +505,5 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 	}
 
 	return BuilderHandler::buildPatch(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
-		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), patchDir.absoluteFilePath(FileHandler::getPatchListName()));
+		, DatabaseProvider::host(), DatabaseProvider::port(), patchDir.absolutePath(), patchDir.absoluteFilePath(FileHandler::getPatchListName()));
 }

@@ -1,4 +1,5 @@
 #include "InstallerHandler.h"
+
 #include <QBitArray>
 #include <QProcess>
 #include <QIODevice>
@@ -6,18 +7,20 @@
 const QString InstallerHandler::program = "PatchInstaller_exe.exe";
 QIODevice *InstallerHandler::outputDevice = nullptr;
 
+// Sets new log output device
 void InstallerHandler::setOutputDevice(QIODevice &newDevice)
 {
 	outputDevice = &newDevice;
 }
 
+// Launches and manages patch installation process
+// Returns result of installation
 bool InstallerHandler::installPatch(const QString &database, const QString &user, const QString &password,
 	const QString &server, int port, const QString &path)
 {
 	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(database).arg(user).arg(password).arg(server)
 		.arg(port);
 	const QStringList arguments = { connectionInfo, "install", path };
-	// Add connection to output stream!
 
 	QProcess installerProcess;
 
@@ -44,15 +47,14 @@ bool InstallerHandler::installPatch(const QString &database, const QString &user
 	return true;
 }
 
+// Launches and manages dependency check process
+// Returns result of check as bit array
 QBitArray InstallerHandler::checkDependencies(const QString &database, const QString &user, const QString &password,
 	const QString &server, int port, const QString &path, bool &isSuccessful)
 {
 	const auto connectionInfo = QString("%1:%2:%3:%4:%5").arg(database).arg(user).arg(password).arg(server)
 		.arg(port);
 	const QStringList arguments = { connectionInfo, "check", path };
-
-	// Not sure if it is ok when process destructed.
-	// Fix code table for output
 
 	QProcess installerProcess;
 
@@ -74,10 +76,7 @@ QBitArray InstallerHandler::checkDependencies(const QString &database, const QSt
 		return checkResult;
 	}
 
-	// Add processing of the return value!
-	// And also it is smth strange with returning.
-
-	if (!installerProcess.waitForFinished())
+	if (!installerProcess.waitForFinished() || installerProcess.exitCode() != 0)
 	{
 		isSuccessful = false;
 		return checkResult;

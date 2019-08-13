@@ -4,8 +4,7 @@
 
 class QString;
 
-// Think about pointer to parameters
-
+// Database object class
 class PatchListElement
 {
 public:
@@ -15,8 +14,12 @@ public:
 	QString getSchema() const;
 	QStringList getParameters() const;
 private:
+	// Type index
 	int type;
+	// Object name
 	QString name;
+	// Object schema
 	QString schema;
+	// List of object parameters
 	QStringList parameters;
 };

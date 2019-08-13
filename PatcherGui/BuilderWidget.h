@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ui_BuilderWidget.h"
-
 #include <QWidget>
 
 class QSqlQueryModel;
@@ -35,9 +33,7 @@ private:
 	void initCompleter();
 	bool startPatchBuild(const QString &path);
 signals:
-	// Signal emitted when database information should be provided
 	void connectionRequested();
-	// Signal emitted when amount of build list elements has changed
 	void itemCountChanged();
 private slots:
 	void onAddButtonClicked();

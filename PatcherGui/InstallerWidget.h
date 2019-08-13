@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ui_InstallerWidget.h"
-
 #include <QWidget>
 #include <QDir>
 

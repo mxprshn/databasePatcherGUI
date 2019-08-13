@@ -2,6 +2,7 @@
 
 #include <QTreeWidget>
 
+// Class implementing graphical interface for list of patch objects
 class PatchListWidget : public QTreeWidget
 {
 	Q_OBJECT
@@ -15,8 +16,8 @@ public:
 		nameColumn
 	};
 
-	PatchListWidget(QWidget *parent);
-	QStringList itemList() const;
+	PatchListWidget(QWidget *parent = nullptr);
+	// QStringList itemList() const;
 	bool itemExists(int typeIndex, const QString &schema, const QString &name);
 	void add(int typeIndex, const QString &schema, const QString &name, bool isDraggable);
 private:
