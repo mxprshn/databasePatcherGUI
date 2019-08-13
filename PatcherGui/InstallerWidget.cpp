@@ -1,9 +1,5 @@
-#include <QAction>
-#include <QBitArray>
-#include <QFileDialog>
-#include <QMessageBox>
-
 #include "InstallerWidget.h"
+#include "ui_InstallerWidget.h"
 #include "InstallerHandler.h"
 #include "PatchListWidget.h"
 #include "DependencyListWidget.h"
@@ -12,14 +8,20 @@
 #include "ObjectTypes.h"
 #include "DatabaseProvider.h"
 #include "FileHandler.h"
-#include "ui_InstallerWidget.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QBitArray>
+
+// Widget constructor, taking pointer to parent widget
+// When parent widget is being deleted, all its children are deleted automatically
 InstallerWidget::InstallerWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::InstallerWidget)
 	, isPatchOpened(false)
 {
 	ui->setupUi(this);
+
 	ui->installInfoLabel->setText("");
 	ui->checkButton->setDisabled(true);
 	ui->installButton->setDisabled(true);
@@ -31,11 +33,13 @@ InstallerWidget::InstallerWidget(QWidget *parent)
 	connect(ui->dependencyListWidget, SIGNAL(itemCheckChanged()), this, SLOT(onItemCheckChanged()));
 }
 
+// Destructor with ui object deleting
 InstallerWidget::~InstallerWidget()
 {
 	delete ui;
 }
 
+// Checks database connection, shows error message and requests connection
 bool InstallerWidget::checkConnection()
 {
 	if (!DatabaseProvider::isConnected())
@@ -51,6 +55,7 @@ bool InstallerWidget::checkConnection()
 	return true;
 }
 
+// Sets elements of interface which is ready to open patch
 void InstallerWidget::setReadyToOpen()
 {
 	ui->patchPathEdit->setPlaceholderText("Patch folder path (leave empty to open in explorer)");
@@ -59,6 +64,7 @@ void InstallerWidget::setReadyToOpen()
 	ui->openPatchButton->setIconSize(QSize(20, 20));
 }
 
+// Fills list widget of patch objects with information from patch 
 bool InstallerWidget::initPatchList(const QString &path)
 {
 	auto isSuccessful = false;
@@ -80,6 +86,7 @@ bool InstallerWidget::initPatchList(const QString &path)
 	return true;
 }
 
+// Fills list widget of dependencies with information from patch 
 bool InstallerWidget::initDependencyList(const QString &path)
 {
 	auto isSuccessful = false;
@@ -98,6 +105,7 @@ bool InstallerWidget::initDependencyList(const QString &path)
 	return true;
 }
 
+// Sets all interface elements affected by patch opening to default state
 void InstallerWidget::clearCurrentPatch()
 {
 	patchDir = QDir();
@@ -112,6 +120,8 @@ void InstallerWidget::clearCurrentPatch()
 	isPatchOpened = false;
 }
 
+// Handles open button click
+// Opens patch list files if possible and sets interface elements to appropriate state
 void InstallerWidget::onOpenButtonClicked()
 {
 	if (isPatchOpened)
@@ -206,6 +216,8 @@ void InstallerWidget::onOpenButtonClicked()
 	isPatchOpened = true;
 }
 
+// Handles check button click
+// 
 void InstallerWidget::onCheckButtonClicked()
 {
 	if (!checkConnection())

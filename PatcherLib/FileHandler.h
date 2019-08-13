@@ -2,6 +2,7 @@
 #include "PatchList.h"
 
 #include <QString>
+#include <QDir>
 
 class FileHandler
 {
