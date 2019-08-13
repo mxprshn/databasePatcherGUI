@@ -1,15 +1,17 @@
-#include <QDir>
-#include <QDateTime>
-#include <QTextStream>
 #include "FileHandler.h"
 #include "DatabaseProvider.h"
 #include "PatchListElement.h"
 #include "ObjectTypes.h"
 
+#include <QDir>
+#include <QDateTime>
+#include <QTextStream>
+
 const QString FileHandler::patchListName = "PatchList.txt";
 const QString FileHandler::dependencyListName = "DependencyList.dpn";
 const QString FileHandler::objectListName = "ObjectList.txt";
 
+// Makes directory for patch files
 QDir FileHandler::makePatchDir(const QString &path, bool &isSuccessful)
 {
 	QDir patchDir(path);
@@ -26,6 +28,7 @@ QDir FileHandler::makePatchDir(const QString &path, bool &isSuccessful)
 	return patchDir;
 }
 
+// Makes patch list file from PatchList object
 bool FileHandler::makePatchList(const QString &path, const PatchList &patchList)
 {
 	const QDir patchDir(path);
@@ -40,23 +43,17 @@ bool FileHandler::makePatchList(const QString &path, const PatchList &patchList)
 
 	for (const auto current : patchList)
 	{
-		const auto schema = current->getSchema();
-		const auto name = current->getName();
-		const auto type = current->getType();
-		const auto typeName = ObjectTypes::typeNames.value(type);
-		const auto parameters = current->getParameters();
-
-		if (type == ObjectTypes::script)
+		if (current->getType() == ObjectTypes::script)
 		{
-			patchFileStream << typeName << " " << name;
+			patchFileStream << ObjectTypes::typeNames.value(current->getType()) << " " << current->getName();
 		}
 		else
 		{
-			patchFileStream << schema << " " << name << " " << typeName;
+			patchFileStream << current->getSchema() << " " << current->getName() << " " << ObjectTypes::typeNames.value(current->getType());
 
-			if (type == ObjectTypes::function)
+			if (current->getType() == ObjectTypes::function)
 			{
-				patchFileStream << " " << getParametersString(parameters);
+				patchFileStream << " " << getParametersString(current->getParameters());
 			}
 		}
 
@@ -67,6 +64,7 @@ bool FileHandler::makePatchList(const QString &path, const PatchList &patchList)
 	return true;
 }
 
+// Returns PatchList object parsed from object list file
 PatchList FileHandler::parseObjectList(const QString &path, bool &isSuccessful)
 {
 	const QDir patchDir(path);
@@ -138,6 +136,7 @@ PatchList FileHandler::parseObjectList(const QString &path, bool &isSuccessful)
 	return objectList;
 }
 
+// Returns PatchList object parsed from dependency list file
 PatchList FileHandler::parseDependencyList(const QString &path, bool &isSuccessful)
 {
 	const QDir patchDir(path);
@@ -187,21 +186,25 @@ PatchList FileHandler::parseDependencyList(const QString &path, bool &isSuccessf
 	return dependencyList;
 }
 
+// Getter for patchListName
 QString FileHandler::getPatchListName()
 {
 	return patchListName;
 }
 
+// Getter for dependencyListName
 QString FileHandler::getDependencyListName()
 {
 	return dependencyListName;
 }
 
+// Getter for objectListName
 QString FileHandler::getObjectListName()
 {
 	return objectListName;
 }
 
+// Returns formatted parameters string made from list of parameters
 QString FileHandler::getParametersString(const QStringList &parameters)
 {
 	QString result = "( ";

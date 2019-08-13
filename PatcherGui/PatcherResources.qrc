@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/images">
-        <file alias="key.svg">Resources/images/key.svg</file>
         <file alias="addDatabase.svg">Resources/images/addDatabase.svg</file>
         <file alias="downArrow.svg">Resources/images/downArrow.svg</file>
         <file alias="hammer.svg">Resources/images/hammer.svg</file>
@@ -25,9 +24,5 @@
         <file alias="close.svg">Resources/images/close.svg</file>
         <file alias="clearList.svg">Resources/images/clearList.svg</file>
         <file alias="mainIcon.svg">Resources/images/mainIcon.svg</file>
-    </qresource>
-    <qresource prefix="/data">
-        <file alias="dependencies.txt">Data/dependencies.txt</file>
-        <file alias="ObjectsExistence.txt">Data/ObjectsExistence.txt</file>
     </qresource>
 </RCC>

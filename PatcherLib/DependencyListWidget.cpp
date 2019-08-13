@@ -1,12 +1,13 @@
 #include "DependencyListWidget.h"
 #include "ObjectTypes.h"
-#include "PatchList.h"
+
 #include <QHeaderView>
 #include <QBitArray>
 
 const QHash<int, QString> DependencyListWidget::statusIcons = QHash<int, QString>({ {waitingForCheck, ":/images/unchecked.svg"}
 		, {satisfied, ":/images/checked.svg"}, {notSatisfied, ":/images/error.svg"} });
 
+// Constructor
 DependencyListWidget::DependencyListWidget(QWidget *parent)
 	: QTreeWidget(parent)
 	, checkedCount(0)
@@ -31,6 +32,7 @@ DependencyListWidget::DependencyListWidget(QWidget *parent)
 	connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
 }
 
+// Marks dependencies in list as satisfied/not satisfied by check result bit array
 bool DependencyListWidget::setCheckStatus(const QBitArray& checkResult)
 {
 	if (checkResult.count() != topLevelItemCount())
@@ -44,7 +46,6 @@ bool DependencyListWidget::setCheckStatus(const QBitArray& checkResult)
 	{
 		if (checkResult[i])
 		{
-			// Save top level item as variable?
 			++checkedCount;
 			topLevelItem(i)->setCheckState(statusColumn, Qt::Checked);
 			topLevelItem(i)->setIcon(statusColumn, QIcon(statusIcons.value(satisfied)));
@@ -62,6 +63,7 @@ bool DependencyListWidget::setCheckStatus(const QBitArray& checkResult)
 	return true;
 }
 
+// Adds a new dependency to list and marks it as waiting for check
 void DependencyListWidget::add(int typeIndex, const class QString& schema, const class QString& name)
 {
 	auto *newItem = new QTreeWidgetItem(this);
@@ -77,6 +79,7 @@ void DependencyListWidget::add(int typeIndex, const class QString& schema, const
 	addTopLevelItem(newItem);
 }
 
+// Clears current list
 void DependencyListWidget::clear()
 {
 	QTreeWidget::clear();
@@ -84,16 +87,19 @@ void DependencyListWidget::clear()
 	areAllSatisfied = true;
 }
 
+// Getter for checkedCount
 int DependencyListWidget::getCheckedCount() const
 {
 	return checkedCount;
 }
 
+// Getter for areAllSatisfied
 bool DependencyListWidget::getAreAllSatisfied() const
 {
 	return areAllSatisfied;
 }
 
+// Handles user's click on item
 void DependencyListWidget::onItemClicked(QTreeWidgetItem *item, int column)
 {
 	if (item->data(statusColumn, Qt::UserRole).toInt() == waitingForCheck)

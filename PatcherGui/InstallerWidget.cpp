@@ -217,7 +217,7 @@ void InstallerWidget::onOpenButtonClicked()
 }
 
 // Handles check button click
-// 
+// Launches dependency check and shows information about its result
 void InstallerWidget::onCheckButtonClicked()
 {
 	if (!checkConnection())
@@ -227,7 +227,7 @@ void InstallerWidget::onCheckButtonClicked()
 
 	auto isSuccessful = false;
 	const auto checkResult = InstallerHandler::checkDependencies(DatabaseProvider::database(), DatabaseProvider::user(), DatabaseProvider::password()
-		, DatabaseProvider::server(), DatabaseProvider::port(), patchDir.absolutePath(), isSuccessful);
+		, DatabaseProvider::host(), DatabaseProvider::port(), patchDir.absolutePath(), isSuccessful);
 
 	if (isSuccessful && ui->dependencyListWidget->setCheckStatus(checkResult))
 	{
@@ -258,6 +258,8 @@ void InstallerWidget::onCheckButtonClicked()
 	}
 }
 
+// Handles install button click
+// Launches patch installation and shows information about its result
 void InstallerWidget::onInstallButtonClicked()
 {
 	if (!checkConnection())
@@ -280,7 +282,7 @@ void InstallerWidget::onInstallButtonClicked()
 	}
 
 	if (InstallerHandler::installPatch(DatabaseProvider::database()
-		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::server()
+		, DatabaseProvider::user(), DatabaseProvider::password(), DatabaseProvider::host()
 		, DatabaseProvider::port(), patchDir.absolutePath()))
 	{
 		QApplication::beep();
@@ -297,6 +299,8 @@ void InstallerWidget::onInstallButtonClicked()
 	}
 }
 
+// Handles amount of checked dependencies change
+// Shows appropriate information and enables install option if all dependencies are checked
 void InstallerWidget::onItemCheckChanged()
 {
 	if (ui->dependencyListWidget->getCheckedCount() == ui->dependencyListWidget->topLevelItemCount())

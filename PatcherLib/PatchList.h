@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QList>
+
 class PatchListElement;
 
+// Class implementing list of database objects
 class PatchList
 {
 public:
@@ -16,5 +19,6 @@ public:
 	void clear();
 private:
 	void swap(PatchList &other);
+	// Internal storage of database objects
 	QList<PatchListElement*> *elements;
 };

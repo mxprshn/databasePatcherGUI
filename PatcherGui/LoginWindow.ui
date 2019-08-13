@@ -41,7 +41,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,2,0">
+  <layout class="QVBoxLayout" name="mainLayout" stretch="1,1,2,0">
    <item>
     <spacer name="verticalSpacer_2">
      <property name="orientation">
@@ -66,7 +66,7 @@
      </item>
      <item row="0" column="1">
       <widget class="QWidget" name="hostWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="hostLayout">
         <property name="spacing">
          <number>7</number>
         </property>
