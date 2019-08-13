@@ -31,6 +31,7 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 	ui->moveDownButton->setDisabled(true);
 	ui->removeButton->setDisabled(true);
 	ui->clearButton->setDisabled(true);
+	ui->buildButton->setDisabled(true);
 
 	ui->typeComboBox->addItem(QIcon(":/images/script.svg"), "script", ObjectTypes::script);
 	ui->typeComboBox->addItem(QIcon(":/images/table.svg"), "table", ObjectTypes::table);
@@ -42,9 +43,16 @@ BuilderWidget::BuilderWidget(QWidget *parent)
 
 	initScriptInput();
 
+	connect(ui->nameEdit, &QLineEdit::returnPressed, [=]()
+	{
+		if (!nameCompleter->popup()->isVisible())
+		{
+			onAddButtonClicked();
+		}
+	});
+
 	connect(ui->addButton, SIGNAL(clicked()), this, SLOT(onAddButtonClicked()));
 	connect(ui->buildButton, SIGNAL(clicked()), this, SLOT(onBuildButtonClicked()));
-	connect(ui->nameEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onWrongFunctionInput()));
 	connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(onRemoveButtonClicked()));
 	connect(ui->buildListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onItemSelectionChanged()));
 	connect(ui->typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentTypeChanged(int)));
@@ -84,7 +92,7 @@ void BuilderWidget::onAddButtonClicked()
 		return;
 	}
 	
-	const auto typeIndex = ui->typeComboBox->currentData().toInt();
+	const auto typeIndex = ui->typeComboBox->currentData(Qt::UserRole).toInt();
 	const auto schema = ui->schemaComboBox->currentText();
 	const auto nameInput = ui->nameEdit->text().remove(QRegExp("\\ "));
 
@@ -114,7 +122,7 @@ void BuilderWidget::onAddButtonClicked()
 
 	auto exists = false;
 
-	switch (ui->typeComboBox->currentData().toInt())
+	switch (ui->typeComboBox->currentData(Qt::UserRole).toInt())
 	{
 		case ObjectTypes::table:
 		{
@@ -238,14 +246,14 @@ void BuilderWidget::initCompleter()
 		return;
 	}
 
-	if (ui->typeComboBox->currentIndex() == ObjectTypes::script)
+	if (ui->typeComboBox->currentData(Qt::UserRole) == ObjectTypes::script)
 	{
 		nameCompleter->clear();
 		ui->nameEdit->setCompleter(nullptr);
 		return;
 	}
 
-	nameCompleter->initialize(ui->typeComboBox->currentIndex(), ui->schemaComboBox->currentText());
+	nameCompleter->initialize(ui->typeComboBox->currentData(Qt::UserRole).toInt(), ui->schemaComboBox->currentText());
 	ui->nameEdit->setCompleter(nameCompleter);
 }
 
@@ -299,14 +307,14 @@ void BuilderWidget::onBuildButtonClicked()
 		{
 			QApplication::beep();
 			QMessageBox::information(this, "Build completed"
-				, "Build completed. See logs for detailed information."
+				, "Build completed. See log for detailed information."
 				, QMessageBox::Ok, QMessageBox::Ok);
 		}
 		else
 		{
 			QApplication::beep();
 			QMessageBox::warning(this, "Build error"
-				, "Error occured. See logs for detailed information."
+				, "Error occured. See log for detailed information."
 				, QMessageBox::Ok, QMessageBox::Ok);			
 		}
 	}
@@ -409,10 +417,9 @@ void BuilderWidget::onCurrentSchemaChanged(const QString& schema)
 	initCompleter();
 }
 
-
 void BuilderWidget::onNameTextChanged(const QString &input)
 {
-	if (ui->typeComboBox->currentData().toInt() != ObjectTypes::function)
+	if (ui->typeComboBox->currentData(Qt::UserRole).toInt() != ObjectTypes::function)
 	{
 		return;
 	}
@@ -425,10 +432,12 @@ void BuilderWidget::onItemCountChanged()
 	if (ui->buildListWidget->topLevelItemCount() == 0)
 	{
 		ui->clearButton->setDisabled(true);
+		ui->buildButton->setDisabled(true);
 	}
 	else if (!ui->clearButton->isEnabled())
 	{
 		ui->clearButton->setEnabled(true);
+		ui->buildButton->setEnabled(true);
 	}
 }
 
@@ -459,12 +468,13 @@ bool BuilderWidget::startPatchBuild(const QString &path)
 
 	for (auto i = 0; i < ui->buildListWidget->topLevelItemCount(); ++i)
 	{
-		auto nameSplitResult = ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::nameColumn).split(QRegExp("(\\ |\\,|\\(|\\))")
+		const auto currentItem = ui->buildListWidget->topLevelItem(i);
+		auto nameSplitResult = currentItem->text(PatchListWidget::ColumnIndexes::nameColumn).split(QRegExp("(\\ |\\,|\\(|\\))")
 			, QString::SkipEmptyParts);
 		const auto itemName = nameSplitResult.first();
 		nameSplitResult.pop_front();
-		buildList.add(ui->buildListWidget->topLevelItem(i)->data(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole).toInt()
-			, ui->buildListWidget->topLevelItem(i)->text(PatchListWidget::ColumnIndexes::schemaColumn)
+		buildList.add(currentItem->data(PatchListWidget::ColumnIndexes::typeColumn, Qt::UserRole).toInt()
+			, currentItem->text(PatchListWidget::ColumnIndexes::schemaColumn)
 			, itemName, nameSplitResult);
 	}
 

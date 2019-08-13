@@ -10,7 +10,7 @@ const QHash<int, QString> DependencyListWidget::statusIcons = QHash<int, QString
 DependencyListWidget::DependencyListWidget(QWidget *parent)
 	: QTreeWidget(parent)
 	, checkedCount(0)
-	, areAllSatisfied(false)
+	, areAllSatisfied(true)
 {
 	setColumnCount(4);
 	QStringList headerLabels;
@@ -26,6 +26,7 @@ DependencyListWidget::DependencyListWidget(QWidget *parent)
 	header()->setSectionResizeMode(schemaColumn, QHeaderView::ResizeMode::ResizeToContents);
 	header()->setSectionResizeMode(nameColumn, QHeaderView::ResizeMode::Stretch);
 	header()->setSectionResizeMode(statusColumn, QHeaderView::ResizeMode::ResizeToContents);
+	setSortingEnabled(true);
 
 	connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
 }
@@ -80,7 +81,7 @@ void DependencyListWidget::clear()
 {
 	QTreeWidget::clear();
 	checkedCount = 0;
-	areAllSatisfied = false;
+	areAllSatisfied = true;
 }
 
 int DependencyListWidget::getCheckedCount() const
@@ -95,10 +96,21 @@ bool DependencyListWidget::getAreAllSatisfied() const
 
 void DependencyListWidget::onItemClicked(QTreeWidgetItem *item, int column)
 {
-	if (item->checkState(statusColumn) != Qt::Checked && item->data(statusColumn, Qt::UserRole).toInt() != waitingForCheck)
+	if (item->data(statusColumn, Qt::UserRole).toInt() == waitingForCheck)
+	{
+		return;
+	}
+
+	if (item->checkState(statusColumn) != Qt::Checked)
 	{
 		++checkedCount;
-		item->setCheckState(statusColumn, Qt::Checked);
-		emit itemCheckChanged();
+		item->setCheckState(statusColumn, Qt::Checked);		
 	}
+	else
+	{
+		--checkedCount;
+		item->setCheckState(statusColumn, Qt::Unchecked);
+	}
+
+	emit itemCheckChanged();
 }
