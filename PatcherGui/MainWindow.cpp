@@ -1,5 +1,5 @@
-#include "ui_MainWindow.h"
 #include "MainWindow.h"
+#include "ui_MainWindow.h"
 #include "BuilderWidget.h"
 #include "InstallerWidget.h"
 #include "LoginWindow.h"
@@ -33,8 +33,18 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->databaseMenu->addAction(connectAction);
 	ui->databaseMenu->addAction(disconnectAction);
 
-	ui->viewMenu->addAction(QIcon(":/images/hammer.svg"),"Build", [=]() { ui->tabWidget->setCurrentWidget(ui->builderTab); });
-	ui->viewMenu->addAction(QIcon(":/images/install.svg"), "Install", [=]() { ui->tabWidget->setCurrentWidget(ui->installerTab); });
+	connectAction->setShortcut(QKeySequence("Ctrl+O"));
+	disconnectAction->setShortcut(QKeySequence("Ctrl+W"));
+
+	ui->viewMenu->addAction(QIcon(":/images/hammer.svg"),"Build", [=]() { ui->tabWidget->setCurrentWidget(ui->builderTab); }, QKeySequence("Ctrl+B"));
+	ui->viewMenu->addAction(QIcon(":/images/install.svg"), "Install", [=]() { ui->tabWidget->setCurrentWidget(ui->installerTab); }, QKeySequence("Ctrl+I"));
+	ui->viewMenu->addAction("About...", [=]()
+	{
+		QMessageBox::about(this, "PostgreSQL database patcher",
+			"PostgreSQL database patcher. "
+			"Developed by: Ekaterina Vinnik, Victor Khovanov, Timur Sirkin, Maxim Parshin, Daria Larionova, Nikolay Bazhulin. "
+			"Graphics by: Vitaly Gorbachev, Smashicons, Pixelmeetup");
+	});
 
 	ui->mainToolBar->addAction(connectAction);
 	ui->mainToolBar->addWidget(databaseInformation);
@@ -96,6 +106,14 @@ void MainWindow::onConnectionRequested()
 // Launches database disconnection and sets appropriate interface elements
 void MainWindow::onDisconnectButtonClicked()
 {
+	const auto dialogResult = QMessageBox::question(this, "Remove item", "Are you sure to disconnect from database?"
+		, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+
+	if (dialogResult == QMessageBox::Cancel)
+	{
+		return;
+	}
+
 	emit disconnectionStarted();
 	DatabaseProvider::disconnect();
 	databaseInformation->setText("Connect to database!");
