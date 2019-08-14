@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
 		QMessageBox::about(this, "PostgreSQL database patcher",
 			"PostgreSQL database patcher. "
 			"Developed by: Ekaterina Vinnik, Victor Khovanov, Timur Sirkin, Maxim Parshin, Daria Larionova, Nikolay Bazhulin. "
-			"Graphics by: Vitaly Gorbachev, Smashicons, Pixelmeetup");
+			"Icons made by: Vitaly Gorbachev, Smashicons, Pixelmeetup, Freepik, Roundicons, Good Ware from www.flaticon.com and www.icons8.com. 2019");
 	});
 
 	ui->mainToolBar->addAction(connectAction);
